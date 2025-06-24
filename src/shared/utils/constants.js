@@ -1,0 +1,6 @@
+export const CONSTANTS = {
+  PANAMA_COUNTRY_ID: 54,
+  USA_COUNTRY_ID: 81,
+  USA_CURRENCY_ID: 2,
+  EUR_CURRENCY_ID: -1,
+};
