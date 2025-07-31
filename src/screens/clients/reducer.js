@@ -19,18 +19,15 @@ import {
   FILTER_CLIENTS_INIT,
   FILTER_CLIENTS_SUCCESS,
   FILTER_CLIENTS_FAILURE,
-  GET_ALL_COUNTRIES_INIT,
-  GET_ALL_COUNTRIES_SUCCESS,
-  GET_ALL_COUNTRIES_FAILURE,
-  GET_ALL_STATES_INIT,
-  GET_ALL_STATES_SUCCESS,
-  GET_ALL_STATES_FAILURE,
-  GET_ALL_DISTRICTS_INIT,
-  GET_ALL_DISTRICTS_SUCCESS,
-  GET_ALL_DISTRICTS_FAILURE,
-  GET_ALL_CITIES_INIT,
-  GET_ALL_CITIES_SUCCESS,
-  GET_ALL_CITIES_FAILURE,
+  FETCH_STATES_INIT,
+  FETCH_STATES_SUCCESS,
+  FETCH_STATES_FAILURE,
+  FETCH_DISTRICTS_INIT,
+  FETCH_DISTRICTS_SUCCESS,
+  FETCH_DISTRICTS_FAILURE,
+  FETCH_CITIES_INIT,
+  FETCH_CITIES_SUCCESS,
+  FETCH_CITIES_FAILURE,
   GET_LOCATION_DATA_INIT,
   GET_LOCATION_DATA_SUCCESS,
   GET_LOCATION_DATA_FAILURE,
@@ -101,25 +98,16 @@ export default function(state = initialState, action) {
       return {
         ...state,
         showEditModal: !state.showEditModal,
+        errors: {},
       };
     case DELETE_CLIENT_SUCCESS:
     case SHOW_DELETE_MODAL:
       return {
         ...state,
         showDeleteModal: !state.showDeleteModal,
+        errors: {},
       };
-    case GET_ALL_COUNTRIES_INIT:
-      return {
-        ...state,
-        loading: true,
-      };
-    case GET_ALL_COUNTRIES_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        countries: [...action.payload],
-      };
-    case GET_ALL_STATES_INIT:
+    case FETCH_STATES_INIT:
       return {
         ...state,
         loading: true,
@@ -127,7 +115,7 @@ export default function(state = initialState, action) {
         districts: [],
         cities: [],
       };
-    case GET_ALL_STATES_SUCCESS:
+    case FETCH_STATES_SUCCESS:
       return {
         ...state,
         loading: false,
@@ -135,24 +123,24 @@ export default function(state = initialState, action) {
         districts: [],
         cities: [],
       };
-    case GET_ALL_DISTRICTS_INIT:
+    case FETCH_DISTRICTS_INIT:
       return {
         ...state,
         loading: true,
       };
-    case GET_ALL_DISTRICTS_SUCCESS:
+    case FETCH_DISTRICTS_SUCCESS:
       return {
         ...state,
         loading: false,
         districts: [...action.payload],
         cities: [],
       };
-    case GET_ALL_CITIES_INIT:
+    case FETCH_CITIES_INIT:
       return {
         ...state,
         loading: true,
       };
-    case GET_ALL_CITIES_SUCCESS:
+    case FETCH_CITIES_SUCCESS:
       return {
         ...state,
         loading: false,
@@ -183,10 +171,9 @@ export default function(state = initialState, action) {
     case FILTER_CLIENTS_FAILURE:
     case ADD_CLIENT_FAILURE:
     case EDIT_CLIENT_FAILURE:
-    case GET_ALL_COUNTRIES_FAILURE:
-    case GET_ALL_STATES_FAILURE:
-    case GET_ALL_DISTRICTS_FAILURE:
-    case GET_ALL_CITIES_FAILURE:
+    case FETCH_STATES_FAILURE:
+    case FETCH_DISTRICTS_FAILURE:
+    case FETCH_CITIES_FAILURE:
     case GET_LOCATION_DATA_FAILURE:
       return { ...state, loading: false, errors: { ...action.errors } };
     default:
@@ -241,17 +228,17 @@ export const getShowDeleteModal = createSelector(
   clientsReducer => clientsReducer.showDeleteModal
 );
 
-export const getAllCountries = createSelector(
+export const fetchCountries = createSelector(
   getClientsReducer,
   clientsReducer => clientsReducer.countries
 );
 
-export const getAllStates = createSelector(
+export const fetchStates = createSelector(
   getClientsReducer,
   clientsReducer => clientsReducer.states
 );
 
-export const getAllDistricts = createSelector(
+export const fetchDistricts = createSelector(
   getClientsReducer,
   clientsReducer => clientsReducer.districts
 );

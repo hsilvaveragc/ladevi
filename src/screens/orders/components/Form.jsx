@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Formik, Form } from "formik";
+import useUser from "shared/security/useUser";
 import InputTextField from "shared/components/InputTextField";
 import InputSelectField from "shared/components/InputSelectField";
 import InputCheckboxField from "shared/components/InputCheckboxField";
 import InputTextAreaField from "shared/components/InputTextAreaField";
 import { SaveButton, DangerButton } from "shared/components/Buttons";
-import { getAssignedRole } from "shared/services/utils";
 
 const NewOrderFormContainer = styled.div`
   width: 50vw;
@@ -73,22 +73,20 @@ const Order = ({
   isLoadingSpaceTypes,
   isLoadingSpaceLocations,
 }) => {
-  const userRole = getAssignedRole();
-  const userId = localStorage.getItem("userId");
+  const { userRol, userId } = useUser();
 
-  debugger;
   const disabledByCloseDate =
     editMode && !selectedItem.canDelete && selectedItem.productEdition.closed;
 
   const disabledByPageNumber =
-    editMode && selectedItem.pageNumber !== "" && !userRole.isAdmin;
+    editMode && selectedItem.pageNumber !== "" && !userRol.isAdmin;
 
   const getSellerId = () => {
     if (isFromContract) {
-      return userRole.isSeller ? parseFloat(userId) : contract.sellerId;
+      return userRol.isSeller ? parseFloat(userId) : contract.sellerId;
     } else {
       if (addMode) {
-        return userRole.isSeller ? parseFloat(userId) : "";
+        return userRol.isSeller ? parseFloat(userId) : "";
       } else {
         return selectedItem.sellerId;
       }
@@ -126,7 +124,7 @@ const Order = ({
         availableSpaceLocations = [];
       }
 
-      setEnableInvoice(contract.billingConditionId === 2 && !userRole.isSeller);
+      setEnableInvoice(contract.billingConditionId === 2 && !userRol.isSeller);
       setShowInvoice(contract.billingConditionId !== 1);
     } else {
       if (!addMode) {
@@ -171,7 +169,7 @@ const Order = ({
           if (selectedItem.contractId) {
             setEnableInvoice(
               selectedItem.contract.billingConditionId === 2 &&
-                !userRole.isSeller
+                !userRol.isSeller
             );
           } else {
             setEnableInvoice(false);
@@ -582,7 +580,7 @@ const Order = ({
                       });
 
                       setEnableInvoice(
-                        contract.billingConditionId === 2 && !userRole.isSeller
+                        contract.billingConditionId === 2 && !userRol.isSeller
                       );
                       setShowInvoice(contract.billingConditionId !== 1);
                       console.log(contract.billingConditionId);
@@ -659,9 +657,9 @@ const Order = ({
                         name="invoiceNumber"
                         disabled={
                           deleteMode ||
-                          userRole.isSeller ||
+                          userRol.isSeller ||
                           !enableInvoice ||
-                          (disabledByCloseDate && !userRole.isAdmin) ||
+                          disabledByCloseDate ||
                           disabledByPageNumber
                         }
                         error={errors.invoiceNumber}
@@ -675,7 +673,7 @@ const Order = ({
                           disabled={
                             deleteMode ||
                             !formikProps.values.invoiceNumber ||
-                            userRole.isSeller ||
+                            userRol.isSeller ||
                             !enableInvoice ||
                             disabledByPageNumber
                           }
@@ -693,10 +691,7 @@ const Order = ({
                     labelText="Página"
                     name="pageNumber"
                     disabled={
-                      deleteMode ||
-                      disabledByCloseDate ||
-                      (disabledByCloseDate && !userRole.isAdmin) ||
-                      disabledByPageNumber
+                      deleteMode || disabledByCloseDate || disabledByPageNumber
                     }
                     error={errors.pageNumber}
                     type="text"
@@ -756,10 +751,7 @@ const Order = ({
                     </DangerButton>
                     <SaveButton
                       type="button"
-                      disabled={
-                        (disabledByCloseDate && !userRole.isAdmin) ||
-                        disabledByPageNumber
-                      }
+                      disabled={disabledByCloseDate || disabledByPageNumber}
                       onClickHandler={evt => {
                         formikProps.validateForm();
                       }}

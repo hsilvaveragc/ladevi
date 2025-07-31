@@ -1,6 +1,6 @@
 import "shared/utils/extensionsMethods.js";
 import { CONSTANTS } from "shared/utils/constants";
-import { getAssignedRole } from "shared/services/utils";
+import useUser from "shared/security/useUser";
 
 export const getBillingConditions = () => [
   { id: 1, name: "Anticipada" },
@@ -16,9 +16,7 @@ export const getPaymentMethod = () => [
 ];
 
 export const GetInitValuesInAddMode = () => {
-  const userId = getAssignedRole().isSeller
-    ? parseFloat(localStorage.getItem("userId"))
-    : "";
+  const { userRol, userId } = useUser();
   const actualDate = new Date();
   const endContract = new Date(
     actualDate.getFullYear() + 1,
@@ -34,7 +32,7 @@ export const GetInitValuesInAddMode = () => {
     clientIsAgency: false,
     clientCountryId: "",
     clientIsComtur: false,
-    sellerId: userId,
+    sellerId: userRol.isSeller ? parseFloat(userId) : "",
     billingCountryId: "",
     name: "",
     productId: "",

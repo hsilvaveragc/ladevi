@@ -249,7 +249,7 @@ export function* getEuroParities({ payload }) {
   }
 }
 
-export default function* rootUsersSaga() {
+export default function* rootContractsSaga() {
   yield all([
     takeLatest(INITIAL_LOAD_INIT, initialLoad),
     takeLatest(ADD_CONTRACT_INIT, addContract),

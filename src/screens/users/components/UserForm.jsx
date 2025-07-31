@@ -31,7 +31,7 @@ const NewUserForm = ({
   closeHandler,
   errors,
   params,
-  filterHandler,
+  handleFilter,
 }) => {
   const [disableEditPassword, setDisableEditPassword] = React.useState(true);
 

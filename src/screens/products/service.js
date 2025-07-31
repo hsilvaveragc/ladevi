@@ -1,5 +1,4 @@
 import axios from "axios";
-import { addYears } from "date-fns";
 import { dissoc } from "ramda";
 import { sortAlphabetically, sortCaseInsensitive } from "shared/utils";
 import { getHeaders } from "shared/services/utils";
@@ -211,6 +210,20 @@ export default {
   getAllProductsOptionsFull: () =>
     axios
       .get(`Products/OptionsFull`, {
+        headers: getHeaders(),
+      })
+      .then(response => sortAlphabetically(response.data, "name")),
+
+  getXubioProducts: () =>
+    axios
+      .get(`Products/GetXubioProducts`, {
+        headers: getHeaders(),
+      })
+      .then(response => sortAlphabetically(response.data, "name")),
+
+  getXubioComturProducts: () =>
+    axios
+      .get(`Products/GetXubioProducts?isComtur=true`, {
         headers: getHeaders(),
       })
       .then(response => sortAlphabetically(response.data, "name")),

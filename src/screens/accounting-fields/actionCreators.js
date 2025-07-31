@@ -3,15 +3,15 @@ import {
   ADD_ACCOUNTING_FIELD_INIT,
   EDIT_ACCOUNTING_FIELD_INIT,
   DELETE_ACCOUNTING_FIELD_INIT,
-  ACCOUNTING_FIELDS_SHOW_ADD_MODAL,
-  ACCOUNTING_FIELDS_SHOW_EDIT_MODAL,
-  ACCOUNTING_FIELDS_SHOW_DELETE_MODAL,
-  ACCOUNTING_FIELDS_INITIAL_LOAD_INIT,
+  SHOW_ADD_MODAL,
+  SHOW_EDIT_MODAL,
+  SHOW_DELETE_MODAL,
+  INITIAL_LOAD_INIT,
   FILTER_ACCOUNTING_FIELDS_INIT,
 } from "./actionTypes";
 
 export const initialLoad = () => ({
-  type: ACCOUNTING_FIELDS_INITIAL_LOAD_INIT,
+  type: INITIAL_LOAD_INIT,
 });
 
 export const getAllAccountingFields = () => ({
@@ -39,13 +39,13 @@ export const deleteAccountingField = payload => ({
 });
 
 export const showAccountingFieldsAddModal = () => ({
-  type: ACCOUNTING_FIELDS_SHOW_ADD_MODAL,
+  type: SHOW_ADD_MODAL,
 });
 
 export const showAccountingFieldsEditModal = () => ({
-  type: ACCOUNTING_FIELDS_SHOW_EDIT_MODAL,
+  type: SHOW_EDIT_MODAL,
 });
 
 export const showAccountingFieldsDeleteModal = () => ({
-  type: ACCOUNTING_FIELDS_SHOW_DELETE_MODAL,
+  type: SHOW_DELETE_MODAL,
 });

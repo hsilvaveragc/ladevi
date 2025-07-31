@@ -3,11 +3,10 @@ import styled from "styled-components";
 import { Formik, Form } from "formik";
 import { isEmpty } from "ramda";
 import * as Yup from "yup";
-
+import useUser from "shared/security/useUser";
 import InputSelectField from "shared/components/InputSelectField";
 import InputDatePickerField from "shared/components/InputDatePickerField";
 import { SaveButton, DangerButton } from "shared/components/Buttons";
-import { getAssignedRole } from "shared/services/utils";
 import ExcelExport from "./ExcelExport";
 import PdfExport from "./PdfExport";
 
@@ -29,7 +28,7 @@ const Filters = ({
   availableEditions = [],
   availableProductTypes = [],
   availableSellers = [],
-  filterHandler,
+  handleFilter,
   clearFilters,
   getProductHandler,
   getProductEditionsHandler,
@@ -40,8 +39,7 @@ const Filters = ({
   isLoadingProducts,
   isLoadingProductEditions,
 }) => {
-  const userRole = getAssignedRole();
-  const userId = localStorage.getItem("userId");
+  const { userRol, userId } = useUser();
 
   const defaultOption = {
     id: -1,
@@ -59,7 +57,7 @@ const Filters = ({
         fromDate: "",
         toDate: "",
         client: "",
-        sellerId: userRole.isSeller ? parseFloat(userId) : -1,
+        sellerId: userRol.isSeller ? parseFloat(userId) : -1,
         productType: -1,
         product: -1,
         edition: -1,
@@ -69,7 +67,7 @@ const Filters = ({
         client: Yup.string().required("Requerido"),
       })}
       onSubmit={values => {
-        filterHandler(values);
+        handleFilter(values);
       }}
     >
       {formikProps => {
@@ -111,7 +109,7 @@ const Filters = ({
                         : [defaultSeller, ...availableSellers]
                     }
                     isLoading={isLoadingSellers}
-                    disabled={isLoadingSellers || userRole.isSeller}
+                    disabled={isLoadingSellers || userRol.isSeller}
                     getOptionLabel={option => option.fullName}
                   />
                 </div>

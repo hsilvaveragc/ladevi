@@ -27,7 +27,6 @@ const modalStyle = {
   },
 };
 export default function LoginPage({
-  isLoggedIn,
   loginLoading,
   loginError,
   forgotPasswordLoading,
@@ -41,8 +40,6 @@ export default function LoginPage({
       <img
         src={Logo}
         style={{
-          // position: "fixed",
-          // top: "20px"
           marginTop: "40px",
         }}
       />

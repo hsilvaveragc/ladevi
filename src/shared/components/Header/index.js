@@ -2,13 +2,12 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import HamburgerMenu from "react-hamburger-menu";
 import CheeseburgerMenu from "cheeseburger-menu";
-import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import useUser from "shared/security/useUser";
 import { headerBg } from "../../styles/constants";
 import MenuContent from "./components/MenuContent";
 import logo from "../../images/logo-mini.png";
-// import logo from "../../images/newLogo.png";
 
 const HeaderContainer = styled.header`
   background-color: ${headerBg};
@@ -55,6 +54,7 @@ const HeaderContainer = styled.header`
   }
 `;
 const Header = props => {
+  const { userFullName } = useUser();
   const [menuOpen, setMenuOpen] = useState(false);
   const routeName = props.match.path.split("/");
 
@@ -83,13 +83,9 @@ const Header = props => {
       </div>
       <div className="info-container">
         <div className="logo-container">
-          {/*<Link to="/">
-            <img src={logo} alt="Logo" />
-          </Link> */}
           <a href="/">
             <img
               style={{
-                // marginLeft: '2rem'
                 width: "38px !important",
               }}
               height="38"
@@ -101,7 +97,7 @@ const Header = props => {
         <h4>{props.routeTitle || routeName[1]}</h4>
       </div>
       <button onClick={props.logoutHandler}>
-        {localStorage.getItem("userFullName")}
+        {userFullName}
         <FontAwesomeIcon icon={faTimes} />
       </button>
     </HeaderContainer>

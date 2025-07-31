@@ -30,7 +30,7 @@ const defaultOption = {
 };
 
 const FiltersForm = ({
-  filterHandler,
+  handleFilter,
   productsAvailable,
   resetFilterHandler,
   handleChangeParams,
@@ -44,7 +44,7 @@ const FiltersForm = ({
       productId: -1,
     }}
     onSubmit={values => {
-      filterHandler(values);
+      handleFilter(values);
       handleChangeParams(values);
     }}
     enableReinitialize={true}

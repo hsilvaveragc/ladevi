@@ -354,6 +354,10 @@ const ContractData = ({
     formikProps.setFieldValue("currencyId", currency.id);
     formikProps.setFieldValue("useEuro", currency.id === -1);
 
+    if (currency.id === -1) {
+      formikProps.setFieldValue("useEuro", true);
+    }
+
     let parity =
       currency?.currencyParities?.find(
         x =>

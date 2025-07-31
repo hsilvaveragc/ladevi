@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import appDataService from "./appData";
+import appDataService from "../appData/service";
 
 /*axios.defaults.baseURL = process.env.NODE_ENV === "development"
     ? "https://localhost:44370/api/"

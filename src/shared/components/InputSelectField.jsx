@@ -43,7 +43,7 @@ function InputSelect({
       }) => {
         const optionsLocal = options || [];
         const selectValue = optionsLocal.filter(
-          option => option.id === field.value
+          option => (option.id ?? option.code) === field.value
         )[0];
         return (
           <InputSelectContainer className="form-group">
@@ -57,7 +57,7 @@ function InputSelect({
               }
               isDisabled={disabled}
               onChange={option => {
-                setFieldValue(field.name, option.id);
+                setFieldValue(field.name, option.id ?? option.code);
                 onChangeHandler(option);
               }}
               value={isNil(selectValue) ? null : selectValue}

@@ -345,7 +345,7 @@ export function* getClientsWithBalance({ payload }) {
   }
 }
 
-export default function* rootUsersSaga() {
+export default function* rootOrdersSaga() {
   yield all([
     takeLatest(INITIAL_LOAD_INIT, initialLoad),
     takeLatest(GETEDITIONSFILTER_INIT, getEditionsFilter),
