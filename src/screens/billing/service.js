@@ -2,12 +2,35 @@ import axios from "axios";
 import { getHeaders } from "shared/services/utils";
 import clientService from "screens/clients/service";
 import productService from "screens/products/service";
+import { is } from "ramda";
 
 export default {
   // Obtener productos de Xubio
   getXubioProducts: () => productService.getXubioProducts(),
-
   getXubioComturProducts: () => productService.getXubioComturProducts(),
+
+  // Obtener productos para filtros de ediciones
+  getProductsForEditions: () => productService.getAllProducts(),
+
+  // Obtener ediciones por producto
+  getEditionsByProduct: productId =>
+    axios
+      .get(`ProductEdition/Options`, {
+        params: {
+          productId: productId,
+          includeClosed: false,
+        },
+        headers: getHeaders(),
+      })
+      .then(response => response.data),
+
+  // Obtener vendedores
+  getVendors: () =>
+    axios
+      .get(`Users/Vendors`, {
+        headers: getHeaders(),
+      })
+      .then(response => response.data),
 
   getClientsByType: clientType =>
     clientService.getAllClientsOptionsFull({
@@ -15,7 +38,7 @@ export default {
       onlyComtur: clientType === "COMTUR",
     }),
 
-  // Filtrar contratos
+  // Filtrar contratos (sin cambios)
   filterContracts: filters =>
     axios
       .post(
@@ -33,7 +56,7 @@ export default {
       )
       .then(response => response.data.data),
 
-  // Obtener contratos anticipados por cliente
+  // Obtener contratos anticipados por cliente (sin cambios)
   getPendingContractsByClient: clientId =>
     axios
       .get(`Contract/GetContractByClient/${clientId}`, {
@@ -41,7 +64,26 @@ export default {
       })
       .then(response => response.data),
 
-  // Filtrar órdenes
+  // NUEVO: Filtrar órdenes por edición
+  filterOrdersByEdition: (editionId, filters = []) =>
+    axios
+      .post(
+        `Orders/SearchByEdition`,
+        {
+          editionId,
+          take: 10000,
+          filter: {
+            logic: "and",
+            filters: [...filters],
+          },
+        },
+        {
+          headers: getHeaders(),
+        }
+      )
+      .then(response => response.data.data),
+
+  // Filtrar órdenes (método original, ahora menos usado)
   filterOrders: filters =>
     axios
       .post(
@@ -59,7 +101,7 @@ export default {
       )
       .then(response => response.data.data),
 
-  // Obtener OP cotra publicacion
+  // Obtener OP contra publicación por cliente (sin cambios)
   getPublishingOrdersByClient: clientId =>
     axios
       .get(`PublishingOrder/GetPublishingOrdersByClient/${clientId}`, {
@@ -67,7 +109,7 @@ export default {
       })
       .then(response => response.data),
 
-  // Enviar datos a Xubio para generar factura
+  // ACTUALIZADO: Enviar datos a Xubio - ahora puede manejar múltiples facturas
   sendToXubio: invoiceData =>
     axios
       .post(`Billing/Post`, invoiceData, {
@@ -75,7 +117,15 @@ export default {
       })
       .then(response => response.data),
 
-  // Obtener items de un contrato
+  // NUEVO: Enviar múltiples facturas a Xubio (para facturación por ediciones)
+  sendMultipleInvoicesToXubio: invoicesData =>
+    axios
+      .post(`Billing/PostMultiple`, invoicesData, {
+        headers: getHeaders(),
+      })
+      .then(response => response.data),
+
+  // Obtener items de un contrato (sin cambios)
   getContractItems: contractId =>
     axios
       .get(`Contracts/GetContractItems/${contractId}`, {
@@ -83,10 +133,18 @@ export default {
       })
       .then(response => response.data),
 
-  // Obtener detalles de una orden de publicación
+  // Obtener detalles de una orden de publicación (sin cambios)
   getOrderDetails: orderId =>
     axios
       .get(`Orders/GetOrderDetails/${orderId}`, {
+        headers: getHeaders(),
+      })
+      .then(response => response.data),
+
+  // NUEVO: Obtener clientes únicos de una edición (para filtros)
+  getClientsFromEdition: editionId =>
+    axios
+      .get(`Orders/GetClientsFromEdition/${editionId}`, {
         headers: getHeaders(),
       })
       .then(response => response.data),

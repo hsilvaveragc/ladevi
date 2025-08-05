@@ -42,6 +42,24 @@ import {
   FILTER_ORDERS_FAILURE,
   UPDATE_CART_ITEM,
   SHOW_CONTRACT_DIALOG_FOR_EDIT,
+  // Nuevos tipos de acciones para ediciones
+  FETCH_PRODUCTS_INIT,
+  FETCH_PRODUCTS_SUCCESS,
+  FETCH_PRODUCTS_FAILURE,
+  FETCH_EDITIONS_INIT,
+  FETCH_EDITIONS_SUCCESS,
+  FETCH_EDITIONS_FAILURE,
+  SET_SELECTED_PRODUCT,
+  SET_SELECTED_EDITION,
+  FETCH_VENDORS_INIT,
+  FETCH_VENDORS_SUCCESS,
+  FETCH_VENDORS_FAILURE,
+  FETCH_CLIENTS_FROM_EDITION_INIT,
+  FETCH_CLIENTS_FROM_EDITION_SUCCESS,
+  FETCH_CLIENTS_FROM_EDITION_FAILURE,
+  SEND_MULTIPLE_TO_XUBIO_INIT,
+  SEND_MULTIPLE_TO_XUBIO_SUCCESS,
+  SEND_MULTIPLE_TO_XUBIO_FAILURE,
 } from "./actionTypes.js";
 
 const initialState = {
@@ -56,11 +74,21 @@ const initialState = {
   contracts: [],
   orders: [],
 
+  // NUEVOS: Datos para ediciones
+  products: [],
+  editions: [],
+  vendors: [],
+  availableClientsForEdition: [],
+
   // Datos de selección
   clientType: null, // 'ARGENTINA' o 'COMTUR'
   selectedClient: null,
-  entityType: null, // 'CONTRACTS' o 'ORDERS'
+  entityType: null, // 'CONTRACTS' o 'EDITIONS' (cambio de 'ORDERS')
   selectedCurrency: "", // Filtro de moneda
+
+  // NUEVOS: Selección para ediciones
+  selectedProduct: null,
+  selectedEdition: null,
 
   // Estado del carrito
   cartItems: [],
@@ -68,16 +96,14 @@ const initialState = {
   // Estado de modales
   showContractDialog: false,
   selectedContract: null,
+  contractDialogEditMode: false,
   showOrderDialog: false,
   selectedOrder: null,
   showInvoiceDialog: false,
 
-  // Filtros activos
-  contractFilters: {},
-  orderFilters: {},
-
-  // Resultados
+  // Resultado de facturación
   invoiceResult: null,
+  multipleInvoiceResults: null, // NUEVO
 };
 
 export default function(state = initialState, action) {
@@ -92,6 +118,11 @@ export default function(state = initialState, action) {
     case SEND_TO_XUBIO_INIT:
     case FILTER_CONTRACTS_INIT:
     case FILTER_ORDERS_INIT:
+    case FETCH_PRODUCTS_INIT:
+    case FETCH_EDITIONS_INIT:
+    case FETCH_VENDORS_INIT:
+    case FETCH_CLIENTS_FROM_EDITION_INIT:
+    case SEND_MULTIPLE_TO_XUBIO_INIT:
       return {
         ...state,
         loading: true,
@@ -142,6 +173,35 @@ export default function(state = initialState, action) {
         orders: action.payload.orders,
       };
 
+    // NUEVOS: Success states para ediciones
+    case FETCH_PRODUCTS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        products: action.payload.products,
+      };
+
+    case FETCH_EDITIONS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        editions: action.payload.editions,
+      };
+
+    case FETCH_VENDORS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        vendors: action.payload.vendors,
+      };
+
+    case FETCH_CLIENTS_FROM_EDITION_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        availableClientsForEdition: action.payload.clients,
+      };
+
     case FETCH_XUBIO_PRODUCTS_SUCCESS:
       return {
         ...state,
@@ -158,6 +218,15 @@ export default function(state = initialState, action) {
         cartItems: [], // Limpiamos el carrito después de facturar
       };
 
+    // NUEVO: Success para facturación múltiple
+    case SEND_MULTIPLE_TO_XUBIO_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        multipleInvoiceResults: action.payload.results,
+        cartItems: [], // Limpiamos el carrito después de facturar
+      };
+
     // Error states
     case INITIAL_LOAD_FAILURE:
     case FETCH_INVOICES_FAILURE:
@@ -168,6 +237,11 @@ export default function(state = initialState, action) {
     case SEND_TO_XUBIO_FAILURE:
     case FILTER_CONTRACTS_FAILURE:
     case FILTER_ORDERS_FAILURE:
+    case FETCH_PRODUCTS_FAILURE:
+    case FETCH_EDITIONS_FAILURE:
+    case FETCH_VENDORS_FAILURE:
+    case FETCH_CLIENTS_FROM_EDITION_FAILURE:
+    case SEND_MULTIPLE_TO_XUBIO_FAILURE:
       return {
         ...state,
         loading: false,
@@ -185,6 +259,11 @@ export default function(state = initialState, action) {
         orders: [],
         cartItems: [],
         selectedCurrency: "", // Resetear moneda seleccionada
+        // NUEVO: Reset de campos de ediciones
+        products: [],
+        editions: [],
+        selectedProduct: null,
+        selectedEdition: null,
       };
 
     case SELECT_CLIENT:
@@ -196,6 +275,11 @@ export default function(state = initialState, action) {
         orders: [],
         cartItems: [],
         selectedCurrency: "", // Resetear moneda seleccionada
+        // NUEVO: Reset de campos de ediciones
+        products: [],
+        editions: [],
+        selectedProduct: null,
+        selectedEdition: null,
       };
 
     case SET_ENTITY_TYPE:
@@ -203,9 +287,39 @@ export default function(state = initialState, action) {
         ...state,
         entityType: action.payload,
         contracts: action.payload === "CONTRACTS" ? state.contracts : [],
-        orders: action.payload === "ORDERS" ? state.orders : [],
+        orders: action.payload === "EDITIONS" ? state.orders : [], // Cambio de "ORDERS" a "EDITIONS"
         cartItems: [],
         selectedCurrency: "", // Resetear moneda seleccionada
+        // NUEVO: Reset de campos específicos según el tipo
+        ...(action.payload === "CONTRACTS"
+          ? {
+              products: [],
+              editions: [],
+              selectedProduct: null,
+              selectedEdition: null,
+            }
+          : {}),
+      };
+
+    // NUEVOS: Selección de producto y edición
+    case SET_SELECTED_PRODUCT:
+      return {
+        ...state,
+        selectedProduct: action.payload,
+        selectedEdition: null,
+        editions: [],
+        orders: [],
+        cartItems: [],
+        selectedCurrency: "",
+      };
+
+    case SET_SELECTED_EDITION:
+      return {
+        ...state,
+        selectedEdition: action.payload,
+        orders: [],
+        cartItems: [],
+        selectedCurrency: "",
       };
 
     case SET_SELECTED_CURRENCY:
@@ -232,6 +346,16 @@ export default function(state = initialState, action) {
       return {
         ...state,
         cartItems: [],
+      };
+
+    case UPDATE_CART_ITEM:
+      return {
+        ...state,
+        cartItems: state.cartItems.map(item =>
+          item.id === action.payload.itemId
+            ? { ...item, ...action.payload.updatedItem }
+            : item
+        ),
       };
 
     // Manejo de modales
@@ -276,16 +400,6 @@ export default function(state = initialState, action) {
         showInvoiceDialog: false,
       };
 
-    case UPDATE_CART_ITEM:
-      return {
-        ...state,
-        cartItems: state.cartItems.map(item =>
-          item.id === action.payload.itemId
-            ? { ...action.payload.updatedItem }
-            : item
-        ),
-      };
-
     case SHOW_CONTRACT_DIALOG_FOR_EDIT:
       return {
         ...state,
@@ -299,7 +413,7 @@ export default function(state = initialState, action) {
   }
 }
 
-// Selectores
+// Selectores - ESTRUCTURA ORIGINAL CON AGREGADOS MÍNIMOS
 const getBillingReducer = state => state.billing;
 
 // Selectores básicos
@@ -334,6 +448,17 @@ export const getSelectedCurrency = createSelector(
   billingReducer => billingReducer.selectedCurrency
 );
 
+// NUEVOS: Selectores para ediciones
+export const getSelectedProduct = createSelector(
+  getBillingReducer,
+  billingReducer => billingReducer.selectedProduct
+);
+
+export const getSelectedEdition = createSelector(
+  getBillingReducer,
+  billingReducer => billingReducer.selectedEdition
+);
+
 // Selectores de datos
 export const getClients = createSelector(
   getBillingReducer,
@@ -348,6 +473,27 @@ export const getContracts = createSelector(
 export const getOrders = createSelector(
   getBillingReducer,
   billingReducer => billingReducer.orders
+);
+
+// NUEVOS: Selectores de datos para ediciones
+export const getProducts = createSelector(
+  getBillingReducer,
+  billingReducer => billingReducer.products
+);
+
+export const getEditions = createSelector(
+  getBillingReducer,
+  billingReducer => billingReducer.editions
+);
+
+export const getVendors = createSelector(
+  getBillingReducer,
+  billingReducer => billingReducer.vendors
+);
+
+export const getAvailableClientsForEdition = createSelector(
+  getBillingReducer,
+  billingReducer => billingReducer.availableClientsForEdition
 );
 
 // Selector para obtener los contratos filtrados por moneda
@@ -440,6 +586,12 @@ export const getShowInvoiceDialog = createSelector(
 export const getInvoiceResult = createSelector(
   getBillingReducer,
   billingReducer => billingReducer.invoiceResult
+);
+
+// NUEVO: Selector de resultado múltiple
+export const getMultipleInvoiceResults = createSelector(
+  getBillingReducer,
+  billingReducer => billingReducer.multipleInvoiceResults
 );
 
 // Selector para obtener el ítem del carrito correspondiente a un contrato específico

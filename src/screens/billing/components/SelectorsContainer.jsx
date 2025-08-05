@@ -8,6 +8,11 @@ import {
   fetchContractsInit,
   fetchOrdersInit,
   setSelectedCurrency,
+  // Nuevas acciones para productos y ediciones
+  fetchProductsInit,
+  fetchEditionsInit,
+  setSelectedProduct,
+  setSelectedEdition,
 } from "../actionCreators";
 import {
   getClientType,
@@ -18,11 +23,18 @@ import {
   getContracts,
   getOrders,
   getSelectedCurrency,
+  // Nuevos selectores
+  getProducts,
+  getEditions,
+  getSelectedProduct,
+  getSelectedEdition,
 } from "../reducer";
 import InputSelectFieldSimple from "shared/components/InputSelectFieldSimple";
 
 const SelectorsContainer = () => {
   const dispatch = useDispatch();
+
+  // Selectores existentes
   const clientType = useSelector(getClientType);
   const clients = useSelector(getClients);
   const selectedClient = useSelector(getSelectedClient);
@@ -31,6 +43,12 @@ const SelectorsContainer = () => {
   const contracts = useSelector(getContracts);
   const orders = useSelector(getOrders);
   const selectedCurrency = useSelector(getSelectedCurrency);
+
+  // Nuevos selectores para productos y ediciones
+  const products = useSelector(getProducts);
+  const editions = useSelector(getEditions);
+  const selectedProduct = useSelector(getSelectedProduct);
+  const selectedEdition = useSelector(getSelectedEdition);
 
   // Estado local para las opciones de moneda
   const [currencyOptions, setCurrencyOptions] = useState([]);
@@ -41,6 +59,20 @@ const SelectorsContainer = () => {
       dispatch(fetchClientsInit(clientType));
     }
   }, [dispatch, clientType]);
+
+  // Cargar productos cuando se selecciona tipo ediciones
+  useEffect(() => {
+    if (entityType === "EDITIONS" && clientType) {
+      dispatch(fetchProductsInit(clientType));
+    }
+  }, [dispatch, entityType, clientType]);
+
+  // Cargar ediciones cuando se selecciona un producto
+  useEffect(() => {
+    if (selectedProduct && entityType === "EDITIONS") {
+      dispatch(fetchEditionsInit(selectedProduct, clientType !== "ARGENTINA"));
+    }
+  }, [dispatch, selectedProduct, entityType]);
 
   // Extraer opciones de moneda únicas cuando se cargan contratos u órdenes
   useEffect(() => {
@@ -65,7 +97,7 @@ const SelectorsContainer = () => {
       if (currencyOpts.length > 0 && !selectedCurrency) {
         dispatch(setSelectedCurrency(currencyOpts[0].id));
       }
-    } else if (entityType === "ORDERS" && orders && orders.length > 0) {
+    } else if (entityType === "EDITIONS" && orders && orders.length > 0) {
       // Extraer monedas únicas de las órdenes
       const uniqueCurrencies = new Set();
       orders.forEach(order => {
@@ -102,11 +134,23 @@ const SelectorsContainer = () => {
     dispatch(setEntityType(selected.id));
 
     // Cargar datos según el tipo seleccionado
-    if (selected.id === "CONTRACTS") {
+    if (selected.id === "CONTRACTS" && selectedClient) {
       dispatch(fetchContractsInit(selectedClient.id));
-    } else if (selected.id === "ORDERS") {
-      dispatch(fetchOrdersInit(selectedClient.id));
+    } else if (selected.id === "EDITIONS") {
+      // Para ediciones, no cargamos datos hasta seleccionar producto y edición
+      // Los productos ya se cargan automáticamente en el useEffect
     }
+  };
+
+  const handleProductChange = selected => {
+    dispatch(setSelectedProduct(selected.id));
+    // Las ediciones se cargan automáticamente en el useEffect
+  };
+
+  const handleEditionChange = selected => {
+    dispatch(setSelectedEdition(selected.id));
+    // Cargar órdenes de la edición seleccionada
+    dispatch(fetchOrdersInit({ editionId: selected.id }));
   };
 
   const handleCurrencyChange = selected => {
@@ -114,6 +158,10 @@ const SelectorsContainer = () => {
   };
 
   const getSortedClients = clients => {
+    if (!clients || !Array.isArray(clients)) {
+      return [];
+    }
+
     return [...clients].sort((a, b) => {
       // Primero por xubioId
       const aHasXubio = a.xubioId ? 0 : 1;
@@ -138,12 +186,15 @@ const SelectorsContainer = () => {
     { id: "COMTUR", name: "Cliente COMTUR" },
   ];
 
-  // Opciones para el selector de tipo de entidad
+  // Opciones para el selector de tipo de entidad - CAMBIO PRINCIPAL
   const entityTypeOptions = [
-    { id: "", name: "Seleccione tipo de entidad" },
     { id: "CONTRACTS", name: "Contratos" },
-    { id: "ORDERS", name: "Órdenes de Publicación" },
+    { id: "EDITIONS", name: "Ediciones" }, // Cambio de "ORDERS" a "EDITIONS"
   ];
+
+  // Filtros para mostrar según el tipo de entidad seleccionado
+  const isContractFlow = entityType === "CONTRACTS";
+  const isEditionFlow = entityType === "EDITIONS";
 
   return (
     <div className="card mb-4">
@@ -152,6 +203,7 @@ const SelectorsContainer = () => {
       </div>
       <div className="card-body">
         <div className="row">
+          {/* Tipo de cliente - siempre primero */}
           <div className="col-md-3 mb-3">
             <InputSelectFieldSimple
               labelText="Tipo de cliente *"
@@ -165,48 +217,104 @@ const SelectorsContainer = () => {
             />
           </div>
 
-          <div className="col-md-5 mb-3">
-            <InputSelectFieldSimple
-              labelText="Cliente *"
-              name="client"
-              options={getSortedClients(clients)}
-              value={selectedClient ? selectedClient.id : ""}
-              onChangeHandler={handleClientChange}
-              disabled={loading || !clientType || clients.length === 0}
-              getOptionLabel={option => {
-                const baseLabel = `${option.brandName} - ${option.legalName}`;
-                return option.xubioId
-                  ? baseLabel
-                  : `${baseLabel} (NO SINCRONIZADO CON XUBIO)`;
-              }}
-            />
-          </div>
-
+          {/* Tipo de entidad - segundo */}
           <div className="col-md-2 mb-3">
             <InputSelectFieldSimple
               labelText="¿Qué desea facturar? *"
+              fontSize="14px"
               name="entityType"
               options={entityTypeOptions}
               value={entityType || ""}
               onChangeHandler={handleEntityTypeChange}
-              disabled={loading || !selectedClient}
+              disabled={loading || !clientType}
               getOptionLabel={option => option.name}
               getOptionValue={option => option.id}
             />
           </div>
 
-          <div className="col-md-2 mb-3">
-            <InputSelectFieldSimple
-              labelText="Moneda *"
-              name="currency"
-              options={currencyOptions}
-              value={selectedCurrency}
-              onChangeHandler={handleCurrencyChange}
-              disabled={loading || !entityType || currencyOptions.length === 0}
-              getOptionLabel={option => option.name}
-              getOptionValue={option => option.id}
-            />
-          </div>
+          {/* FLUJO PARA CONTRATOS - igual que antes */}
+          {isContractFlow && (
+            <>
+              <div className="col-md-5 mb-3">
+                <InputSelectFieldSimple
+                  labelText="Cliente *"
+                  name="client"
+                  options={getSortedClients(clients || [])}
+                  value={selectedClient ? selectedClient.id : ""}
+                  onChangeHandler={handleClientChange}
+                  disabled={
+                    loading || !entityType || (clients || []).length === 0
+                  }
+                  getOptionLabel={option => {
+                    const baseLabel = `${option.brandName} - ${option.legalName}`;
+                    return option.xubioId
+                      ? baseLabel
+                      : `${baseLabel} (NO SINCRONIZADO CON XUBIO)`;
+                  }}
+                  getOptionValue={option => option.id}
+                />
+              </div>
+
+              <div className="col-md-2 mb-3">
+                <InputSelectFieldSimple
+                  labelText="Moneda *"
+                  fontSize="14px"
+                  name="currency"
+                  options={currencyOptions}
+                  value={selectedCurrency || ""}
+                  onChangeHandler={handleCurrencyChange}
+                  disabled={loading || !selectedClient}
+                  getOptionLabel={option => option.name}
+                  getOptionValue={option => option.id}
+                />
+              </div>
+            </>
+          )}
+
+          {/* NUEVO FLUJO PARA EDICIONES */}
+          {isEditionFlow && (
+            <>
+              <div className="col-md-3 mb-3">
+                <InputSelectFieldSimple
+                  labelText="Producto *"
+                  name="product"
+                  options={products || []}
+                  value={selectedProduct || ""}
+                  onChangeHandler={handleProductChange}
+                  disabled={loading || !entityType}
+                  getOptionLabel={option => option.name}
+                  getOptionValue={option => option.id}
+                />
+              </div>
+
+              <div className="col-md-3 mb-3">
+                <InputSelectFieldSimple
+                  labelText="Edición *"
+                  name="edition"
+                  options={editions || []}
+                  value={selectedEdition || ""}
+                  onChangeHandler={handleEditionChange}
+                  disabled={loading || !selectedProduct}
+                  getOptionLabel={option => `${option.name} (${option.code})`}
+                  getOptionValue={option => option.id}
+                />
+              </div>
+
+              <div className="col-md-1 mb-3">
+                <InputSelectFieldSimple
+                  labelText="Moneda *"
+                  fontSize="10px"
+                  name="currency"
+                  options={currencyOptions}
+                  value={selectedCurrency || ""}
+                  onChangeHandler={handleCurrencyChange}
+                  disabled={loading || !selectedEdition}
+                  getOptionLabel={option => option.name}
+                  getOptionValue={option => option.id}
+                />
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

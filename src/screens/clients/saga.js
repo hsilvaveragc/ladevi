@@ -131,7 +131,6 @@ export function* addClient({ payload }) {
       put({ type: FILTER_CLIENTS_INIT, payload: payload.params || {} }),
     ]);
   } catch (err) {
-    debugger;
     let auxError = {};
 
     // Verificar si existe la respuesta y los datos de error

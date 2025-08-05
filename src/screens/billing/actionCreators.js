@@ -23,8 +23,17 @@ import {
   FILTER_ORDERS_INIT,
   UPDATE_CART_ITEM,
   SHOW_CONTRACT_DIALOG_FOR_EDIT,
+  // Nuevas acciones
+  FETCH_PRODUCTS_INIT,
+  FETCH_EDITIONS_INIT,
+  SET_SELECTED_PRODUCT,
+  SET_SELECTED_EDITION,
+  FETCH_VENDORS_INIT,
+  FETCH_CLIENTS_FROM_EDITION_INIT,
+  SEND_MULTIPLE_TO_XUBIO_INIT,
 } from "./actionTypes.js";
 
+// Acciones existentes
 export const initialLoad = () => ({
   type: INITIAL_LOAD_INIT,
 });
@@ -45,7 +54,7 @@ export const selectClient = client => ({
 
 export const setEntityType = entityType => ({
   type: SET_ENTITY_TYPE,
-  payload: entityType, // 'CONTRACTS' o 'ORDERS'
+  payload: entityType, // 'CONTRACTS' o 'EDITIONS'
 });
 
 export const setSelectedCurrency = currency => ({
@@ -63,15 +72,46 @@ export const fetchContractsInit = clientId => ({
   payload: clientId,
 });
 
-export const fetchOrdersInit = clientId => ({
+export const fetchOrdersInit = payload => ({
   type: FETCH_ORDERS_INIT,
-  payload: clientId,
+  payload, // Puede ser clientId o { editionId }
 });
 
 export const fetchXubioProductsInit = () => ({
   type: FETCH_XUBIO_PRODUCTS_INIT,
 });
 
+// NUEVAS ACCIONES PARA EDICIONES
+export const fetchProductsInit = clientType => ({
+  type: FETCH_PRODUCTS_INIT,
+  payload: clientType,
+});
+
+export const fetchEditionsInit = (productId, isComturClient) => ({
+  type: FETCH_EDITIONS_INIT,
+  payload: productId,
+});
+
+export const setSelectedProduct = productId => ({
+  type: SET_SELECTED_PRODUCT,
+  payload: productId,
+});
+
+export const setSelectedEdition = editionId => ({
+  type: SET_SELECTED_EDITION,
+  payload: editionId,
+});
+
+export const fetchVendorsInit = () => ({
+  type: FETCH_VENDORS_INIT,
+});
+
+export const fetchClientsFromEditionInit = editionId => ({
+  type: FETCH_CLIENTS_FROM_EDITION_INIT,
+  payload: editionId,
+});
+
+// Gestión del carrito
 export const addToCart = item => ({
   type: ADD_TO_CART,
   payload: item,
@@ -86,6 +126,15 @@ export const clearCart = () => ({
   type: CLEAR_CART,
 });
 
+export const updateCartItem = (itemId, updatedItem) => ({
+  type: UPDATE_CART_ITEM,
+  payload: {
+    itemId,
+    updatedItem,
+  },
+});
+
+// Diálogos
 export const showContractDialog = contract => ({
   type: SHOW_CONTRACT_DIALOG,
   payload: contract,
@@ -112,11 +161,27 @@ export const hideInvoiceDialog = () => ({
   type: HIDE_INVOICE_DIALOG,
 });
 
+export const showContractDialogForEdit = (contract, editMode = false) => ({
+  type: SHOW_CONTRACT_DIALOG_FOR_EDIT,
+  payload: {
+    contract,
+    editMode,
+  },
+});
+
+// Envío a Xubio
 export const sendToXubioInit = invoiceData => ({
   type: SEND_TO_XUBIO_INIT,
   payload: invoiceData,
 });
 
+// NUEVA: Envío múltiple a Xubio
+export const sendMultipleToXubioInit = invoicesData => ({
+  type: SEND_MULTIPLE_TO_XUBIO_INIT,
+  payload: invoicesData,
+});
+
+// Filtros
 export const filterContractsInit = filters => ({
   type: FILTER_CONTRACTS_INIT,
   payload: filters,
@@ -125,20 +190,4 @@ export const filterContractsInit = filters => ({
 export const filterOrdersInit = filters => ({
   type: FILTER_ORDERS_INIT,
   payload: filters,
-});
-
-export const updateCartItem = (itemId, updatedItem) => ({
-  type: UPDATE_CART_ITEM,
-  payload: {
-    itemId,
-    updatedItem,
-  },
-});
-
-export const showContractDialogForEdit = (contract, editMode = false) => ({
-  type: SHOW_CONTRACT_DIALOG_FOR_EDIT,
-  payload: {
-    contract,
-    editMode,
-  },
 });

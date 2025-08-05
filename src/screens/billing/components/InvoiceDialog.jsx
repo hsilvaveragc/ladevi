@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
-import { hideInvoiceDialog, sendToXubioInit } from "../actionCreators";
+import {
+  hideInvoiceDialog,
+  sendToXubioInit,
+  sendMultipleToXubioInit,
+} from "../actionCreators";
 import {
   getShowInvoiceDialog,
   getCartItems,
@@ -10,6 +14,7 @@ import {
   getSelectedClient,
   getCartTotal,
   getClientType,
+  getEntityType,
 } from "../reducer";
 import { SaveButton, DangerButton } from "shared/components/Buttons";
 import InputSelectFieldSimple from "shared/components/InputSelectFieldSimple";
@@ -37,12 +42,49 @@ const InvoiceDialog = () => {
   const selectedClient = useSelector(getSelectedClient);
   const cartTotal = useSelector(getCartTotal);
   const clientType = useSelector(getClientType);
+  const entityType = useSelector(getEntityType);
 
   const [invoiceMode, setInvoiceMode] = useState("separate");
   const [consolidatedXubioProductId, setConsolidatedXubioProductId] = useState(
     ""
   );
   const [globalObservations, setGlobalObservations] = useState("");
+  const [groupedByClient, setGroupedByClient] = useState({});
+
+  const isEditionFlow = entityType === "EDITIONS";
+
+  // Agrupar items por cliente cuando es flujo de ediciones
+  useEffect(() => {
+    if (isEditionFlow && cartItems && cartItems.length > 0) {
+      const grouped = {};
+
+      cartItems.forEach(item => {
+        const clientKey = `${item.clientId}_${item.clientName}`;
+
+        if (!grouped[clientKey]) {
+          grouped[clientKey] = {
+            clientId: item.clientId,
+            clientName: item.clientName,
+            items: [],
+            totals: {
+              quantity: 0,
+              amount: 0,
+              taxes: 0,
+            },
+          };
+        }
+
+        grouped[clientKey].items.push(item);
+        grouped[clientKey].totals.quantity += item.quantity || 1;
+        grouped[clientKey].totals.amount += item.total || item.amount || 0;
+        grouped[clientKey].totals.taxes += item.totalTaxes || 0;
+      });
+
+      setGroupedByClient(grouped);
+    } else {
+      setGroupedByClient({});
+    }
+  }, [cartItems, isEditionFlow]);
 
   // Determinar el tipo de entidad de la factura (CONTRACT o ORDER)
   const determineEntityType = () => {
@@ -99,169 +141,149 @@ const InvoiceDialog = () => {
   };
 
   const handleSendToXubio = () => {
-    // Validar datos
-    if (
-      invoiceMode === "consolidated" &&
-      totalItemsCount > 1 &&
-      !consolidatedXubioProductId
-    ) {
-      return;
-    }
+    if (isEditionFlow) {
+      // Para ediciones, enviar datos agrupados por cliente
+      const invoicesByClient = Object.values(groupedByClient).map(
+        clientGroup => ({
+          clientId: clientGroup.clientId,
+          clientName: clientGroup.clientName,
+          globalObservations,
+          entityType: "ORDER", // Mantenemos el tipo original para el backend
+          isConsolidated: true, // Para agrupar todos los items del cliente
+          items: clientGroup.items.map(item => ({
+            id: item.id,
+            xubioProductId: item.xubioProductId,
+            amount: item.total || item.amount,
+            totalTaxes: item.totalTaxes || 0,
+            observations: item.description || item.observations,
+            quantity: item.quantity || 1,
+            price: item.price || 0,
+          })),
+          totals: clientGroup.totals,
+        })
+      );
 
-    // Si hay un solo item, forzar modo separado
-    const effectiveMode = totalItemsCount === 1 ? "separate" : invoiceMode;
-
-    // Determinar el tipo de entidad
-    const entityType = determineEntityType();
-
-    // Preparar datos para enviar a Xubio
-    let invoiceData = {
-      clientId: selectedClient.id,
-      globalObservations,
-      entityType,
-      isConsolidated: effectiveMode === "consolidated",
-    };
-
-    if (effectiveMode === "consolidated") {
-      // Modo consolidado: un solo item con todos los detalles agrupados
-      let consolidatedObservations = "";
-      let totalQuantity = 0;
-      let totalAmount = 0;
-      let totalTaxes = 0;
-      const consolidatedIds = [];
-
-      // Generar las observaciones consolidadas y recolectar los IDs
-      cartItems.forEach(cartItem => {
-        if (cartItem.type === "CONTRACT" && cartItem.entityItems) {
-          cartItem.entityItems.forEach(entityItem => {
-            consolidatedObservations += `${entityItem.quantity} ${entityItem.productAdvertisingSpaceName} - ${entityItem.advertisingSpaceLocationTypeName}\n`;
-            totalQuantity += entityItem.quantity;
-            totalAmount += entityItem.total;
-            totalTaxes += entityItem.totalTaxes || 0; // Incluir impuestos si existen
-            consolidatedIds.push(entityItem.id);
-          });
-        } else if (cartItem.type === "ORDER") {
-          consolidatedObservations += `${cartItem.quantity} ${cartItem.description}\n`;
-          totalQuantity += cartItem.quantity || 1;
-          totalAmount += cartItem.amount;
-          totalTaxes += cartItem.totalTaxes || 0; // Incluir impuestos si existen
-          consolidatedIds.push(cartItem.id);
-        }
-      });
-
-      // Construir el item de factura consolidado
-      invoiceData.items = [
-        {
-          xubioProductId: consolidatedXubioProductId,
-          amount: totalAmount,
-          totalTaxes: totalTaxes || 0,
-          observations: consolidatedObservations.trim(),
-          // Para consolidado, usamos un ID genérico y sumamos las cantidades
-          id: 0,
-          quantity: totalQuantity,
-          price: totalAmount / totalQuantity,
-          // Agregar array de IDs consolidados
-          consolidatedIds: consolidatedIds,
-        },
-      ];
+      dispatch(sendMultipleToXubioInit(invoicesByClient));
     } else {
-      // Modo separado: cada item se convierte en un item de factura
-      invoiceData.items = [];
+      // Flujo original para contratos
+      // Validar datos
+      if (
+        invoiceMode === "consolidated" &&
+        totalItemsCount > 1 &&
+        !consolidatedXubioProductId
+      ) {
+        return;
+      }
 
-      cartItems.forEach(cartItem => {
-        if (cartItem.type === "CONTRACT") {
-          // Para contratos, cada entityItem se convierte en un item de factura separado
-          if (cartItem.entityItems) {
+      // Si hay un solo item, forzar modo separado
+      const effectiveMode = totalItemsCount === 1 ? "separate" : invoiceMode;
+
+      // Determinar el tipo de entidad
+      const entityType = determineEntityType();
+
+      // Preparar datos para enviar a Xubio
+      let invoiceData = {
+        clientId: selectedClient.id,
+        globalObservations,
+        entityType,
+        isConsolidated: effectiveMode === "consolidated",
+      };
+
+      if (effectiveMode === "consolidated") {
+        // Modo consolidado: un solo item con todos los detalles agrupados
+        let consolidatedObservations = "";
+        let totalQuantity = 0;
+        let totalAmount = 0;
+        let totalTaxes = 0;
+        const consolidatedIds = [];
+
+        // Generar las observaciones consolidadas y recolectar los IDs
+        cartItems.forEach(cartItem => {
+          if (cartItem.type === "CONTRACT" && cartItem.entityItems) {
             cartItem.entityItems.forEach(entityItem => {
-              invoiceData.items.push({
+              consolidatedObservations += `${entityItem.quantity} ${entityItem.productAdvertisingSpaceName} - ${entityItem.advertisingSpaceLocationTypeName}\n`;
+              totalQuantity += entityItem.quantity;
+              totalAmount += entityItem.total;
+              totalTaxes += entityItem.totalTaxes || 0;
+              consolidatedIds.push(entityItem.id);
+            });
+          } else if (cartItem.type === "ORDER") {
+            consolidatedObservations += `${cartItem.quantity} ${cartItem.description}\n`;
+            totalQuantity += cartItem.quantity || 1;
+            totalAmount += cartItem.amount;
+            totalTaxes += cartItem.totalTaxes || 0;
+            consolidatedIds.push(cartItem.id);
+          }
+        });
+
+        // Construir el item de factura consolidado
+        invoiceData.items = [
+          {
+            xubioProductId: consolidatedXubioProductId,
+            amount: totalAmount,
+            totalTaxes: totalTaxes || 0,
+            observations: consolidatedObservations.trim(),
+            quantity: 1,
+            price: totalAmount,
+            consolidatedIds: consolidatedIds,
+          },
+        ];
+      } else {
+        // Modo separado: un item por cada entity item
+        const items = [];
+
+        cartItems.forEach(cartItem => {
+          if (cartItem.type === "CONTRACT" && cartItem.entityItems) {
+            cartItem.entityItems.forEach(entityItem => {
+              items.push({
+                id: entityItem.id,
                 xubioProductId: entityItem.xubioProductId,
                 amount: entityItem.total,
-                totalTaxes: entityItem.totalTaxes || 0, // Incluir impuestos si existen
-                observations: entityItem.observations || "",
-                id: entityItem.id,
+                totalTaxes: entityItem.totalTaxes || 0,
+                observations: entityItem.observations,
                 quantity: entityItem.quantity,
                 price: entityItem.total / entityItem.quantity,
               });
             });
+          } else if (cartItem.type === "ORDER") {
+            items.push({
+              id: cartItem.id,
+              xubioProductId: cartItem.xubioProductId,
+              amount: cartItem.amount,
+              totalTaxes: cartItem.totalTaxes || 0,
+              observations: cartItem.observations,
+              quantity: cartItem.quantity || 1,
+              price: cartItem.amount,
+            });
           }
-        } else {
-          // Para órdenes, mantener la misma estructura
-          invoiceData.items.push({
-            xubioProductId: cartItem.xubioProductId,
-            amount: cartItem.amount,
-            observations: cartItem.observations || "",
-            id: cartItem.id,
-            quantity: cartItem.quantity || 1,
-            price: cartItem.amount / (cartItem.quantity || 1),
-          });
-        }
-      });
-    }
+        });
 
-    dispatch(sendToXubioInit(invoiceData));
-    dispatch(hideInvoiceDialog());
+        invoiceData.items = items;
+      }
+
+      dispatch(sendToXubioInit(invoiceData));
+    }
   };
 
-  // Función para obtener las observaciones consolidadas
+  // Funciones auxiliares para generar observaciones consolidadas (flujo original)
   const getConsolidatedObservations = () => {
-    // Crear un mapa para agrupar los items
-    const groupedMap = new Map();
+    let observations = "";
 
     cartItems.forEach(cartItem => {
       if (cartItem.type === "CONTRACT" && cartItem.entityItems) {
         cartItem.entityItems.forEach(entityItem => {
-          // Crear una clave única para cada combinación de espacio y ubicación
-          const key = `${entityItem.productAdvertisingSpaceName}|${entityItem.advertisingSpaceLocationTypeName}`;
-
-          if (groupedMap.has(key)) {
-            // Si ya existe, sumar la cantidad
-            const existing = groupedMap.get(key);
-            existing.quantity += entityItem.quantity;
-          } else {
-            // Si no existe, crear nueva entrada
-            groupedMap.set(key, {
-              productAdvertisingSpaceName:
-                entityItem.productAdvertisingSpaceName,
-              advertisingSpaceLocationTypeName:
-                entityItem.advertisingSpaceLocationTypeName,
-              quantity: entityItem.quantity,
-            });
-          }
+          observations += `${entityItem.quantity} ${entityItem.productAdvertisingSpaceName} - ${entityItem.advertisingSpaceLocationTypeName}\n`;
         });
       } else if (cartItem.type === "ORDER") {
-        // Para órdenes, usar descripción como clave
-        const key = cartItem.description;
-
-        if (groupedMap.has(key)) {
-          const existing = groupedMap.get(key);
-          existing.quantity += cartItem.quantity || 1;
-        } else {
-          groupedMap.set(key, {
-            description: cartItem.description,
-            quantity: cartItem.quantity || 1,
-          });
-        }
-      }
-    });
-
-    // Convertir el mapa a string de observaciones
-    let observations = "";
-    groupedMap.forEach(item => {
-      if (item.description) {
-        // Es una orden
-        observations += `${item.quantity} ${item.description}\n`;
-      } else {
-        // Es un item de contrato
-        observations += `${item.quantity} ${item.productAdvertisingSpaceName} - ${item.advertisingSpaceLocationTypeName}\n`;
+        observations += `${cartItem.quantity} ${cartItem.description}\n`;
       }
     });
 
     return observations.trim();
   };
 
-  // Función para obtener los items de factura según el modo
   const getInvoiceTableData = () => {
-    // Si hay un solo item, siempre usar modo separado
+    // Si hay un solo item, forzar modo separado
     const effectiveMode = totalItemsCount === 1 ? "separate" : invoiceMode;
 
     if (effectiveMode === "consolidated") {
@@ -323,6 +345,26 @@ const InvoiceDialog = () => {
     }
   };
 
+  const getTotalAmount = () => {
+    if (isEditionFlow) {
+      return Object.values(groupedByClient).reduce(
+        (total, clientGroup) => total + clientGroup.totals.amount,
+        0
+      );
+    }
+    return cartTotal;
+  };
+
+  const getTotalQuantity = () => {
+    if (isEditionFlow) {
+      return Object.values(groupedByClient).reduce(
+        (total, clientGroup) => total + clientGroup.totals.quantity,
+        0
+      );
+    }
+    return totalItemsCount;
+  };
+
   const invoiceTableData = getInvoiceTableData();
 
   if (!showDialog) {
@@ -332,152 +374,246 @@ const InvoiceDialog = () => {
   return (
     <Modal isOpen={showDialog} toggle={handleClose} size="lg">
       <ModalHeader toggle={handleClose}>
-        Facturar a {selectedClient?.brandName}
+        {isEditionFlow
+          ? "Resumen de facturación por edición"
+          : `Facturar a ${selectedClient?.brandName}`}
       </ModalHeader>
       <ModalBody>
-        {totalItemsCount > 1 && (
-          <div className="form-group mb-4">
-            <label>Modo de facturación:</label>
-            <div className="d-flex">
-              <div className="form-check">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  name="invoiceMode"
-                  id="separate"
-                  value="separate"
-                  checked={invoiceMode === "separate"}
-                  onChange={handleInvoiceModeChange}
-                />
-                <label className="form-check-label" htmlFor="separate">
-                  Facturar espacios por separado
-                </label>
+        {isEditionFlow ? (
+          // Vista para flujo de ediciones - agrupado por cliente
+          <div>
+            <div className="alert alert-info">
+              <strong>Facturación por edición:</strong> Se generará una factura
+              por cada cliente con todos sus elementos de la edición
+              seleccionada.
+            </div>
+
+            {Object.values(groupedByClient).map(clientGroup => (
+              <div
+                key={`${clientGroup.clientId}_${clientGroup.clientName}`}
+                className="card mb-3"
+              >
+                <div className="card-header">
+                  <h6 className="mb-0">
+                    <strong>{clientGroup.clientName}</strong>
+                    <span className="badge bg-primary ms-2">
+                      {clientGroup.items.length} elementos
+                    </span>
+                  </h6>
+                </div>
+                <div className="card-body">
+                  <div className="table-responsive">
+                    <table className="table table-sm">
+                      <thead>
+                        <tr>
+                          <th>Descripción</th>
+                          <th>Cantidad</th>
+                          <th>Precio Unit.</th>
+                          <th>Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {clientGroup.items.map(item => (
+                          <tr key={item.id}>
+                            <td>{item.description || item.observations}</td>
+                            <td>{item.quantity || 1}</td>
+                            <td>
+                              {formatCurrency(
+                                item.price || 0,
+                                cartCurrency || "$"
+                              )}
+                            </td>
+                            <td>
+                              {formatCurrency(
+                                item.total || item.amount || 0,
+                                cartCurrency || "$"
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot>
+                        <tr className="table-light">
+                          <th>Total Cliente</th>
+                          <th>{clientGroup.totals.quantity}</th>
+                          <th>-</th>
+                          <th>
+                            {formatCurrency(
+                              clientGroup.totals.amount,
+                              cartCurrency || "$"
+                            )}
+                          </th>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
               </div>
-              <div className="form-check ml-5">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  name="invoiceMode"
-                  id="consolidated"
-                  value="consolidated"
-                  checked={invoiceMode === "consolidated"}
-                  onChange={handleInvoiceModeChange}
+            ))}
+
+            {/* Resumen general */}
+            <div className="card bg-light">
+              <div className="card-body">
+                <div className="row">
+                  <div className="col-md-4">
+                    <strong>Total de facturas a generar:</strong>
+                    <div className="fs-4 text-primary">
+                      {Object.keys(groupedByClient).length}
+                    </div>
+                  </div>
+                  <div className="col-md-4">
+                    <strong>Total de elementos:</strong>
+                    <div className="fs-4 text-info">{getTotalQuantity()}</div>
+                  </div>
+                  <div className="col-md-4">
+                    <strong>Monto total:</strong>
+                    <div className="fs-4 text-success">
+                      {formatCurrency(getTotalAmount(), cartCurrency || "$")}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          // Vista original para contratos
+          <div>
+            {totalItemsCount > 1 && (
+              <div className="form-group mb-4">
+                <label>Modo de facturación:</label>
+                <div className="d-flex">
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="invoiceMode"
+                      id="separate"
+                      value="separate"
+                      checked={invoiceMode === "separate"}
+                      onChange={handleInvoiceModeChange}
+                    />
+                    <label className="form-check-label" htmlFor="separate">
+                      Items separados
+                    </label>
+                  </div>
+                  <div className="form-check ms-3">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="invoiceMode"
+                      id="consolidated"
+                      value="consolidated"
+                      checked={invoiceMode === "consolidated"}
+                      onChange={handleInvoiceModeChange}
+                    />
+                    <label className="form-check-label" htmlFor="consolidated">
+                      Consolidado
+                    </label>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {invoiceMode === "consolidated" && totalItemsCount > 1 && (
+              <div className="form-group mb-4">
+                <InputSelectFieldSimple
+                  labelText="Producto de Xubio para consolidar"
+                  name="xubioProduct"
+                  options={xubioProducts}
+                  value={consolidatedXubioProductId}
+                  onChangeHandler={handleXubioProductChange}
+                  getOptionLabel={option => option.name || option.Name}
+                  getOptionValue={option => option.code || option.Code}
+                  placeholderText="Seleccione un producto"
                 />
-                <label className="form-check-label" htmlFor="consolidated">
-                  Facturar todo junto (consolidado)
-                </label>
+              </div>
+            )}
+
+            <div className="row">
+              <div className="col-md-12">
+                <p>
+                  <strong>Cliente:</strong> {selectedClient?.brandName} (
+                  {clientType === "COMTUR" ? "COMTUR" : "Argentina"})
+                </p>
+
+                {cartCurrency && (
+                  <p>
+                    <strong>Moneda:</strong> {cartCurrency}
+                  </p>
+                )}
+
+                <div className="table-responsive mt-3">
+                  <table className="table table-sm table-bordered">
+                    <thead className="table-light">
+                      <tr>
+                        <th style={{ width: "30%" }}>Artículo</th>
+                        <th style={{ width: "40%" }}>Observaciones</th>
+                        <th style={{ width: "10%" }} className="text-center">
+                          Cantidad
+                        </th>
+                        <th style={{ width: "20%" }} className="text-end">
+                          Precio
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {invoiceTableData.map((item, index) => (
+                        <tr key={index}>
+                          <td>{item.articulo}</td>
+                          <td>
+                            {totalItemsCount > 1 &&
+                            invoiceMode === "consolidated" ? (
+                              <div
+                                style={{
+                                  whiteSpace: "pre-wrap",
+                                  fontSize: "0.875rem",
+                                }}
+                              >
+                                {item.observaciones}
+                              </div>
+                            ) : (
+                              item.observaciones
+                            )}
+                          </td>
+                          <td className="text-center">{item.cantidad}</td>
+                          <td className="text-end">
+                            {formatCurrency(
+                              item.precio,
+                              item.currencyName || "$"
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot className="table-light">
+                      <tr>
+                        <th colSpan="3" className="text-end">
+                          Total a facturar:
+                        </th>
+                        <th className="text-end">
+                          {cartCurrency
+                            ? formatCurrency(cartTotal, cartCurrency)
+                            : formatCurrency(cartTotal, "$")}
+                        </th>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
         )}
 
-        {invoiceMode === "consolidated" && totalItemsCount > 1 && (
-          <div className="form-group mb-3">
-            <InputSelectFieldSimple
-              labelText={`Producto de Xubio ${
-                clientType === "COMTUR" ? "COMTUR" : "Argentina"
-              } para factura consolidada *`}
-              name="consolidatedXubioProductId"
-              options={xubioProducts}
-              value={consolidatedXubioProductId}
-              onChangeHandler={handleXubioProductChange}
-              disabled={loading}
-              getOptionValue={option => option.code || option.Code}
-              getOptionLabel={option => option.name || option.Name}
-              error={
-                !consolidatedXubioProductId
-                  ? "Debe seleccionar un producto"
-                  : ""
-              }
-            />
-          </div>
-        )}
-
-        <div className="form-group mb-4">
+        {/* Observaciones globales - para ambos flujos */}
+        <div className="form-group mt-4">
           <InputTextAreaFieldSimple
-            labelText="Observaciones globales de la factura"
+            labelText="Observaciones generales:"
             name="globalObservations"
             value={globalObservations}
             onChangeHandler={handleGlobalObservationsChange}
+            placeholderText="Ingrese observaciones que se aplicarán a todas las facturas..."
             rows={3}
           />
-        </div>
-
-        <div className="card mb-3">
-          <div className="card-header">
-            <h6 className="mb-0">Resumen de items a facturar</h6>
-          </div>
-          <div className="card-body">
-            <p>
-              <strong>Cliente:</strong> {selectedClient?.brandName} (
-              {selectedClient?.legalName})
-            </p>
-            <p>
-              <strong>Tipo de cliente:</strong>{" "}
-              {clientType === "COMTUR" ? "COMTUR" : "Argentina"}
-            </p>
-
-            {cartCurrency && (
-              <p>
-                <strong>Moneda:</strong> {cartCurrency}
-              </p>
-            )}
-
-            <div className="table-responsive mt-3">
-              <table className="table table-sm table-bordered">
-                <thead className="table-light">
-                  <tr>
-                    <th style={{ width: "30%" }}>Artículo</th>
-                    <th style={{ width: "40%" }}>Observaciones</th>
-                    <th style={{ width: "10%" }} className="text-center">
-                      Cantidad
-                    </th>
-                    <th style={{ width: "20%" }} className="text-end">
-                      Precio
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {invoiceTableData.map((item, index) => (
-                    <tr key={index}>
-                      <td>{item.articulo}</td>
-                      <td>
-                        {totalItemsCount > 1 &&
-                        invoiceMode === "consolidated" ? (
-                          <div
-                            style={{
-                              whiteSpace: "pre-wrap",
-                              fontSize: "0.875rem",
-                            }}
-                          >
-                            {item.observaciones}
-                          </div>
-                        ) : (
-                          item.observaciones
-                        )}
-                      </td>
-                      <td className="text-center">{item.cantidad}</td>
-                      <td className="text-end">
-                        {formatCurrency(item.precio, item.currencyName || "$")}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-                <tfoot className="table-light">
-                  <tr>
-                    <th colSpan="3" className="text-end">
-                      Total a facturar:
-                    </th>
-                    <th className="text-end">
-                      {cartCurrency
-                        ? formatCurrency(cartTotal, cartCurrency)
-                        : formatCurrency(cartTotal, "$")}
-                    </th>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-          </div>
         </div>
       </ModalBody>
       <ModalFooter>
@@ -488,12 +624,25 @@ const InvoiceDialog = () => {
           onClickHandler={handleSendToXubio}
           disabled={
             loading ||
-            (invoiceMode === "consolidated" &&
+            (!isEditionFlow &&
+              invoiceMode === "consolidated" &&
               totalItemsCount > 1 &&
               !consolidatedXubioProductId)
           }
         >
-          Enviar a Xubio
+          {loading ? (
+            <>
+              <span
+                className="spinner-border spinner-border-sm me-2"
+                role="status"
+              />
+              Procesando...
+            </>
+          ) : isEditionFlow ? (
+            `Generar ${Object.keys(groupedByClient).length} facturas`
+          ) : (
+            "Enviar a Xubio"
+          )}
         </SaveButton>
       </ModalFooter>
     </Modal>

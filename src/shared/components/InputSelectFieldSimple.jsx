@@ -28,6 +28,7 @@ const InputSelectFieldSimple = ({
   disabled = false,
   isLoading = false,
   showLabel = true,
+  fontSize = "16px", // Nuevo prop para controlar el tamaño de letra
   onChangeHandler = () => {},
   getOptionLabel = option => option.name,
   getOptionValue = option => option.id,
@@ -36,6 +37,31 @@ const InputSelectFieldSimple = ({
   const selectedValue = options.find(
     option => (option.id ?? option.code) === value
   );
+
+  // Estilos personalizados para react-select con tamaño de letra configurable
+  const customStyles = {
+    menuPortal: base => ({ ...base, zIndex: 9999 }),
+    control: (provided, state) => ({
+      ...provided,
+      fontSize: fontSize,
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      fontSize: fontSize,
+    }),
+    singleValue: (provided, state) => ({
+      ...provided,
+      fontSize: fontSize,
+    }),
+    placeholder: (provided, state) => ({
+      ...provided,
+      fontSize: fontSize,
+    }),
+    input: (provided, state) => ({
+      ...provided,
+      fontSize: fontSize,
+    }),
+  };
 
   return (
     <InputSelectContainer className="form-group">
@@ -51,7 +77,7 @@ const InputSelectFieldSimple = ({
         getOptionValue={getOptionValue}
         placeholder={isLoading ? "Cargando..." : placeholderText}
         isLoading={isLoading}
-        styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+        styles={customStyles}
         menuPortalTarget={document.body}
       />
       {error && <small className="form-text">{error}</small>}
@@ -68,6 +94,7 @@ InputSelectFieldSimple.propTypes = {
   placeholderText: PropTypes.string,
   disabled: PropTypes.bool,
   isLoading: PropTypes.bool,
+  fontSize: PropTypes.string, // Nuevo PropType
   onChangeHandler: PropTypes.func,
   getOptionLabel: PropTypes.func,
   getOptionValue: PropTypes.func,
