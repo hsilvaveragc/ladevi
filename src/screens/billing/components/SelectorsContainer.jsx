@@ -72,11 +72,18 @@ const SelectorsContainer = () => {
     if (selectedProduct && entityType === "EDITIONS") {
       dispatch(fetchEditionsInit(selectedProduct, clientType !== "ARGENTINA"));
     }
-  }, [dispatch, selectedProduct, entityType]);
+  }, [dispatch, selectedProduct, entityType, clientType]);
+
+  // FUNCIONALIDAD CORREGIDA: Cargar órdenes inmediatamente al seleccionar edición (como contratos)
+  useEffect(() => {
+    if (selectedEdition && entityType === "EDITIONS") {
+      console.log("Cargando órdenes para edición:", selectedEdition);
+      dispatch(fetchOrdersInit({ editionId: selectedEdition }));
+    }
+  }, [dispatch, selectedEdition, entityType]);
 
   // Extraer opciones de moneda únicas cuando se cargan contratos u órdenes
   useEffect(() => {
-    debugger;
     if (entityType === "CONTRACTS" && contracts && contracts.length > 0) {
       // Extraer monedas únicas de los contratos
       const uniqueCurrencies = new Set();
@@ -94,10 +101,10 @@ const SelectorsContainer = () => {
 
       setCurrencyOptions(currencyOpts);
 
-      // Si hay opciones y no hay moneda seleccionada, seleccionar la primera automáticamente
-      if (currencyOpts.length > 0 && !selectedCurrency) {
-        dispatch(setSelectedCurrency(currencyOpts[0].id));
-      }
+      // NO seleccionar automáticamente la moneda - debe ser manual como en contratos
+      // if (currencyOpts.length > 0 && !selectedCurrency) {
+      //   dispatch(setSelectedCurrency(currencyOpts[0].id));
+      // }
     } else if (entityType === "EDITIONS" && orders && orders.length > 0) {
       // Extraer monedas únicas de las órdenes
       const uniqueCurrencies = new Set();
@@ -115,44 +122,64 @@ const SelectorsContainer = () => {
 
       setCurrencyOptions(currencyOpts);
 
-      // Si hay opciones y no hay moneda seleccionada, seleccionar la primera automáticamente
-      if (currencyOpts.length > 0 && !selectedCurrency) {
-        dispatch(setSelectedCurrency(currencyOpts[0].id));
-      }
+      // NO seleccionar automáticamente la moneda - debe ser manual como en contratos
+      // if (currencyOpts.length > 0 && !selectedCurrency) {
+      //   dispatch(setSelectedCurrency(currencyOpts[0].id));
+      // }
     }
   }, [entityType, contracts, orders, selectedCurrency, dispatch]);
 
   const handleClientTypeChange = selected => {
-    // Reset client selection and entity type when client type changes
+    // Reset all selections when client type changes
     dispatch(setClientType(selected.id));
+    dispatch(selectClient(null));
+    dispatch(setEntityType(null));
+    dispatch(setSelectedCurrency(""));
+    dispatch(setSelectedProduct(null));
+    dispatch(setSelectedEdition(null));
+    setCurrencyOptions([]);
   };
 
   const handleClientChange = selected => {
     dispatch(selectClient(selected));
+    // Reset currency when client changes
+    dispatch(setSelectedCurrency(""));
   };
 
   const handleEntityTypeChange = selected => {
     dispatch(setEntityType(selected.id));
 
+    // Reset related selections
+    dispatch(setSelectedCurrency(""));
+
     // Cargar datos según el tipo seleccionado
     if (selected.id === "CONTRACTS" && selectedClient) {
       dispatch(fetchContractsInit(selectedClient.id));
+      // Reset edition-related selections
+      dispatch(setSelectedProduct(null));
+      dispatch(setSelectedEdition(null));
     } else if (selected.id === "EDITIONS") {
-      // Para ediciones, no cargamos datos hasta seleccionar producto y edición
-      // Los productos ya se cargan automáticamente en el useEffect
+      // Para ediciones, reset client selection y otras relacionadas
+      dispatch(selectClient(null));
+      dispatch(setSelectedProduct(null));
+      dispatch(setSelectedEdition(null));
+      // Los productos se cargan automáticamente en el useEffect
     }
   };
 
   const handleProductChange = selected => {
     dispatch(setSelectedProduct(selected.id));
+    // Reset edition and currency when product changes
+    dispatch(setSelectedEdition(null));
+    dispatch(setSelectedCurrency(""));
     // Las ediciones se cargan automáticamente en el useEffect
   };
 
   const handleEditionChange = selected => {
-    debugger;
     dispatch(setSelectedEdition(selected.id));
-    // Cargar órdenes de la edición seleccionada
-    // dispatch(fetchOrdersInit({ editionId: selected.id }));
+    // Reset currency when edition changes
+    dispatch(setSelectedCurrency(""));
+    // Las órdenes se cargan automáticamente en el useEffect
   };
 
   const handleCurrencyChange = selected => {

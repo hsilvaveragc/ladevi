@@ -7,6 +7,7 @@ import {
   getErrors,
   getSelectedClient,
   getEntityType,
+  getSelectedEdition, // NUEVO: Selector para edición seleccionada
 } from "./reducer";
 import ContractsTable from "./components/ContractsTable";
 import OrdersTable from "./components/OrdersTable";
@@ -61,6 +62,7 @@ const BillingPage = () => {
   const errors = useSelector(getErrors);
   const selectedClient = useSelector(getSelectedClient);
   const entityType = useSelector(getEntityType);
+  const selectedEdition = useSelector(getSelectedEdition); // NUEVO
 
   useEffect(() => {
     // Cargar los datos iniciales cuando el componente se monta
@@ -80,8 +82,11 @@ const BillingPage = () => {
         <div className="row" style={{ width: "100%" }}>
           <div className="col-md-8">
             <SelectorsContainer />
+            {/* CONDICIÓN PARA CONTRATOS: Cuando hay cliente seleccionado y tipo es CONTRACTS */}
             {selectedClient && entityType === "CONTRACTS" && <ContractsTable />}
-            {selectedClient && entityType === "EDITIONS" && <OrdersTable />}
+
+            {/* CONDICIÓN CORREGIDA PARA EDICIONES: Cuando hay edición seleccionada y tipo es EDITIONS */}
+            {selectedEdition && entityType === "EDITIONS" && <OrdersTable />}
           </div>
 
           <div className="col-md-4">

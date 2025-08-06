@@ -26,9 +26,6 @@ import {
   FILTER_CONTRACTS_INIT,
   FILTER_CONTRACTS_SUCCESS,
   FILTER_CONTRACTS_FAILURE,
-  FILTER_ORDERS_INIT,
-  FILTER_ORDERS_SUCCESS,
-  FILTER_ORDERS_FAILURE,
   // Nuevas acciones
   FETCH_PRODUCTS_INIT,
   FETCH_PRODUCTS_SUCCESS,
@@ -39,9 +36,6 @@ import {
   FETCH_VENDORS_INIT,
   FETCH_VENDORS_SUCCESS,
   FETCH_VENDORS_FAILURE,
-  FETCH_CLIENTS_FROM_EDITION_INIT,
-  FETCH_CLIENTS_FROM_EDITION_SUCCESS,
-  FETCH_CLIENTS_FROM_EDITION_FAILURE,
   SEND_MULTIPLE_TO_XUBIO_INIT,
   SEND_MULTIPLE_TO_XUBIO_SUCCESS,
   SEND_MULTIPLE_TO_XUBIO_FAILURE,
@@ -133,19 +127,36 @@ export function* fetchContracts({ payload }) {
 export function* fetchOrders({ payload }) {
   try {
     let orders;
-    debugger;
+
     // Verificar si es un payload con editionId (nuevo flujo) o clientId (flujo anterior)
     if (typeof payload === "object" && payload.editionId) {
       // Nuevo flujo: obtener órdenes por edición
-      orders = yield call(
-        billingService.filterOrdersByEdition,
-        payload.editionId
+      console.log("Cargando órdenes por edición:", payload.editionId);
+
+      // Obtener el tipo de cliente del estado
+      const state = yield select();
+      const clientType = state.billing.clientType; // 'ARGENTINA' o 'COMTUR'
+      const isComturClient = clientType === "COMTUR";
+
+      console.log(
+        "Tipo de cliente:",
+        clientType,
+        "isComturClient:",
+        isComturClient
       );
-      console.log("Órdenes cargadas por edición:", orders); // Debug
+
+      orders = yield call(
+        billingService.getOrdersByEdition,
+        payload.editionId,
+        isComturClient
+      );
+
+      console.log("Órdenes cargadas por edición:", orders);
     } else {
       // Flujo anterior: obtener órdenes por cliente
+      console.log("Cargando órdenes por cliente:", payload);
       orders = yield call(billingService.getPublishingOrdersByClient, payload);
-      console.log("Órdenes cargadas por cliente:", orders); // Debug
+      console.log("Órdenes cargadas por cliente:", orders);
     }
 
     yield put({
@@ -240,36 +251,8 @@ export function* fetchVendors() {
     yield call(toast.error, "Hubo un error al cargar los vendedores");
   }
 }
-
-export function* fetchClientsFromEdition({ payload }) {
-  try {
-    const clients = yield call(billingService.getClientsFromEdition, payload);
-    yield put({
-      type: FETCH_CLIENTS_FROM_EDITION_SUCCESS,
-      payload: {
-        clients,
-      },
-    });
-  } catch (err) {
-    console.log(err);
-    yield put({
-      type: FETCH_CLIENTS_FROM_EDITION_FAILURE,
-      errors: {
-        ...(err.response?.data?.errors || {
-          general: "Error al cargar clientes de la edición",
-        }),
-      },
-    });
-    yield call(
-      toast.error,
-      "Hubo un error al cargar los clientes de la edición"
-    );
-  }
-}
-
 export function* filterContracts({ payload }) {
   try {
-    debugger;
     const contracts = yield call(billingService.filterContracts, payload);
     yield put({
       type: FILTER_CONTRACTS_SUCCESS,
@@ -288,32 +271,6 @@ export function* filterContracts({ payload }) {
       },
     });
     yield call(toast.error, "Hubo un error al filtrar los contratos");
-  }
-}
-
-export function* filterOrders({ payload }) {
-  try {
-    const orders = yield call(billingService.filterOrders, payload);
-    yield put({
-      type: FILTER_ORDERS_SUCCESS,
-      payload: {
-        orders,
-      },
-    });
-  } catch (err) {
-    console.log(err);
-    yield put({
-      type: FILTER_ORDERS_FAILURE,
-      errors: {
-        ...(err.response?.data?.errors || {
-          general: "Error al filtrar órdenes",
-        }),
-      },
-    });
-    yield call(
-      toast.error,
-      "Hubo un error al filtrar las órdenes de publicación"
-    );
   }
 }
 
@@ -389,7 +346,7 @@ export function* sendToXubio({ payload }) {
       closeButton: true,
       position: "top-center",
     });
-    debugger;
+
     // Recargar los datos según el tipo de entidad
     if (entityType === "CONTRACTS") {
       // Primero recargar todos los contratos para ese cliente
@@ -537,11 +494,9 @@ export default function* rootBillingSaga() {
     takeLatest(FETCH_PRODUCTS_INIT, fetchProducts), // NUEVO
     takeLatest(FETCH_EDITIONS_INIT, fetchEditions), // NUEVO
     takeLatest(FETCH_VENDORS_INIT, fetchVendors), // NUEVO
-    takeLatest(FETCH_CLIENTS_FROM_EDITION_INIT, fetchClientsFromEdition), // NUEVO
     takeLatest(FETCH_XUBIO_PRODUCTS_INIT, fetchXubioProducts),
     takeLatest(SEND_TO_XUBIO_INIT, sendToXubio),
     takeLatest(SEND_MULTIPLE_TO_XUBIO_INIT, sendMultipleToXubio), // NUEVO
     takeLatest(FILTER_CONTRACTS_INIT, filterContracts),
-    takeLatest(FILTER_ORDERS_INIT, filterOrders),
   ]);
 }

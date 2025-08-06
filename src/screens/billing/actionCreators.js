@@ -20,7 +20,6 @@ import {
   HIDE_INVOICE_DIALOG,
   SEND_TO_XUBIO_INIT,
   FILTER_CONTRACTS_INIT,
-  FILTER_ORDERS_INIT,
   UPDATE_CART_ITEM,
   SHOW_CONTRACT_DIALOG_FOR_EDIT,
   // Nuevas acciones
@@ -29,7 +28,6 @@ import {
   SET_SELECTED_PRODUCT,
   SET_SELECTED_EDITION,
   FETCH_VENDORS_INIT,
-  FETCH_CLIENTS_FROM_EDITION_INIT,
   SEND_MULTIPLE_TO_XUBIO_INIT,
 } from "./actionTypes.js";
 
@@ -106,11 +104,6 @@ export const fetchVendorsInit = () => ({
   type: FETCH_VENDORS_INIT,
 });
 
-export const fetchClientsFromEditionInit = editionId => ({
-  type: FETCH_CLIENTS_FROM_EDITION_INIT,
-  payload: editionId,
-});
-
 // Gestión del carrito
 export const addToCart = item => ({
   type: ADD_TO_CART,
@@ -184,10 +177,5 @@ export const sendMultipleToXubioInit = invoicesData => ({
 // Filtros
 export const filterContractsInit = filters => ({
   type: FILTER_CONTRACTS_INIT,
-  payload: filters,
-});
-
-export const filterOrdersInit = filters => ({
-  type: FILTER_ORDERS_INIT,
   payload: filters,
 });

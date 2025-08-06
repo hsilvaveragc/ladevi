@@ -2,7 +2,6 @@ import axios from "axios";
 import { getHeaders } from "shared/services/utils";
 import clientService from "screens/clients/service";
 import productService from "screens/products/service";
-import ordersService from "screens/orders/service";
 
 export default {
   // Obtener productos de Xubio
@@ -64,43 +63,16 @@ export default {
       })
       .then(response => response.data),
 
-  // NUEVO: Filtrar órdenes por edición
-  filterOrdersByEdition: (editionId, filters = {}) =>
+  // MÉTODO ÚNICO: Obtener órdenes por edición (con parámetro isComturClient)
+  getOrdersByEdition: (editionId, isComturClient = false) =>
     axios
-      .post(
-        `PublishingOrder/SearchByEdition`,
-        {
-          editionId: editionId,
-          clientId: filters.clientId || null,
-          sellerId: filters.sellerId || null,
-          isComturClient: filters.isComturClient || null,
-          take: 1000,
-        },
-        {
-          headers: getHeaders(),
-        }
-      )
-      .then(response => response.data.data),
+      .get(`PublishingOrder/GetPublishingOrdersByEdition/${editionId}`, {
+        params: { isComturClient },
+        headers: getHeaders(),
+      })
+      .then(response => response.data),
 
-  // Filtrar órdenes (método original, ahora menos usado)
-  filterOrders: filters =>
-    axios
-      .post(
-        `Orders/Search`,
-        {
-          take: 10000,
-          filter: {
-            logic: "and",
-            filters: [...filters],
-          },
-        },
-        {
-          headers: getHeaders(),
-        }
-      )
-      .then(response => response.data.data),
-
-  // Obtener OP contra publicación por cliente (sin cambios)
+  // Obtener OP por cliente (flujo original - sin cambios)
   getPublishingOrdersByClient: clientId =>
     axios
       .get(`PublishingOrder/GetPublishingOrdersByClient/${clientId}`, {
@@ -108,7 +80,7 @@ export default {
       })
       .then(response => response.data),
 
-  // ACTUALIZADO: Enviar datos a Xubio - ahora puede manejar múltiples facturas
+  // Enviar datos a Xubio - ahora puede manejar múltiples facturas
   sendToXubio: invoiceData =>
     axios
       .post(`Billing/Post`, invoiceData, {
@@ -116,7 +88,7 @@ export default {
       })
       .then(response => response.data),
 
-  // NUEVO: Enviar múltiples facturas a Xubio (para facturación por ediciones)
+  // Enviar múltiples facturas a Xubio (para facturación por ediciones)
   sendMultipleInvoicesToXubio: invoicesData =>
     axios
       .post(`Billing/PostMultiple`, invoicesData, {
@@ -136,14 +108,6 @@ export default {
   getOrderDetails: orderId =>
     axios
       .get(`Orders/GetOrderDetails/${orderId}`, {
-        headers: getHeaders(),
-      })
-      .then(response => response.data),
-
-  // NUEVO: Obtener clientes únicos de una edición (para filtros)
-  getClientsFromEdition: editionId =>
-    axios
-      .get(`Orders/GetClientsFromEdition/${editionId}`, {
         headers: getHeaders(),
       })
       .then(response => response.data),

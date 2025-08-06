@@ -142,28 +142,30 @@ const InvoiceDialog = () => {
 
   const handleSendToXubio = () => {
     if (isEditionFlow) {
-      // Para ediciones, enviar datos agrupados por cliente
-      const invoicesByClient = Object.values(groupedByClient).map(
-        clientGroup => ({
-          clientId: clientGroup.clientId,
-          clientName: clientGroup.clientName,
-          globalObservations,
-          entityType: "ORDER", // Mantenemos el tipo original para el backend
-          isConsolidated: true, // Para agrupar todos los items del cliente
-          items: clientGroup.items.map(item => ({
-            id: item.id,
-            xubioProductId: item.xubioProductId,
-            amount: item.total || item.amount,
-            totalTaxes: item.totalTaxes || 0,
-            observations: item.description || item.observations,
-            quantity: item.quantity || 1,
-            price: item.price || 0,
-          })),
-          totals: clientGroup.totals,
-        })
-      );
+      // FLUJO PARA EDICIONES: Facturación múltiple
+      const invoicesData = Object.values(groupedByClient).map(clientGroup => {
+        // Preparar los items del cliente
+        const items = clientGroup.items.map(item => ({
+          id: item.id,
+          xubioProductId: item.xubioProductId,
+          amount: item.amount || item.total,
+          totalTaxes: item.totalTaxes || 0,
+          observations: item.observations || item.description,
+          quantity: item.quantity || 1,
+          price: (item.amount || item.total) / (item.quantity || 1),
+        }));
 
-      dispatch(sendMultipleToXubioInit(invoicesByClient));
+        return {
+          clientId: clientGroup.clientId,
+          globalObservations: globalObservations || "",
+          entityType: "ORDER", // Para ediciones siempre son órdenes
+          isConsolidated: false, // Para ediciones, mantener elementos separados
+          items: items,
+        };
+      });
+
+      // Enviar múltiples facturas
+      dispatch(sendMultipleToXubioInit(invoicesData));
     } else {
       // Flujo original para contratos
       // Validar datos

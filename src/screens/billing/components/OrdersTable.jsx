@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "shared/utils/extensionsMethods.js";
-import { showOrderDialog } from "../actionCreators";
+import { showOrderDialog, addToCart } from "../actionCreators";
 import {
   getOrders,
   getLoading,
   getCartItems,
   getSelectedCurrency,
+  getEntityType,
 } from "../reducer";
 import Table from "shared/components/Table";
 import { getHeaderStyleTable } from "shared/utils/index";
@@ -15,31 +16,29 @@ import { SaveButton } from "shared/components/Buttons";
 
 const OrdersTable = () => {
   const dispatch = useDispatch();
-  // Usamos los selectores básicos en lugar del filtrado por moneda
+
+  // Selectores
   const orders = useSelector(getOrders);
   const loading = useSelector(getLoading);
   const cartItems = useSelector(getCartItems);
   const selectedCurrency = useSelector(getSelectedCurrency);
+  const entityType = useSelector(getEntityType);
 
+  // SIMPLIFICADO: Solo filtros relevantes para facturación por ediciones
   const [filters, setFilters] = useState({
-    productId: -1,
-    editionId: -1,
     sellerId: -1,
+    clientId: -1, // Solo para ediciones
   });
 
   // Estado para almacenar las órdenes filtradas localmente
   const [visibleOrders, setVisibleOrders] = useState([]);
 
-  // Extraer opciones únicas para los dropdowns de filtros desde las órdenes cargadas
-  const [productOptions, setProductOptions] = useState([
+  // SIMPLIFICADO: Solo opciones necesarias
+  const [sellerOptions, setSellerOptions] = useState([
     { id: -1, name: "Todos" },
   ]);
 
-  const [editionOptions, setEditionOptions] = useState([
-    { id: -1, name: "Todas" },
-  ]);
-
-  const [sellerOptions, setSellerOptions] = useState([
+  const [clientOptions, setClientOptions] = useState([
     { id: -1, name: "Todos" },
   ]);
 
@@ -48,7 +47,7 @@ const OrdersTable = () => {
     .filter(item => item.type === "ORDER")
     .map(item => item.id);
 
-  // Filtrar las órdenes por moneda y por las que no están en el carrito
+  // Filtrar las órdenes por moneda (IGUAL QUE CONTRATOS) - Solo mostrar cuando hay moneda seleccionada
   useEffect(() => {
     console.log("OrdersTable useEffect - Órdenes totales:", orders);
     console.log(
@@ -57,12 +56,18 @@ const OrdersTable = () => {
     );
 
     if (Array.isArray(orders) && orders.length > 0) {
-      // Primero filtrar por moneda seleccionada
+      // IGUAL QUE CONTRATOS: Solo filtrar si hay moneda seleccionada
       let ordersFilteredByCurrency = orders;
       if (selectedCurrency) {
         ordersFilteredByCurrency = orders.filter(
           order => order.currencyName === selectedCurrency
         );
+      } else {
+        // Si no hay moneda seleccionada, no mostrar órdenes (igual que contratos)
+        setVisibleOrders([]);
+        setSellerOptions([{ id: -1, name: "Todos" }]);
+        setClientOptions([{ id: -1, name: "Todos" }]);
+        return;
       }
 
       console.log(
@@ -70,39 +75,7 @@ const OrdersTable = () => {
         ordersFilteredByCurrency
       );
 
-      // Extraer productos únicos
-      const uniqueProducts = new Set();
-      const productOpts = [{ id: -1, name: "Todos" }];
-
-      ordersFilteredByCurrency.forEach(order => {
-        if (order.productId && !uniqueProducts.has(order.productId)) {
-          uniqueProducts.add(order.productId);
-          productOpts.push({
-            id: order.productId,
-            name: order.productName || `Producto ${order.productId}`,
-          });
-        }
-      });
-
-      // Extraer ediciones únicas
-      const uniqueEditions = new Set();
-      const editionOpts = [{ id: -1, name: "Todas" }];
-
-      ordersFilteredByCurrency.forEach(order => {
-        if (
-          order.productEditionId &&
-          !uniqueEditions.has(order.productEditionId)
-        ) {
-          uniqueEditions.add(order.productEditionId);
-          editionOpts.push({
-            id: order.productEditionId,
-            name:
-              order.productEditionName || `Edición ${order.productEditionId}`,
-          });
-        }
-      });
-
-      // Extraer vendedores únicos
+      // SIMPLIFICADO: Solo extraer vendedores y clientes (no producto/edición que ya están seleccionados)
       const uniqueSellers = new Set();
       const sellerOpts = [{ id: -1, name: "Todos" }];
 
@@ -116,9 +89,22 @@ const OrdersTable = () => {
         }
       });
 
-      setProductOptions(productOpts);
-      setEditionOptions(editionOpts);
+      // Extraer clientes únicos (para facturación por ediciones)
+      const uniqueClients = new Set();
+      const clientOpts = [{ id: -1, name: "Todos" }];
+
+      ordersFilteredByCurrency.forEach(order => {
+        if (order.clientId && !uniqueClients.has(order.clientId)) {
+          uniqueClients.add(order.clientId);
+          clientOpts.push({
+            id: order.clientId,
+            name: order.clientBrandName || `Cliente ${order.clientId}`,
+          });
+        }
+      });
+
       setSellerOptions(sellerOpts);
+      setClientOptions(clientOpts);
 
       // Inicializar las órdenes filtradas excluyendo las que ya están en el carrito
       const availableOrders = ordersFilteredByCurrency.filter(
@@ -132,11 +118,10 @@ const OrdersTable = () => {
     } else {
       // Si no hay órdenes, resetear la vista
       setVisibleOrders([]);
-      setProductOptions([{ id: -1, name: "Todos" }]);
-      setEditionOptions([{ id: -1, name: "Todas" }]);
       setSellerOptions([{ id: -1, name: "Todos" }]);
+      setClientOptions([{ id: -1, name: "Todos" }]);
     }
-  }, [orders, cartItems, selectedCurrency]); // Actualizar cuando cambia el filtro de moneda
+  }, [orders, cartItems, selectedCurrency]);
 
   const handleFilterChange = (field, value) => {
     setFilters({
@@ -145,6 +130,7 @@ const OrdersTable = () => {
     });
   };
 
+  // SIMPLIFICADO: Filtros solo en memoria (igual que ContractsTable)
   const handleApplyFilters = () => {
     // Filtrar primero por moneda seleccionada
     let ordersToFilter = orders;
@@ -154,28 +140,20 @@ const OrdersTable = () => {
       );
     }
 
-    // Luego aplicar los filtros adicionales
+    // Luego aplicar los filtros adicionales EN MEMORIA
     const filtered = ordersToFilter.filter(order => {
       // Excluir órdenes que ya están en el carrito
       if (ordersInCart.includes(order.id)) {
         return false;
       }
 
-      // Filtrar por productId
-      if (filters.productId !== -1 && order.productId !== filters.productId) {
-        return false;
-      }
-
-      // Filtrar por editionId
-      if (
-        filters.editionId !== -1 &&
-        order.productEditionId !== filters.editionId
-      ) {
-        return false;
-      }
-
       // Filtrar por sellerId
       if (filters.sellerId !== -1 && order.sellerId !== filters.sellerId) {
+        return false;
+      }
+
+      // Filtrar por clientId (para facturación por ediciones)
+      if (filters.clientId !== -1 && order.clientId !== filters.clientId) {
         return false;
       }
 
@@ -189,53 +167,80 @@ const OrdersTable = () => {
     dispatch(showOrderDialog(order));
   };
 
+  // NUEVA FUNCIÓN: Agregar todas las órdenes visibles al carrito
+  const handleAddAllToCart = () => {
+    if (visibleOrders.length === 0) {
+      return;
+    }
+
+    // Agregar cada orden visible al carrito
+    visibleOrders.forEach(order => {
+      const cartItem = {
+        id: order.id,
+        type: "ORDER",
+        clientId: order.clientId,
+        clientName: order.clientBrandName,
+        contractId: order.contractId,
+        contractNumber: order.contractNumber,
+        productName: order.productName,
+        productEditionName: order.productEditionName,
+        productAdvertisingSpaceName: order.productAdvertisingSpaceName,
+        advertisingSpaceLocationTypeName:
+          order.advertisingSpaceLocationTypeName,
+        quantity: order.quantity,
+        amount: order.total,
+        totalTaxes: order.totalTaxes || 0,
+        currencyName: order.currencyName,
+        xubioProductId: order.xubioProductId,
+        description: `${order.productAdvertisingSpaceName} - ${order.advertisingSpaceLocationTypeName}`,
+        observations: `Contrato: ${order.contractNumber} - ${order.contractName}\nProducto: ${order.productName}\nEdición: ${order.productEditionName}\nEspacio: ${order.productAdvertisingSpaceName}\nUbicación: ${order.advertisingSpaceLocationTypeName}`,
+      };
+
+      dispatch(addToCart(cartItem));
+    });
+  };
+
   const columns = [
+    {
+      Header: "Cliente",
+      accessor: "clientBrandName",
+      width: "1%",
+      headerStyle: getHeaderStyleTable(),
+    },
     {
       Header: "N°Contrato",
       accessor: "contractNumber",
-      width: "15%",
+      width: "10%",
       headerStyle: getHeaderStyleTable(),
     },
     {
       Header: "Contrato",
-      accessor: "contracName",
-      width: "15%",
-      headerStyle: getHeaderStyleTable(),
-    },
-    {
-      Header: "Producto",
-      accessor: "productName",
-      width: "15%",
-      headerStyle: getHeaderStyleTable(),
-    },
-    {
-      Header: "Edición",
-      accessor: "productEditionName",
-      width: "10%",
+      accessor: "contractName",
+      width: "20%",
       headerStyle: getHeaderStyleTable(),
     },
     {
       Header: "Espacio",
       accessor: "productAdvertisingSpaceName",
-      width: "15%",
+      width: "20%",
       headerStyle: getHeaderStyleTable(),
     },
     {
       Header: "Ubicación",
       accessor: "advertisingSpaceLocationTypeName",
-      width: "15%",
+      width: "10%",
       headerStyle: getHeaderStyleTable(),
     },
     {
       Header: "Moneda",
       accessor: "currencyName",
-      width: "10%",
+      width: "5%",
       headerStyle: getHeaderStyleTable(),
     },
     {
       Header: "Cantidad",
       accessor: "quantity",
-      width: "10%",
+      width: "5%",
       headerStyle: getHeaderStyleTable(),
     },
     {
@@ -267,40 +272,27 @@ const OrdersTable = () => {
   return (
     <div className="card mb-4">
       <div className="card-header">
-        <h5 className="mb-0">
-          Órdenes de publicación disponibles para facturar
-        </h5>
+        <h5 className="mb-0">Órdenes de la edición seleccionada</h5>
       </div>
       <div className="card-body">
         <div className="mb-4">
           <div className="row">
-            <div className="col-md-3">
+            {/* SIMPLIFICADO: Solo filtros relevantes para facturación por ediciones */}
+            <div className="col-md-4">
               <InputSelectFieldSimple
-                labelText="Producto"
-                name="productId"
-                options={productOptions}
-                value={filters.productId}
-                onChangeHandler={product =>
-                  handleFilterChange("productId", product.id)
+                labelText="Cliente"
+                name="clientId"
+                options={clientOptions}
+                value={filters.clientId}
+                onChangeHandler={client =>
+                  handleFilterChange("clientId", client.id)
                 }
                 getOptionLabel={option => option.name}
                 getOptionValue={option => option.id}
               />
             </div>
-            <div className="col-md-3">
-              <InputSelectFieldSimple
-                labelText="Edición"
-                name="editionId"
-                options={editionOptions}
-                value={filters.editionId}
-                onChangeHandler={edition =>
-                  handleFilterChange("editionId", edition.id)
-                }
-                getOptionLabel={option => option.name}
-                getOptionValue={option => option.id}
-              />
-            </div>
-            <div className="col-md-3">
+
+            <div className="col-md-4">
               <InputSelectFieldSimple
                 labelText="Vendedor"
                 name="sellerId"
@@ -313,14 +305,26 @@ const OrdersTable = () => {
                 getOptionValue={option => option.id}
               />
             </div>
-            <div className="col-md-1 d-flex justify-content-center align-items-center mt-2">
-              <div>
+
+            <div className="col-md-3 d-flex justify-content-center align-items-center mt-2">
+              <div className="d-flex gap-2">
                 <SaveButton
                   onClickHandler={handleApplyFilters}
                   disabled={loading}
                 >
                   Buscar
                 </SaveButton>
+
+                {entityType === "EDITIONS" && visibleOrders.length > 0 && (
+                  <button
+                    className="btn btn-primary btn-sm ml-3"
+                    onClick={handleAddAllToCart}
+                    disabled={loading}
+                    title="Agregar todas las órdenes visibles al carrito"
+                  >
+                    Agregar Todo
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -332,6 +336,18 @@ const OrdersTable = () => {
           loading={loading}
           showButton={false}
         />
+
+        {/* NUEVO: Mostrar información de resumen */}
+        {visibleOrders.length > 0 && (
+          <div className="mt-3">
+            <small className="text-muted">
+              Mostrando {visibleOrders.length} órdenes
+              {entityType === "EDITIONS" && selectedCurrency && (
+                <span> • Moneda: {selectedCurrency}</span>
+              )}
+            </small>
+          </div>
+        )}
       </div>
     </div>
   );

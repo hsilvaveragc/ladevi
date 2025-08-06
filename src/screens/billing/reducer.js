@@ -37,9 +37,6 @@ import {
   FILTER_CONTRACTS_INIT,
   FILTER_CONTRACTS_SUCCESS,
   FILTER_CONTRACTS_FAILURE,
-  FILTER_ORDERS_INIT,
-  FILTER_ORDERS_SUCCESS,
-  FILTER_ORDERS_FAILURE,
   UPDATE_CART_ITEM,
   SHOW_CONTRACT_DIALOG_FOR_EDIT,
   // Nuevos tipos de acciones para ediciones
@@ -54,9 +51,6 @@ import {
   FETCH_VENDORS_INIT,
   FETCH_VENDORS_SUCCESS,
   FETCH_VENDORS_FAILURE,
-  FETCH_CLIENTS_FROM_EDITION_INIT,
-  FETCH_CLIENTS_FROM_EDITION_SUCCESS,
-  FETCH_CLIENTS_FROM_EDITION_FAILURE,
   SEND_MULTIPLE_TO_XUBIO_INIT,
   SEND_MULTIPLE_TO_XUBIO_SUCCESS,
   SEND_MULTIPLE_TO_XUBIO_FAILURE,
@@ -117,11 +111,9 @@ export default function(state = initialState, action) {
     case FETCH_XUBIO_PRODUCTS_INIT:
     case SEND_TO_XUBIO_INIT:
     case FILTER_CONTRACTS_INIT:
-    case FILTER_ORDERS_INIT:
     case FETCH_PRODUCTS_INIT:
     case FETCH_EDITIONS_INIT:
     case FETCH_VENDORS_INIT:
-    case FETCH_CLIENTS_FROM_EDITION_INIT:
     case SEND_MULTIPLE_TO_XUBIO_INIT:
       return {
         ...state,
@@ -166,13 +158,6 @@ export default function(state = initialState, action) {
         orders: action.payload.orders,
       };
 
-    case FILTER_ORDERS_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        orders: action.payload.orders,
-      };
-
     // NUEVOS: Success states para ediciones
     case FETCH_PRODUCTS_SUCCESS:
       return {
@@ -193,13 +178,6 @@ export default function(state = initialState, action) {
         ...state,
         loading: false,
         vendors: action.payload.vendors,
-      };
-
-    case FETCH_CLIENTS_FROM_EDITION_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        availableClientsForEdition: action.payload.clients,
       };
 
     case FETCH_XUBIO_PRODUCTS_SUCCESS:
@@ -236,11 +214,10 @@ export default function(state = initialState, action) {
     case FETCH_XUBIO_PRODUCTS_FAILURE:
     case SEND_TO_XUBIO_FAILURE:
     case FILTER_CONTRACTS_FAILURE:
-    case FILTER_ORDERS_FAILURE:
+
     case FETCH_PRODUCTS_FAILURE:
     case FETCH_EDITIONS_FAILURE:
     case FETCH_VENDORS_FAILURE:
-    case FETCH_CLIENTS_FROM_EDITION_FAILURE:
     case SEND_MULTIPLE_TO_XUBIO_FAILURE:
       return {
         ...state,
@@ -253,50 +230,54 @@ export default function(state = initialState, action) {
       return {
         ...state,
         clientType: action.payload,
+        // Reset completo de todas las selecciones
         selectedClient: null,
         entityType: null,
-        contracts: [],
-        orders: [],
-        cartItems: [],
-        selectedCurrency: "", // Resetear moneda seleccionada
-        // NUEVO: Reset de campos de ediciones
-        products: [],
-        editions: [],
+        selectedCurrency: "",
         selectedProduct: null,
         selectedEdition: null,
+        // Reset de datos cargados
+        clients: [],
+        contracts: [],
+        orders: [],
+        products: [],
+        editions: [],
+        cartItems: [],
       };
 
     case SELECT_CLIENT:
       return {
         ...state,
         selectedClient: action.payload,
-        entityType: null,
+        // Reset data dependientes del cliente
         contracts: [],
-        orders: [],
         cartItems: [],
-        selectedCurrency: "", // Resetear moneda seleccionada
-        // NUEVO: Reset de campos de ediciones
-        products: [],
-        editions: [],
-        selectedProduct: null,
-        selectedEdition: null,
+        selectedCurrency: "",
       };
 
     case SET_ENTITY_TYPE:
       return {
         ...state,
         entityType: action.payload,
+        // Reset datos que dependan del tipo de entidad
         contracts: action.payload === "CONTRACTS" ? state.contracts : [],
-        orders: action.payload === "EDITIONS" ? state.orders : [], // Cambio de "ORDERS" a "EDITIONS"
+        orders: action.payload === "EDITIONS" ? state.orders : [],
         cartItems: [],
-        selectedCurrency: "", // Resetear moneda seleccionada
-        // NUEVO: Reset de campos específicos según el tipo
+        selectedCurrency: "",
+        // Reset específico para cada tipo
         ...(action.payload === "CONTRACTS"
           ? {
+              // Si cambia a contratos, limpio datos de ediciones
               products: [],
               editions: [],
               selectedProduct: null,
               selectedEdition: null,
+            }
+          : action.payload === "EDITIONS"
+          ? {
+              // Si cambia a ediciones, limpio datos de contratos
+              selectedClient: null,
+              contracts: [],
             }
           : {}),
       };
@@ -306,6 +287,7 @@ export default function(state = initialState, action) {
       return {
         ...state,
         selectedProduct: action.payload,
+        // Reset data dependiente del producto
         selectedEdition: null,
         editions: [],
         orders: [],
@@ -317,6 +299,7 @@ export default function(state = initialState, action) {
       return {
         ...state,
         selectedEdition: action.payload,
+        // Reset data dependiente de la edición
         orders: [],
         cartItems: [],
         selectedCurrency: "",
