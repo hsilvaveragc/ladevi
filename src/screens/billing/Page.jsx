@@ -81,7 +81,7 @@ const BillingPage = () => {
           <div className="col-md-8">
             <SelectorsContainer />
             {selectedClient && entityType === "CONTRACTS" && <ContractsTable />}
-            {selectedClient && entityType === "ORDERS" && <OrdersTable />}
+            {selectedClient && entityType === "EDITIONS" && <OrdersTable />}
           </div>
 
           <div className="col-md-4">

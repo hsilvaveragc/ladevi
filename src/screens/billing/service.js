@@ -2,7 +2,7 @@ import axios from "axios";
 import { getHeaders } from "shared/services/utils";
 import clientService from "screens/clients/service";
 import productService from "screens/products/service";
-import { is } from "ramda";
+import ordersService from "screens/orders/service";
 
 export default {
   // Obtener productos de Xubio
@@ -65,17 +65,16 @@ export default {
       .then(response => response.data),
 
   // NUEVO: Filtrar órdenes por edición
-  filterOrdersByEdition: (editionId, filters = []) =>
+  filterOrdersByEdition: (editionId, filters = {}) =>
     axios
       .post(
-        `Orders/SearchByEdition`,
+        `PublishingOrder/SearchByEdition`,
         {
-          editionId,
-          take: 10000,
-          filter: {
-            logic: "and",
-            filters: [...filters],
-          },
+          editionId: editionId,
+          clientId: filters.clientId || null,
+          sellerId: filters.sellerId || null,
+          isComturClient: filters.isComturClient || null,
+          take: 1000,
         },
         {
           headers: getHeaders(),

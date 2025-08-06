@@ -76,6 +76,7 @@ const SelectorsContainer = () => {
 
   // Extraer opciones de moneda únicas cuando se cargan contratos u órdenes
   useEffect(() => {
+    debugger;
     if (entityType === "CONTRACTS" && contracts && contracts.length > 0) {
       // Extraer monedas únicas de los contratos
       const uniqueCurrencies = new Set();
@@ -148,9 +149,10 @@ const SelectorsContainer = () => {
   };
 
   const handleEditionChange = selected => {
+    debugger;
     dispatch(setSelectedEdition(selected.id));
     // Cargar órdenes de la edición seleccionada
-    dispatch(fetchOrdersInit({ editionId: selected.id }));
+    // dispatch(fetchOrdersInit({ editionId: selected.id }));
   };
 
   const handleCurrencyChange = selected => {

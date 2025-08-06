@@ -133,7 +133,7 @@ export function* fetchContracts({ payload }) {
 export function* fetchOrders({ payload }) {
   try {
     let orders;
-
+    debugger;
     // Verificar si es un payload con editionId (nuevo flujo) o clientId (flujo anterior)
     if (typeof payload === "object" && payload.editionId) {
       // Nuevo flujo: obtener órdenes por edición
@@ -141,9 +141,11 @@ export function* fetchOrders({ payload }) {
         billingService.filterOrdersByEdition,
         payload.editionId
       );
+      console.log("Órdenes cargadas por edición:", orders); // Debug
     } else {
       // Flujo anterior: obtener órdenes por cliente
       orders = yield call(billingService.getPublishingOrdersByClient, payload);
+      console.log("Órdenes cargadas por cliente:", orders); // Debug
     }
 
     yield put({
@@ -153,7 +155,7 @@ export function* fetchOrders({ payload }) {
       },
     });
   } catch (err) {
-    console.log(err);
+    console.log("Error cargando órdenes:", err);
     yield put({
       type: FETCH_ORDERS_FAILURE,
       errors: {
@@ -387,7 +389,7 @@ export function* sendToXubio({ payload }) {
       closeButton: true,
       position: "top-center",
     });
-
+    debugger;
     // Recargar los datos según el tipo de entidad
     if (entityType === "CONTRACTS") {
       // Primero recargar todos los contratos para ese cliente
@@ -395,7 +397,7 @@ export function* sendToXubio({ payload }) {
         type: FETCH_CONTRACTS_INIT,
         payload: selectedClient.id,
       });
-    } else if (entityType === "ORDERS") {
+    } else if (entityType === "EDITIONS") {
       // Primero recargar todas las órdenes para ese cliente
       yield put({
         type: FETCH_ORDERS_INIT,
