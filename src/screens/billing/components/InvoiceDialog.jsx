@@ -45,9 +45,10 @@ const InvoiceDialog = () => {
   const entityType = useSelector(getEntityType);
 
   const [invoiceMode, setInvoiceMode] = useState("separate");
-  const [consolidatedXubioProductId, setConsolidatedXubioProductId] = useState(
-    ""
-  );
+  const [
+    consolidatedXubioProductCode,
+    setConsolidatedXubioProductCode,
+  ] = useState("");
   const [globalObservations, setGlobalObservations] = useState("");
   const [groupedByClient, setGroupedByClient] = useState({});
 
@@ -119,7 +120,7 @@ const InvoiceDialog = () => {
   useEffect(() => {
     if (showDialog) {
       setInvoiceMode("separate");
-      setConsolidatedXubioProductId("");
+      setConsolidatedXubioProductCode("");
       setGlobalObservations("");
     }
   }, [showDialog]);
@@ -133,7 +134,7 @@ const InvoiceDialog = () => {
   };
 
   const handleXubioProductChange = product => {
-    setConsolidatedXubioProductId(product.code || product.Code);
+    setConsolidatedXubioProductCode(product.code || product.Code);
   };
 
   const handleGlobalObservationsChange = e => {
@@ -147,7 +148,7 @@ const InvoiceDialog = () => {
         // Preparar los items del cliente
         const items = clientGroup.items.map(item => ({
           id: item.id,
-          xubioProductId: item.xubioProductId,
+          xubioProductCode: item.xubioProductCode,
           amount: item.amount || item.total,
           totalTaxes: item.totalTaxes || 0,
           observations: item.observations || item.description,
@@ -172,7 +173,7 @@ const InvoiceDialog = () => {
       if (
         invoiceMode === "consolidated" &&
         totalItemsCount > 1 &&
-        !consolidatedXubioProductId
+        !consolidatedXubioProductCode
       ) {
         return;
       }
@@ -221,7 +222,7 @@ const InvoiceDialog = () => {
         // Construir el item de factura consolidado
         invoiceData.items = [
           {
-            xubioProductId: consolidatedXubioProductId,
+            xubioProductCode: consolidatedXubioProductCode,
             amount: totalAmount,
             totalTaxes: totalTaxes || 0,
             observations: consolidatedObservations.trim(),
@@ -239,7 +240,7 @@ const InvoiceDialog = () => {
             cartItem.entityItems.forEach(entityItem => {
               items.push({
                 id: entityItem.id,
-                xubioProductId: entityItem.xubioProductId,
+                xubioProductCode: entityItem.xubioProductCode,
                 amount: entityItem.total,
                 totalTaxes: entityItem.totalTaxes || 0,
                 observations: entityItem.observations,
@@ -250,7 +251,7 @@ const InvoiceDialog = () => {
           } else if (cartItem.type === "ORDER") {
             items.push({
               id: cartItem.id,
-              xubioProductId: cartItem.xubioProductId,
+              xubioProductCode: cartItem.xubioProductCode,
               amount: cartItem.amount,
               totalTaxes: cartItem.totalTaxes || 0,
               observations: cartItem.observations,
@@ -291,7 +292,7 @@ const InvoiceDialog = () => {
     if (effectiveMode === "consolidated") {
       // Modo consolidado
       const xubioProduct = xubioProducts.find(
-        p => (p.code || p.Code) === consolidatedXubioProductId
+        p => (p.code || p.Code) === consolidatedXubioProductCode
       );
       return [
         {
@@ -313,7 +314,7 @@ const InvoiceDialog = () => {
         if (cartItem.type === "CONTRACT" && cartItem.entityItems) {
           cartItem.entityItems.forEach(entityItem => {
             const xubioProduct = xubioProducts.find(
-              p => (p.code || p.Code) === entityItem.xubioProductId
+              p => (p.code || p.Code) === entityItem.xubioProductCode
             );
             items.push({
               articulo:
@@ -328,7 +329,7 @@ const InvoiceDialog = () => {
           });
         } else if (cartItem.type === "ORDER") {
           const xubioProduct = xubioProducts.find(
-            p => (p.code || p.Code) === cartItem.xubioProductId
+            p => (p.code || p.Code) === cartItem.xubioProductCode
           );
           items.push({
             articulo:
@@ -522,7 +523,7 @@ const InvoiceDialog = () => {
                   labelText="Producto de Xubio para consolidar"
                   name="xubioProduct"
                   options={xubioProducts}
-                  value={consolidatedXubioProductId}
+                  value={consolidatedXubioProductCode}
                   onChangeHandler={handleXubioProductChange}
                   getOptionLabel={option => option.name || option.Name}
                   getOptionValue={option => option.code || option.Code}
@@ -629,7 +630,7 @@ const InvoiceDialog = () => {
             (!isEditionFlow &&
               invoiceMode === "consolidated" &&
               totalItemsCount > 1 &&
-              !consolidatedXubioProductId)
+              !consolidatedXubioProductCode)
           }
         >
           {loading ? (

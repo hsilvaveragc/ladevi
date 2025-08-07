@@ -139,9 +139,9 @@ const Cart = () => {
     });
   };
 
-  const getXubioProductName = xubioProductId => {
+  const getXubioProductName = xubioProductCode => {
     const product = xubioProducts.find(
-      p => (p.code || p.Code) === xubioProductId
+      p => (p.code || p.Code) === xubioProductCode
     );
     return product ? product.name || product.Name : "Producto no especificado";
   };
@@ -217,7 +217,7 @@ const Cart = () => {
                                   : "Argentina"}
                                 :
                               </strong>{" "}
-                              {getXubioProductName(item.xubioProductId)}
+                              {getXubioProductName(item.xubioProductCode)}
                             </small>
                           </>
                         )}
@@ -290,7 +290,7 @@ const Cart = () => {
                                         :
                                       </strong>{" "}
                                       {getXubioProductName(
-                                        entityItem.xubioProductId
+                                        entityItem.xubioProductCode
                                       )}
                                     </small>
                                     {entityItem.observations && (

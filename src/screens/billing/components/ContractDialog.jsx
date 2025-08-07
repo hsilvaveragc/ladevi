@@ -73,7 +73,7 @@ const ContractDialog = () => {
         const existingObservations = {};
         if (existingCartItem.entityItems) {
           existingCartItem.entityItems.forEach(item => {
-            existingXubioProducts[item.id] = item.xubioProductId || "";
+            existingXubioProducts[item.id] = item.xubioProductCode || "";
             existingObservations[item.id] = item.observations || "";
           });
         }
@@ -86,15 +86,9 @@ const ContractDialog = () => {
         // Si es un nuevo ítem, inicializar con los códigos Xubio predeterminados
         const defaultXubioProducts = {};
 
-        // Usar el código correcto según el tipo de cliente
-        const defaultXubioCode =
-          clientType === "COMTUR"
-            ? selectedContract.comturXubioProductCode
-            : selectedContract.xubioProductCode;
-
-        if (defaultXubioCode) {
+        if (selectedContract.xubioProductCode) {
           soldSpacesArray.forEach(item => {
-            defaultXubioProducts[item.id] = defaultXubioCode;
+            defaultXubioProducts[item.id] = selectedContract.xubioProductCode;
           });
         }
         setSelectedContractItems([]);
@@ -129,11 +123,7 @@ const ContractDialog = () => {
       if (contractItem && !itemXubioProducts[itemId]) {
         // Usar el código correcto según el tipo de cliente
         const defaultXubioCode =
-          clientType === "COMTUR"
-            ? contractItem.comturXubioProductCode ||
-              selectedContract.comturXubioProductCode
-            : contractItem.xubioProductCode ||
-              selectedContract.xubioProductCode;
+          contractItem.xubioProductCode || selectedContract.xubioProductCode;
 
         if (defaultXubioCode) {
           setItemXubioProducts({
@@ -198,7 +188,7 @@ const ContractDialog = () => {
         quantity: contractItem.quantity,
         total: contractItem.total,
         totalTaxes: contractItem.totalTaxes || 0, // Incluir total de impuestos si exist
-        xubioProductId: itemXubioProducts[itemId], // Producto Xubio específico para este item
+        xubioProductCode: itemXubioProducts[itemId], // Producto Xubio específico para este item
         observations:
           itemObservations[itemId] ||
           `${contractItem.productAdvertisingSpaceName} - ${contractItem.advertisingSpaceLocationTypeName}`, // Observaciones específicas para este item
@@ -255,9 +245,9 @@ const ContractDialog = () => {
     dispatch(hideContractDialog());
   };
 
-  const getXubioProductName = xubioProductId => {
+  const getXubioProductName = xubioProductCode => {
     const product = xubioProducts.find(
-      p => (p.code || p.Code) === xubioProductId
+      p => (p.code || p.Code) === xubioProductCode
     );
     return product ? product.name || product.Name : "Producto no especificado";
   };

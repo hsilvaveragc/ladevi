@@ -43,11 +43,18 @@ const ContractsTable = () => {
   // Filtrar los contratos por moneda y por los que no están en el carrito
   useEffect(() => {
     if (Array.isArray(contracts) && contracts.length > 0) {
+      // CORREGIDO: Solo mostrar si hay moneda seleccionada (igual que OrdersTable)
       let contractsFilteredByCurrency = contracts;
       if (selectedCurrency) {
         contractsFilteredByCurrency = contracts.filter(
           contract => contract.currencyName === selectedCurrency
         );
+      } else {
+        // Si no hay moneda seleccionada, tabla vacía (igual que órdenes)
+        setVisibleContracts([]);
+        setProductOptions([{ id: -1, name: "Todos" }]);
+        setSellerOptions([{ id: -1, name: "Todos" }]);
+        return;
       }
 
       // Extraer productos únicos
@@ -87,6 +94,7 @@ const ContractsTable = () => {
       );
       setVisibleContracts(availableContracts);
     } else {
+      // Si no hay contratos, resetear la vista
       setVisibleContracts([]);
       setProductOptions([{ id: -1, name: "Todos" }]);
       setSellerOptions([{ id: -1, name: "Todos" }]);

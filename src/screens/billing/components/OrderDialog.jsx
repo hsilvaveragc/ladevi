@@ -38,7 +38,7 @@ const OrderDialog = () => {
   const cartItems = useSelector(getCartItems);
   const clientType = useSelector(getClientType);
 
-  const [xubioProductId, setXubioProductId] = useState("");
+  const [xubioProductCode, setXubioProductCode] = useState("");
   const [observations, setObservations] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
 
@@ -52,17 +52,12 @@ const OrderDialog = () => {
 
       if (existingCartItem) {
         // Si la orden ya está en el carrito, cargamos sus datos y activamos el modo edición
-        setXubioProductId(existingCartItem.xubioProductId || "");
+        setXubioProductCode(existingCartItem.xubioProductCode || "");
         setObservations(existingCartItem.observations || "");
         setIsEditMode(true);
       } else {
-        // Usar el código correcto según el tipo de cliente
-        const defaultXubioCode =
-          clientType === "COMTUR"
-            ? selectedOrder.comturXubioProductCode
-            : selectedOrder.xubioProductCode;
         // Si es un nuevo ítem, reiniciar valores
-        setXubioProductId(defaultXubioCode || "");
+        setXubioProductCode(selectedOrder.xubioProductCode || "");
         setObservations("");
         setIsEditMode(false);
       }
@@ -74,7 +69,7 @@ const OrderDialog = () => {
   };
 
   const handleXubioProductChange = product => {
-    setXubioProductId(product.code || product.Code);
+    setXubioProductCode(product.code || product.Code);
   };
 
   const handleObservationsChange = e => {
@@ -82,7 +77,7 @@ const OrderDialog = () => {
   };
 
   const handleAddOrUpdateCart = () => {
-    if (!xubioProductId) {
+    if (!xubioProductCode) {
       return;
     }
 
@@ -98,7 +93,7 @@ const OrderDialog = () => {
       // Crear el ítem actualizado manteniendo la mayoría de las propiedades originales
       const updatedCartItem = {
         ...existingItem,
-        xubioProductId: xubioProductId,
+        xubioProductCode: xubioProductCode,
         observations: observations,
       };
 
@@ -114,7 +109,7 @@ const OrderDialog = () => {
           ""}, ${selectedOrder.advertisingSpaceLocationTypeName || ""}`,
         amount: selectedOrder.total || 0,
         totalTaxes: selectedOrder.totalTaxes || 0,
-        xubioProductId,
+        xubioProductCode,
         observations,
         quantity: selectedOrder.quantity || 0,
         contract: `#${selectedOrder.contractNumber ||
@@ -183,12 +178,12 @@ const OrderDialog = () => {
             } *`}
             name="xubioProductCode"
             options={xubioProducts}
-            value={xubioProductId}
+            value={xubioProductCode}
             getOptionValue={option => option.code || option.Code}
             getOptionLabel={option => option.name || option.Name}
             onChangeHandler={handleXubioProductChange}
             disabled={loading}
-            error={!xubioProductId ? "Debe seleccionar un producto" : ""}
+            error={!xubioProductCode ? "Debe seleccionar un producto" : ""}
           />
         </div>
 
@@ -209,7 +204,7 @@ const OrderDialog = () => {
         </DangerButton>
         <SaveButton
           onClickHandler={handleAddOrUpdateCart}
-          disabled={loading || !xubioProductId}
+          disabled={loading || !xubioProductCode}
         >
           {isEditMode ? "Actualizar" : "Agregar al carrito"}
         </SaveButton>

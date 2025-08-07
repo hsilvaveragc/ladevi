@@ -93,9 +93,6 @@ const NewProductForm = ({
               maximumFractionDigits: 2,
             }),
         xubioProductCode: addMode ? "" : selectedItem.xubioProductCode,
-        comturXubioProductCode: addMode
-          ? ""
-          : selectedItem.comturXubioProductCode,
         discountForSameCountry: addMode
           ? ""
           : selectedItem.discountForSameCountry.toLocaleString("pt-BR", {

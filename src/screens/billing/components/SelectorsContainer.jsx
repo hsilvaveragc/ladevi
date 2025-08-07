@@ -43,8 +43,6 @@ const SelectorsContainer = () => {
   const contracts = useSelector(getContracts);
   const orders = useSelector(getOrders);
   const selectedCurrency = useSelector(getSelectedCurrency);
-
-  // Nuevos selectores para productos y ediciones
   const products = useSelector(getProducts);
   const editions = useSelector(getEditions);
   const selectedProduct = useSelector(getSelectedProduct);
@@ -60,6 +58,12 @@ const SelectorsContainer = () => {
     }
   }, [dispatch, clientType]);
 
+  useEffect(() => {
+    if (selectedClient && entityType === "CONTRACTS") {
+      dispatch(fetchContractsInit(selectedClient.id)); // ← ESTO faltaba
+    }
+  }, [dispatch, selectedClient, entityType]);
+
   // Cargar productos cuando se selecciona tipo ediciones
   useEffect(() => {
     if (entityType === "EDITIONS" && clientType) {
@@ -74,7 +78,7 @@ const SelectorsContainer = () => {
     }
   }, [dispatch, selectedProduct, entityType, clientType]);
 
-  // FUNCIONALIDAD CORREGIDA: Cargar órdenes inmediatamente al seleccionar edición (como contratos)
+  // Cargar órdenes inmediatamente al seleccionar edición
   useEffect(() => {
     if (selectedEdition && entityType === "EDITIONS") {
       console.log("Cargando órdenes para edición:", selectedEdition);
@@ -100,11 +104,6 @@ const SelectorsContainer = () => {
       });
 
       setCurrencyOptions(currencyOpts);
-
-      // NO seleccionar automáticamente la moneda - debe ser manual como en contratos
-      // if (currencyOpts.length > 0 && !selectedCurrency) {
-      //   dispatch(setSelectedCurrency(currencyOpts[0].id));
-      // }
     } else if (entityType === "EDITIONS" && orders && orders.length > 0) {
       // Extraer monedas únicas de las órdenes
       const uniqueCurrencies = new Set();
@@ -121,11 +120,6 @@ const SelectorsContainer = () => {
       });
 
       setCurrencyOptions(currencyOpts);
-
-      // NO seleccionar automáticamente la moneda - debe ser manual como en contratos
-      // if (currencyOpts.length > 0 && !selectedCurrency) {
-      //   dispatch(setSelectedCurrency(currencyOpts[0].id));
-      // }
     }
   }, [entityType, contracts, orders, selectedCurrency, dispatch]);
 

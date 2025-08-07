@@ -191,7 +191,7 @@ const OrdersTable = () => {
         amount: order.total,
         totalTaxes: order.totalTaxes || 0,
         currencyName: order.currencyName,
-        xubioProductId: order.xubioProductId,
+        xubioProductCode: order.xubioProductCode,
         description: `${order.productAdvertisingSpaceName} - ${order.advertisingSpaceLocationTypeName}`,
         observations: `Contrato: ${order.contractNumber} - ${order.contractName}\nProducto: ${order.productName}\nEdición: ${order.productEditionName}\nEspacio: ${order.productAdvertisingSpaceName}\nUbicación: ${order.advertisingSpaceLocationTypeName}`,
       };

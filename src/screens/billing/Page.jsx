@@ -11,7 +11,7 @@ import {
 } from "./reducer";
 import ContractsTable from "./components/ContractsTable";
 import OrdersTable from "./components/OrdersTable";
-import Cart from "./components/Cart";
+import CartContainer from "./components/CartContainer";
 import ContractDialog from "./components/ContractDialog";
 import OrderDialog from "./components/OrderDialog";
 import InvoiceDialog from "./components/InvoiceDialog";
@@ -90,7 +90,7 @@ const BillingPage = () => {
           </div>
 
           <div className="col-md-4">
-            <Cart />
+            <CartContainer />
           </div>
         </div>
 
