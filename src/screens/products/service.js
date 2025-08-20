@@ -227,4 +227,18 @@ export default {
         headers: getHeaders(),
       })
       .then(response => sortAlphabetically(response.data, "name")),
+
+  getXubioGenericProduct: () =>
+    axios
+      .get(`Products/GetXubioGenericProductCode`, {
+        headers: getHeaders(),
+      })
+      .then(response => response.data),
+
+  getXubioComturGenericProduct: () =>
+    axios
+      .get(`Products/GetXubioGenericProductCode?isComtur=true`, {
+        headers: getHeaders(),
+      })
+      .then(response => response.data),
 };

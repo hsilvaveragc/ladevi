@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { showContractDialog } from "../actionCreators";
+import { getHeaderStyleTable, getAllItem } from "shared/utils/index";
+import { CONSTANTS } from "../constants";
+import { addToCart } from "../actionCreators";
 import {
   getContracts,
   getLoading,
@@ -8,15 +10,15 @@ import {
   getSelectedCurrency,
 } from "../reducer";
 import Table from "shared/components/Table";
-import { getHeaderStyleTable } from "shared/utils/index";
 import InputTextFieldSimple from "shared/components/InputTextFieldSimple";
 import InputSelectFieldSimple from "shared/components/InputSelectFieldSimple";
 import { SaveButton } from "shared/components/Buttons";
 
 const ContractsTable = () => {
   const dispatch = useDispatch();
-  const contracts = useSelector(getContracts);
+
   const loading = useSelector(getLoading);
+  const contracts = useSelector(getContracts);
   const cartItems = useSelector(getCartItems);
   const selectedCurrency = useSelector(getSelectedCurrency);
 
@@ -27,39 +29,42 @@ const ContractsTable = () => {
     sellerId: -1,
   });
 
+  // Estado para almacenar los contratos filtradas localmente
   const [visibleContracts, setVisibleContracts] = useState([]);
-  const [productOptions, setProductOptions] = useState([
-    { id: -1, name: "Todos" },
-  ]);
-  const [sellerOptions, setSellerOptions] = useState([
-    { id: -1, name: "Todos" },
-  ]);
 
-  // Obtener IDs de contratos que ya están en el carrito
-  const contractsInCart = cartItems
-    .filter(item => item.type === "CONTRACT")
-    .map(item => item.id);
+  const [productOptions, setProductOptions] = useState([getAllItem()]);
+  const [sellerOptions, setSellerOptions] = useState([getAllItem()]);
 
-  // Filtrar los contratos por moneda y por los que no están en el carrito
+  // Obtener IDs de contratos que ya están en el carrito (memorizado para evitar loops)
+  const contractsInCart = React.useMemo(
+    () =>
+      cartItems
+        .filter(item => item.type === CONSTANTS.CONTRACT_CODE)
+        .map(item => item.id),
+    [cartItems]
+  );
+
+  // Filtrar los contratos por moneda y EXCLUIR los que están en el carrito
   useEffect(() => {
     if (Array.isArray(contracts) && contracts.length > 0) {
-      // CORREGIDO: Solo mostrar si hay moneda seleccionada (igual que OrdersTable)
+      // Solo filtrar si hay moneda seleccionada
       let contractsFilteredByCurrency = contracts;
       if (selectedCurrency) {
         contractsFilteredByCurrency = contracts.filter(
           contract => contract.currencyName === selectedCurrency
         );
       } else {
-        // Si no hay moneda seleccionada, tabla vacía (igual que órdenes)
         setVisibleContracts([]);
-        setProductOptions([{ id: -1, name: "Todos" }]);
-        setSellerOptions([{ id: -1, name: "Todos" }]);
+        setProductOptions([getAllItem()]);
+        setSellerOptions([getAllItem()]);
         return;
       }
 
-      // Extraer productos únicos
+      // Extraer productos y vendedores únicos
       const uniqueProducts = new Set();
-      const productOpts = [{ id: -1, name: "Todos" }];
+      const productOpts = [getAllItem()];
+      const uniqueSellers = new Set();
+      const sellerOpts = [getAllItem()];
 
       contractsFilteredByCurrency.forEach(contract => {
         if (contract.productId && !uniqueProducts.has(contract.productId)) {
@@ -69,13 +74,6 @@ const ContractsTable = () => {
             name: contract.productName || `Producto ${contract.productId}`,
           });
         }
-      });
-
-      // Extraer vendedores únicos
-      const uniqueSellers = new Set();
-      const sellerOpts = [{ id: -1, name: "Todos" }];
-
-      contractsFilteredByCurrency.forEach(contract => {
         if (contract.sellerId && !uniqueSellers.has(contract.sellerId)) {
           uniqueSellers.add(contract.sellerId);
           sellerOpts.push({
@@ -96,8 +94,8 @@ const ContractsTable = () => {
     } else {
       // Si no hay contratos, resetear la vista
       setVisibleContracts([]);
-      setProductOptions([{ id: -1, name: "Todos" }]);
-      setSellerOptions([{ id: -1, name: "Todos" }]);
+      setProductOptions([getAllItem()]);
+      setSellerOptions([getAllItem()]);
     }
   }, [contracts, cartItems, selectedCurrency]);
 
@@ -108,7 +106,9 @@ const ContractsTable = () => {
     });
   };
 
+  // Filtros solo en memoria
   const handleApplyFilters = () => {
+    // Filtrar primero por moneda seleccionada
     let contractsToFilter = contracts;
     if (selectedCurrency) {
       contractsToFilter = contracts.filter(
@@ -116,11 +116,14 @@ const ContractsTable = () => {
       );
     }
 
+    // Luego aplicar los filtros adicionales
     const filtered = contractsToFilter.filter(contract => {
+      // Excluir órdenes que ya están en el carrito
       if (contractsInCart.includes(contract.id)) {
         return false;
       }
 
+      // Filtrar por number
       if (
         filters.number &&
         !String(contract.number)
@@ -130,6 +133,7 @@ const ContractsTable = () => {
         return false;
       }
 
+      // Filtrar por name
       if (
         filters.name &&
         !String(contract.name)
@@ -139,6 +143,7 @@ const ContractsTable = () => {
         return false;
       }
 
+      // Filtrar por productId
       if (
         filters.productId !== -1 &&
         contract.productId !== filters.productId
@@ -146,6 +151,7 @@ const ContractsTable = () => {
         return false;
       }
 
+      // Filtrar por sellerId
       if (filters.sellerId !== -1 && contract.sellerId !== filters.sellerId) {
         return false;
       }
@@ -156,40 +162,81 @@ const ContractsTable = () => {
     setVisibleContracts(filtered);
   };
 
-  const handleAddToCart = contract => {
-    dispatch(showContractDialog(contract));
-  };
-
-  const getContractCartStatus = contract => {
-    if (!contract.soldSpaces || contract.soldSpaces.length === 0) {
-      return { status: "no-items", text: "No disponible" };
+  const handleAddContractToCart = contract => {
+    if (loading) {
+      return;
     }
 
-    const nonBilledSpaces = contract.soldSpaces.filter(space => !space.billed);
-    if (nonBilledSpaces.length === 0) {
-      return { status: "fully-billed", text: "Ya facturado" };
+    // Filtrar solo los items no facturados del contrato
+    const soldSpacesArray = contract.soldSpaces || [];
+    const nonBilledItems = soldSpacesArray.filter(item => !item.billed);
+
+    if (nonBilledItems.length === 0) {
+      alert("No hay espacios disponibles para facturar en este contrato");
+      return;
     }
 
-    return { status: "available", text: "Agregar" };
+    // Crear array con TODOS los ítems no facturados del contrato
+    const newEntityItems = nonBilledItems.map(contractItem => ({
+      id: contractItem.id,
+      productAdvertisingSpaceName: contractItem.productAdvertisingSpaceName,
+      advertisingSpaceLocationTypeName:
+        contractItem.advertisingSpaceLocationTypeName,
+      quantity: contractItem.quantity,
+      total: contractItem.total,
+      totalTaxes: contractItem.totalTaxes || 0,
+      xubioProductCode:
+        contractItem.xubioProductCode || contract.xubioProductCode,
+      observations: `${contractItem.productAdvertisingSpaceName} - ${contractItem.advertisingSpaceLocationTypeName}`,
+    }));
+
+    // Calcular el total de TODOS los items
+    const amount = newEntityItems.reduce(
+      (total, item) => total + item.total,
+      0
+    );
+
+    const totalTaxes = newEntityItems.reduce(
+      (totalTaxes, item) => totalTaxes + (item.totalTaxes || 0),
+      0
+    );
+
+    // Crear el item del carrito con TODO el contrato
+    const cartItem = {
+      id: contract.id,
+      type: "CONTRACT",
+      description: `Contrato #${contract.number || ""} - ${contract.name ||
+        ""}`,
+      number: contract.number || "",
+      name: contract.name || "",
+      amount,
+      amountTaxes: totalTaxes,
+      entityItems: newEntityItems,
+      currencyName: contract.currencyName || "$",
+      isAnticipated: true,
+      isCompleteContract: true,
+    };
+
+    dispatch(addToCart(cartItem));
   };
 
   const columns = [
     {
-      Header: "Nro",
+      Header: "Número",
       accessor: "number",
-      width: "15%",
+      width: "10%",
       headerStyle: getHeaderStyleTable(),
     },
     {
-      Header: "Nombre",
-      accessor: "name",
+      Header: "Cliente",
+      accessor: "clientBrandName",
       width: "20%",
       headerStyle: getHeaderStyleTable(),
     },
     {
-      Header: "Vendedor",
-      accessor: "sellerFullName",
-      width: "15%",
+      Header: "Contrato",
+      accessor: "name",
+      width: "25%",
       headerStyle: getHeaderStyleTable(),
     },
     {
@@ -199,20 +246,13 @@ const ContractsTable = () => {
       headerStyle: getHeaderStyleTable(),
     },
     {
-      id: "currency",
-      Header: "Moneda",
-      accessor: "currencyName",
-      width: "10%",
-      headerStyle: getHeaderStyleTable(),
-    },
-    {
       id: "balance",
       Header: "Saldo",
       accessor: d => {
         const saldos = d.balance.join(", ");
         return saldos;
       },
-      width: "15%",
+      width: "10%",
       headerStyle: getHeaderStyleTable(),
     },
     {
@@ -223,6 +263,12 @@ const ContractsTable = () => {
         return `${fechaEnd.getDate()}/${fechaEnd.getMonth() +
           1}/${fechaEnd.getFullYear()}`;
       },
+      width: "10%",
+      headerStyle: getHeaderStyleTable(),
+    },
+    {
+      Header: "Vendedor",
+      accessor: "sellerFullName",
       width: "15%",
       headerStyle: getHeaderStyleTable(),
     },
@@ -231,33 +277,19 @@ const ContractsTable = () => {
       width: "10%",
       Cell: ({ row }) => {
         const contract = row._original;
-        const cartStatus = getContractCartStatus(contract);
-
-        let buttonClass = "btn btn-sm ";
-        let disabled = loading;
-        let title = "";
-
-        switch (cartStatus.status) {
-          case "no-items":
-          case "fully-billed":
-            buttonClass += "btn-secondary";
-            disabled = true;
-            title = "Todos los ítems ya han sido facturados";
-            break;
-          case "available":
-            buttonClass += "btn-primary";
-            title = "Agregar ítems de este contrato al carrito";
-            break;
-        }
 
         return (
           <button
-            className={buttonClass}
-            onClick={() => handleAddToCart(contract)}
-            disabled={disabled}
-            title={title}
+            className="btn btn-sm btn-primary"
+            onClick={e => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleAddContractToCart(contract);
+            }}
+            disabled={loading}
+            title="Agregar"
           >
-            {cartStatus.text}
+            Agregar
           </button>
         );
       },
@@ -281,6 +313,7 @@ const ContractsTable = () => {
                 onChangeHandler={e =>
                   handleFilterChange("number", e.target.value)
                 }
+                placeholderText="Filtrar por número..."
               />
             </div>
             <div className="col-md-3">
@@ -291,6 +324,7 @@ const ContractsTable = () => {
                 onChangeHandler={e =>
                   handleFilterChange("name", e.target.value)
                 }
+                placeholderText="Filtrar por nombre..."
               />
             </div>
             <div className="col-md-3">
@@ -331,12 +365,22 @@ const ContractsTable = () => {
             </div>
           </div>
         </div>
-        <Table
-          data={visibleContracts}
-          columns={columns}
-          loading={loading}
-          showButton={false}
-        />
+
+        {visibleContracts.length === 0 ? (
+          <div className="alert alert-info">
+            {selectedCurrency
+              ? "No hay contratos disponibles con los filtros aplicados"
+              : "Selecciona una moneda para ver los contratos disponibles"}
+          </div>
+        ) : (
+          <Table
+            data={visibleContracts}
+            columns={columns}
+            loading={loading}
+            showPagination={true}
+            defaultPageSize={10}
+          />
+        )}
       </div>
     </div>
   );

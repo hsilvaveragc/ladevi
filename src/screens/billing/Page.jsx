@@ -1,102 +1,60 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { PageContainer } from "shared/utils";
+import { CONSTANTS } from "./constants";
 import { initialLoad } from "./actionCreators";
 import {
   getLoading,
-  getErrors,
   getSelectedClient,
   getEntityType,
-  getSelectedEdition, // NUEVO: Selector para edición seleccionada
+  getSelectedEdition,
 } from "./reducer";
+import FullWidthProgressBar from "shared/components/FullWidthProgressBar";
+import SelectorsContainer from "./components/SelectorsContainer";
 import ContractsTable from "./components/ContractsTable";
 import OrdersTable from "./components/OrdersTable";
-import CartContainer from "./components/CartContainer";
-import ContractDialog from "./components/ContractDialog";
-import OrderDialog from "./components/OrderDialog";
-import InvoiceDialog from "./components/InvoiceDialog";
-import SelectorsContainer from "./components/SelectorsContainer";
-
-// Componente para el progress bar que se renderiza fuera del PageContainer
-const FullWidthProgressBar = ({ show }) => {
-  if (!show) return null;
-
-  return (
-    <div
-      style={{
-        position: "fixed",
-        top: "50px", // Ajusta esto según la altura de tu header principal
-        left: 0,
-        right: 0,
-        zIndex: 1030,
-        height: "6px",
-        padding: 0,
-        margin: 0,
-      }}
-    >
-      <div
-        className="progress"
-        style={{
-          height: "100%",
-          borderRadius: 0,
-        }}
-      >
-        <div
-          className="progress-bar progress-bar-striped progress-bar-animated bg-primary"
-          role="progressbar"
-          style={{ width: "100%" }}
-          aria-valuenow="100"
-          aria-valuemin="0"
-          aria-valuemax="100"
-        />
-      </div>
-    </div>
-  );
-};
+import Cart from "./components/Cart";
+import InvoiceContractDialog from "./components/InvoiceContractDialog";
+import InvoiceOrderDialog from "./components/InvoiceOrderDialog";
 
 const BillingPage = () => {
   const dispatch = useDispatch();
 
-  // Usando useSelector con los selectores definidos en reducer.js
   const loading = useSelector(getLoading);
-  const errors = useSelector(getErrors);
-  const selectedClient = useSelector(getSelectedClient);
   const entityType = useSelector(getEntityType);
-  const selectedEdition = useSelector(getSelectedEdition); // NUEVO
+  const selectedClient = useSelector(getSelectedClient);
+  const selectedEdition = useSelector(getSelectedEdition);
 
   useEffect(() => {
-    // Cargar los datos iniciales cuando el componente se monta
     dispatch(initialLoad());
   }, [dispatch]);
 
   return (
     <>
-      {/* Progress bar a ancho completo de la página */}
       <FullWidthProgressBar show={loading} />
 
       <PageContainer>
-        {/* {errors.general && (
-          <div className="alert alert-danger">{errors.general}</div>
-        )} */}
-
         <div className="row" style={{ width: "100%" }}>
           <div className="col-md-8">
             <SelectorsContainer />
-            {/* CONDICIÓN PARA CONTRATOS: Cuando hay cliente seleccionado y tipo es CONTRACTS */}
-            {selectedClient && entityType === "CONTRACTS" && <ContractsTable />}
-
-            {/* CONDICIÓN CORREGIDA PARA EDICIONES: Cuando hay edición seleccionada y tipo es EDITIONS */}
-            {selectedEdition && entityType === "EDITIONS" && <OrdersTable />}
+            {selectedClient && entityType === CONSTANTS.CONTRACTS_CODE && (
+              <ContractsTable />
+            )}
+            {selectedEdition && entityType === CONSTANTS.ORDERS_CODE && (
+              <OrdersTable />
+            )}
           </div>
 
           <div className="col-md-4">
-            <CartContainer />
+            <Cart />
           </div>
         </div>
-
-        <ContractDialog />
-        <OrderDialog />
-        <InvoiceDialog />
+        {selectedClient && entityType === CONSTANTS.CONTRACTS_CODE && (
+          <InvoiceContractDialog />
+        )}
+        {selectedEdition && entityType === CONSTANTS.ORDERS_CODE && (
+          <InvoiceOrderDialog />
+        )}
       </PageContainer>
     </>
   );

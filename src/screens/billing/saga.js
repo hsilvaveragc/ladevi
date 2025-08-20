@@ -1,9 +1,8 @@
 import React from "react";
 import { put, all, takeLatest, call, select } from "redux-saga/effects";
 import { toast } from "react-toastify";
-
+import { CONSTANTS } from "./constants";
 import billingService from "./service";
-
 import {
   INITIAL_LOAD_INIT,
   INITIAL_LOAD_SUCCESS,
@@ -17,30 +16,19 @@ import {
   FETCH_ORDERS_INIT,
   FETCH_ORDERS_SUCCESS,
   FETCH_ORDERS_FAILURE,
-  FETCH_XUBIO_PRODUCTS_INIT,
-  FETCH_XUBIO_PRODUCTS_SUCCESS,
-  FETCH_XUBIO_PRODUCTS_FAILURE,
   SEND_TO_XUBIO_INIT,
   SEND_TO_XUBIO_SUCCESS,
   SEND_TO_XUBIO_FAILURE,
-  FILTER_CONTRACTS_INIT,
-  FILTER_CONTRACTS_SUCCESS,
-  FILTER_CONTRACTS_FAILURE,
-  // Nuevas acciones
   FETCH_PRODUCTS_INIT,
   FETCH_PRODUCTS_SUCCESS,
   FETCH_PRODUCTS_FAILURE,
   FETCH_EDITIONS_INIT,
   FETCH_EDITIONS_SUCCESS,
   FETCH_EDITIONS_FAILURE,
-  FETCH_VENDORS_INIT,
-  FETCH_VENDORS_SUCCESS,
-  FETCH_VENDORS_FAILURE,
   SEND_MULTIPLE_TO_XUBIO_INIT,
   SEND_MULTIPLE_TO_XUBIO_SUCCESS,
   SEND_MULTIPLE_TO_XUBIO_FAILURE,
 } from "./actionTypes";
-
 import {
   getSelectedClient,
   getEntityType,
@@ -49,9 +37,16 @@ import {
 
 export function* initialLoad() {
   try {
-    const [xubioProducts, xubioComturProducts] = yield all([
+    const [
+      xubioProducts,
+      xubioComturProducts,
+      xubioGenericProduct,
+      xubioComturGenericProduct,
+    ] = yield all([
       call(billingService.getXubioProducts),
       call(billingService.getXubioComturProducts),
+      call(billingService.getXubioGenericProduct),
+      call(billingService.getXubioComturGenericProduct),
     ]);
 
     yield put({
@@ -59,6 +54,8 @@ export function* initialLoad() {
       payload: {
         xubioProducts,
         xubioComturProducts,
+        xubioGenericProduct,
+        xubioComturGenericProduct,
       },
     });
   } catch (err) {
@@ -124,65 +121,6 @@ export function* fetchContracts({ payload }) {
   }
 }
 
-export function* fetchOrders({ payload }) {
-  try {
-    let orders;
-
-    // Verificar si es un payload con editionId (nuevo flujo) o clientId (flujo anterior)
-    if (typeof payload === "object" && payload.editionId) {
-      // Nuevo flujo: obtener órdenes por edición
-      console.log("Cargando órdenes por edición:", payload.editionId);
-
-      // Obtener el tipo de cliente del estado
-      const state = yield select();
-      const clientType = state.billing.clientType; // 'ARGENTINA' o 'COMTUR'
-      const isComturClient = clientType === "COMTUR";
-
-      console.log(
-        "Tipo de cliente:",
-        clientType,
-        "isComturClient:",
-        isComturClient
-      );
-
-      orders = yield call(
-        billingService.getOrdersByEdition,
-        payload.editionId,
-        isComturClient
-      );
-
-      console.log("Órdenes cargadas por edición:", orders);
-    } else {
-      // Flujo anterior: obtener órdenes por cliente
-      console.log("Cargando órdenes por cliente:", payload);
-      orders = yield call(billingService.getPublishingOrdersByClient, payload);
-      console.log("Órdenes cargadas por cliente:", orders);
-    }
-
-    yield put({
-      type: FETCH_ORDERS_SUCCESS,
-      payload: {
-        orders,
-      },
-    });
-  } catch (err) {
-    console.log("Error cargando órdenes:", err);
-    yield put({
-      type: FETCH_ORDERS_FAILURE,
-      errors: {
-        ...(err.response?.data?.errors || {
-          general: "Error al cargar órdenes",
-        }),
-      },
-    });
-    yield call(
-      toast.error,
-      "Hubo un error al cargar las órdenes de publicación"
-    );
-  }
-}
-
-// NUEVAS SAGAS PARA PRODUCTOS Y EDICIONES
 export function* fetchProducts({ payload }) {
   try {
     const products = yield call(billingService.getProductsForEditions);
@@ -229,76 +167,52 @@ export function* fetchEditions({ payload }) {
   }
 }
 
-export function* fetchVendors() {
+export function* fetchOrders({ payload }) {
   try {
-    const vendors = yield call(billingService.getVendors);
-    yield put({
-      type: FETCH_VENDORS_SUCCESS,
-      payload: {
-        vendors,
-      },
-    });
-  } catch (err) {
-    console.log(err);
-    yield put({
-      type: FETCH_VENDORS_FAILURE,
-      errors: {
-        ...(err.response?.data?.errors || {
-          general: "Error al cargar vendedores",
-        }),
-      },
-    });
-    yield call(toast.error, "Hubo un error al cargar los vendedores");
-  }
-}
-export function* filterContracts({ payload }) {
-  try {
-    const contracts = yield call(billingService.filterContracts, payload);
-    yield put({
-      type: FILTER_CONTRACTS_SUCCESS,
-      payload: {
-        contracts,
-      },
-    });
-  } catch (err) {
-    console.log(err);
-    yield put({
-      type: FILTER_CONTRACTS_FAILURE,
-      errors: {
-        ...(err.response?.data?.errors || {
-          general: "Error al filtrar contratos",
-        }),
-      },
-    });
-    yield call(toast.error, "Hubo un error al filtrar los contratos");
-  }
-}
+    let orders;
 
-export function* fetchXubioProducts() {
-  try {
-    const [xubioProducts, xubioComturProducts] = yield all([
-      call(billingService.getXubioProducts),
-      call(billingService.getXubioComturProducts),
-    ]);
+    console.log("Cargando órdenes por edición:", payload.editionId);
+
+    // Obtener el tipo de cliente del estado
+    const state = yield select();
+    const clientType = state.billing.clientType;
+    const isComturClient = clientType === CONSTANTS.COMTUR_CODE;
+
+    console.log(
+      "Tipo de cliente:",
+      clientType,
+      "isComturClient:",
+      isComturClient
+    );
+
+    orders = yield call(
+      billingService.getOrdersByEdition,
+      payload.editionId,
+      isComturClient
+    );
+
+    console.log("Órdenes cargadas por edición:", orders);
 
     yield put({
-      type: FETCH_XUBIO_PRODUCTS_SUCCESS,
+      type: FETCH_ORDERS_SUCCESS,
       payload: {
-        xubioProducts,
-        xubioComturProducts,
+        orders,
       },
     });
   } catch (err) {
-    console.log(err);
+    console.log("Error cargando órdenes:", err);
     yield put({
-      type: FETCH_XUBIO_PRODUCTS_FAILURE,
+      type: FETCH_ORDERS_FAILURE,
       errors: {
         ...(err.response?.data?.errors || {
-          general: "Error al cargar productos de Xubio",
+          general: "Error al cargar órdenes",
         }),
       },
     });
-    yield call(toast.error, "Hubo un error al cargar los productos de Xubio");
+    yield call(
+      toast.error,
+      "Hubo un error al cargar las órdenes de publicación"
+    );
   }
 }
 
@@ -348,13 +262,13 @@ export function* sendToXubio({ payload }) {
     });
 
     // Recargar los datos según el tipo de entidad
-    if (entityType === "CONTRACTS") {
+    if (entityType === CONSTANTS.CONTRACTS_CODE) {
       // Primero recargar todos los contratos para ese cliente
       yield put({
         type: FETCH_CONTRACTS_INIT,
         payload: selectedClient.id,
       });
-    } else if (entityType === "EDITIONS") {
+    } else if (entityType === CONSTANTS.ORDERS_CODE) {
       // Primero recargar todas las órdenes para ese cliente
       yield put({
         type: FETCH_ORDERS_INIT,
@@ -397,7 +311,6 @@ export function* sendToXubio({ payload }) {
   }
 }
 
-// NUEVA SAGA: Envío múltiple a Xubio
 export function* sendMultipleToXubio({ payload }) {
   // Mostrar toast de procesamiento
   const toastId = toast.info(
@@ -433,10 +346,17 @@ export function* sendMultipleToXubio({ payload }) {
     toast.dismiss(toastId);
 
     // Mostrar mensaje de éxito
-    const successCount = results.SuccessCount || 0;
-    const errorCount = results.ErrorCount || 0;
+    const successCount = results.successCount || 0;
+    const errorCount = results.errorCount || 0;
 
-    let successMessage = `Facturación completada: ${successCount} facturas generadas`;
+    let invoiceNumbers = "";
+    if (successCount > 0) {
+      invoiceNumbers = results.results
+        .map(item => `${item.numeroDocumento}`)
+        .join(", ");
+    }
+
+    let successMessage = `Facturación completada: ${successCount}, facturas generadas (${invoiceNumbers})`;
     if (errorCount > 0) {
       successMessage += `, ${errorCount} errores`;
     }
@@ -448,8 +368,8 @@ export function* sendMultipleToXubio({ payload }) {
     });
 
     // Mostrar errores individuales si los hay
-    if (results.Errors && results.Errors.length > 0) {
-      results.Errors.forEach(error => {
+    if (results.errors && results.errors.length > 0) {
+      results.errors.forEach(error => {
         toast.error(error, { position: "top-center", autoClose: 10000 });
       });
     }
@@ -490,13 +410,10 @@ export default function* rootBillingSaga() {
     takeLatest(INITIAL_LOAD_INIT, initialLoad),
     takeLatest(FETCH_CLIENTS_INIT, fetchClients),
     takeLatest(FETCH_CONTRACTS_INIT, fetchContracts),
+    takeLatest(FETCH_PRODUCTS_INIT, fetchProducts),
+    takeLatest(FETCH_EDITIONS_INIT, fetchEditions),
     takeLatest(FETCH_ORDERS_INIT, fetchOrders),
-    takeLatest(FETCH_PRODUCTS_INIT, fetchProducts), // NUEVO
-    takeLatest(FETCH_EDITIONS_INIT, fetchEditions), // NUEVO
-    takeLatest(FETCH_VENDORS_INIT, fetchVendors), // NUEVO
-    takeLatest(FETCH_XUBIO_PRODUCTS_INIT, fetchXubioProducts),
     takeLatest(SEND_TO_XUBIO_INIT, sendToXubio),
-    takeLatest(SEND_MULTIPLE_TO_XUBIO_INIT, sendMultipleToXubio), // NUEVO
-    takeLatest(FILTER_CONTRACTS_INIT, filterContracts),
+    takeLatest(SEND_MULTIPLE_TO_XUBIO_INIT, sendMultipleToXubio),
   ]);
 }

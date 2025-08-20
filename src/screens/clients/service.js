@@ -287,7 +287,8 @@ export default {
     axios
       .get(
         `Clients/OptionsFull?onlyArgentina=${payload?.onlyArgentina ??
-          false}&onlyComtur=${payload?.onlyComtur ?? false}`,
+          false}&onlyComtur=${payload?.onlyComtur ??
+          false}&onlyEnabled=${payload?.onlyEnabled ?? false}`,
         {
           headers: getHeaders(),
         }

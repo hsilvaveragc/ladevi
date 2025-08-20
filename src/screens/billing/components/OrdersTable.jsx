@@ -1,83 +1,68 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "shared/utils/extensionsMethods.js";
-import { showOrderDialog, addToCart } from "../actionCreators";
+import { getHeaderStyleTable, getAllItem } from "shared/utils/index";
+import { CONSTANTS } from "../constants";
+import { addToCart } from "../actionCreators";
 import {
   getOrders,
   getLoading,
   getCartItems,
   getSelectedCurrency,
-  getEntityType,
 } from "../reducer";
 import Table from "shared/components/Table";
-import { getHeaderStyleTable } from "shared/utils/index";
 import InputSelectFieldSimple from "shared/components/InputSelectFieldSimple";
 import { SaveButton } from "shared/components/Buttons";
 
 const OrdersTable = () => {
   const dispatch = useDispatch();
 
-  // Selectores
-  const orders = useSelector(getOrders);
   const loading = useSelector(getLoading);
+  const orders = useSelector(getOrders);
   const cartItems = useSelector(getCartItems);
   const selectedCurrency = useSelector(getSelectedCurrency);
-  const entityType = useSelector(getEntityType);
 
-  // SIMPLIFICADO: Solo filtros relevantes para facturación por ediciones
   const [filters, setFilters] = useState({
     sellerId: -1,
-    clientId: -1, // Solo para ediciones
+    clientId: -1,
   });
 
   // Estado para almacenar las órdenes filtradas localmente
   const [visibleOrders, setVisibleOrders] = useState([]);
 
-  // SIMPLIFICADO: Solo opciones necesarias
-  const [sellerOptions, setSellerOptions] = useState([
-    { id: -1, name: "Todos" },
-  ]);
+  const [sellerOptions, setSellerOptions] = useState([getAllItem()]);
+  const [clientOptions, setClientOptions] = useState([getAllItem()]);
 
-  const [clientOptions, setClientOptions] = useState([
-    { id: -1, name: "Todos" },
-  ]);
+  // Obtener IDs de ordenes que ya están en el carrito (memorizado para evitar loops)
+  const ordersInCart = React.useMemo(
+    () =>
+      cartItems
+        .filter(item => item.type === CONSTANTS.ORDER_CODE)
+        .map(item => item.id),
+    [cartItems]
+  );
 
-  // Obtener IDs de órdenes que ya están en el carrito
-  const ordersInCart = cartItems
-    .filter(item => item.type === "ORDER")
-    .map(item => item.id);
-
-  // Filtrar las órdenes por moneda (IGUAL QUE CONTRATOS) - Solo mostrar cuando hay moneda seleccionada
+  // Filtrar las órdenes por moneda  y EXCLUIR los que están en el carrito
   useEffect(() => {
-    console.log("OrdersTable useEffect - Órdenes totales:", orders);
-    console.log(
-      "OrdersTable useEffect - Moneda seleccionada:",
-      selectedCurrency
-    );
-
     if (Array.isArray(orders) && orders.length > 0) {
-      // IGUAL QUE CONTRATOS: Solo filtrar si hay moneda seleccionada
+      // Solo filtrar si hay moneda seleccionada
       let ordersFilteredByCurrency = orders;
       if (selectedCurrency) {
         ordersFilteredByCurrency = orders.filter(
           order => order.currencyName === selectedCurrency
         );
       } else {
-        // Si no hay moneda seleccionada, no mostrar órdenes (igual que contratos)
         setVisibleOrders([]);
-        setSellerOptions([{ id: -1, name: "Todos" }]);
-        setClientOptions([{ id: -1, name: "Todos" }]);
+        setSellerOptions([getAllItem()]);
+        setClientOptions([getAllItem()]);
         return;
       }
 
-      console.log(
-        "OrdersTable useEffect - Órdenes filtradas por moneda:",
-        ordersFilteredByCurrency
-      );
-
-      // SIMPLIFICADO: Solo extraer vendedores y clientes (no producto/edición que ya están seleccionados)
+      // Extraer vendedores y clientes únicos
       const uniqueSellers = new Set();
-      const sellerOpts = [{ id: -1, name: "Todos" }];
+      const sellerOpts = [getAllItem()];
+      const uniqueClients = new Set();
+      const clientOpts = [getAllItem()];
 
       ordersFilteredByCurrency.forEach(order => {
         if (order.sellerId && !uniqueSellers.has(order.sellerId)) {
@@ -87,13 +72,6 @@ const OrdersTable = () => {
             name: order.sellerFullName || `Vendedor ${order.sellerId}`,
           });
         }
-      });
-
-      // Extraer clientes únicos (para facturación por ediciones)
-      const uniqueClients = new Set();
-      const clientOpts = [{ id: -1, name: "Todos" }];
-
-      ordersFilteredByCurrency.forEach(order => {
         if (order.clientId && !uniqueClients.has(order.clientId)) {
           uniqueClients.add(order.clientId);
           clientOpts.push({
@@ -110,16 +88,12 @@ const OrdersTable = () => {
       const availableOrders = ordersFilteredByCurrency.filter(
         order => !ordersInCart.includes(order.id)
       );
-      console.log(
-        "OrdersTable useEffect - Órdenes disponibles final:",
-        availableOrders
-      );
       setVisibleOrders(availableOrders);
     } else {
       // Si no hay órdenes, resetear la vista
       setVisibleOrders([]);
-      setSellerOptions([{ id: -1, name: "Todos" }]);
-      setClientOptions([{ id: -1, name: "Todos" }]);
+      setSellerOptions([getAllItem()]);
+      setClientOptions([getAllItem()]);
     }
   }, [orders, cartItems, selectedCurrency]);
 
@@ -130,7 +104,7 @@ const OrdersTable = () => {
     });
   };
 
-  // SIMPLIFICADO: Filtros solo en memoria (igual que ContractsTable)
+  // Filtros solo en memoria
   const handleApplyFilters = () => {
     // Filtrar primero por moneda seleccionada
     let ordersToFilter = orders;
@@ -140,7 +114,7 @@ const OrdersTable = () => {
       );
     }
 
-    // Luego aplicar los filtros adicionales EN MEMORIA
+    // Luego aplicar los filtros adicionales
     const filtered = ordersToFilter.filter(order => {
       // Excluir órdenes que ya están en el carrito
       if (ordersInCart.includes(order.id)) {
@@ -163,11 +137,35 @@ const OrdersTable = () => {
     setVisibleOrders(filtered);
   };
 
-  const handleAddToCart = order => {
-    dispatch(showOrderDialog(order));
+  const handleAddOrderToCart = order => {
+    if (loading) {
+      return;
+    }
+
+    // Crear el item del carrito con TODA la orden
+    const cartItem = {
+      id: order.id,
+      type: CONSTANTS.ORDER_CODE,
+      clientId: order.clientId,
+      clientName: order.clientBrandName,
+      contractId: order.contractId,
+      contractNumber: order.contractNumber,
+      productName: order.productName,
+      productEditionName: order.productEditionName,
+      productAdvertisingSpaceName: order.productAdvertisingSpaceName,
+      advertisingSpaceLocationTypeName: order.advertisingSpaceLocationTypeName,
+      quantity: order.quantity,
+      amount: order.total,
+      totalTaxes: order.totalTaxes || 0,
+      currencyName: order.currencyName,
+      xubioProductCode: order.xubioProductCode,
+      description: `${order.productAdvertisingSpaceName} - ${order.advertisingSpaceLocationTypeName}`,
+    };
+
+    dispatch(addToCart(cartItem));
   };
 
-  // NUEVA FUNCIÓN: Agregar todas las órdenes visibles al carrito
+  // Agregar todas las órdenes visibles al carrito
   const handleAddAllToCart = () => {
     if (visibleOrders.length === 0) {
       return;
@@ -175,28 +173,7 @@ const OrdersTable = () => {
 
     // Agregar cada orden visible al carrito
     visibleOrders.forEach(order => {
-      const cartItem = {
-        id: order.id,
-        type: "ORDER",
-        clientId: order.clientId,
-        clientName: order.clientBrandName,
-        contractId: order.contractId,
-        contractNumber: order.contractNumber,
-        productName: order.productName,
-        productEditionName: order.productEditionName,
-        productAdvertisingSpaceName: order.productAdvertisingSpaceName,
-        advertisingSpaceLocationTypeName:
-          order.advertisingSpaceLocationTypeName,
-        quantity: order.quantity,
-        amount: order.total,
-        totalTaxes: order.totalTaxes || 0,
-        currencyName: order.currencyName,
-        xubioProductCode: order.xubioProductCode,
-        description: `${order.productAdvertisingSpaceName} - ${order.advertisingSpaceLocationTypeName}`,
-        observations: `Contrato: ${order.contractNumber} - ${order.contractName}\nProducto: ${order.productName}\nEdición: ${order.productEditionName}\nEspacio: ${order.productAdvertisingSpaceName}\nUbicación: ${order.advertisingSpaceLocationTypeName}`,
-      };
-
-      dispatch(addToCart(cartItem));
+      handleAddOrderToCart(order);
     });
   };
 
@@ -256,15 +233,23 @@ const OrdersTable = () => {
     {
       Header: "Acciones",
       width: "10%",
-      Cell: ({ row }) => (
-        <button
-          className="btn btn-sm btn-primary"
-          onClick={() => handleAddToCart(row._original)}
-          disabled={loading}
-        >
-          Agregar
-        </button>
-      ),
+      Cell: ({ row }) => {
+        const order = row._original;
+        return (
+          <button
+            className="btn btn-sm btn-primary"
+            onClick={e => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleAddOrderToCart(order);
+            }}
+            disabled={loading}
+            title="Agregar"
+          >
+            Agregar
+          </button>
+        );
+      },
       headerStyle: getHeaderStyleTable(),
     },
   ];
@@ -315,7 +300,7 @@ const OrdersTable = () => {
                   Buscar
                 </SaveButton>
 
-                {entityType === "EDITIONS" && visibleOrders.length > 0 && (
+                {visibleOrders.length > 0 && (
                   <button
                     className="btn btn-primary btn-sm ml-3"
                     onClick={handleAddAllToCart}
@@ -330,21 +315,27 @@ const OrdersTable = () => {
           </div>
         </div>
 
-        <Table
-          data={visibleOrders}
-          columns={columns}
-          loading={loading}
-          showButton={false}
-        />
+        {visibleOrders.length === 0 ? (
+          <div className="alert alert-info">
+            {selectedCurrency
+              ? "No hay ordenes de publiación disponibles con los filtros aplicados"
+              : "Selecciona una moneda para ver las ordenes de publiación disponibles"}
+          </div>
+        ) : (
+          <Table
+            data={visibleOrders}
+            columns={columns}
+            loading={loading}
+            showButton={false}
+          />
+        )}
 
         {/* NUEVO: Mostrar información de resumen */}
         {visibleOrders.length > 0 && (
           <div className="mt-3">
             <small className="text-muted">
               Mostrando {visibleOrders.length} órdenes
-              {entityType === "EDITIONS" && selectedCurrency && (
-                <span> • Moneda: {selectedCurrency}</span>
-              )}
+              {selectedCurrency && <span> • Moneda: {selectedCurrency}</span>}
             </small>
           </div>
         )}

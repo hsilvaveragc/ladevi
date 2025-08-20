@@ -1,8 +1,6 @@
 import { createSelector } from "reselect";
+import { CONSTANTS } from "./constants";
 import {
-  FETCH_INVOICES_INIT,
-  FETCH_INVOICES_SUCCESS,
-  FETCH_INVOICES_FAILURE,
   INITIAL_LOAD_INIT,
   INITIAL_LOAD_SUCCESS,
   INITIAL_LOAD_FAILURE,
@@ -19,27 +17,14 @@ import {
   FETCH_ORDERS_INIT,
   FETCH_ORDERS_SUCCESS,
   FETCH_ORDERS_FAILURE,
-  FETCH_XUBIO_PRODUCTS_INIT,
-  FETCH_XUBIO_PRODUCTS_SUCCESS,
-  FETCH_XUBIO_PRODUCTS_FAILURE,
   ADD_TO_CART,
   REMOVE_FROM_CART,
   CLEAR_CART,
-  SHOW_CONTRACT_DIALOG,
-  HIDE_CONTRACT_DIALOG,
-  SHOW_ORDER_DIALOG,
-  HIDE_ORDER_DIALOG,
   SHOW_INVOICE_DIALOG,
   HIDE_INVOICE_DIALOG,
   SEND_TO_XUBIO_INIT,
   SEND_TO_XUBIO_SUCCESS,
   SEND_TO_XUBIO_FAILURE,
-  FILTER_CONTRACTS_INIT,
-  FILTER_CONTRACTS_SUCCESS,
-  FILTER_CONTRACTS_FAILURE,
-  UPDATE_CART_ITEM,
-  SHOW_CONTRACT_DIALOG_FOR_EDIT,
-  // Nuevos tipos de acciones para ediciones
   FETCH_PRODUCTS_INIT,
   FETCH_PRODUCTS_SUCCESS,
   FETCH_PRODUCTS_FAILURE,
@@ -48,9 +33,6 @@ import {
   FETCH_EDITIONS_FAILURE,
   SET_SELECTED_PRODUCT,
   SET_SELECTED_EDITION,
-  FETCH_VENDORS_INIT,
-  FETCH_VENDORS_SUCCESS,
-  FETCH_VENDORS_FAILURE,
   SEND_MULTIPLE_TO_XUBIO_INIT,
   SEND_MULTIPLE_TO_XUBIO_SUCCESS,
   SEND_MULTIPLE_TO_XUBIO_FAILURE,
@@ -61,38 +43,36 @@ const initialState = {
   loading: false,
   errors: {},
 
-  // Datos cargados
+  // Datos cargados al inicio
   xubioProducts: [],
   xubioComturProducts: [],
+  xubioGenericProduct: null,
+  xubioComturGenericProduct: null,
+  clientType: null,
+  entityType: null,
+
+  // Filtros compartidos
+  selectedCurrency: "",
+
+  // Filtros de contrato
   clients: [],
-  contracts: [],
-  orders: [],
-
-  // NUEVOS: Datos para ediciones
-  products: [],
-  editions: [],
-  vendors: [],
-  availableClientsForEdition: [],
-
-  // Datos de selección
-  clientType: null, // 'ARGENTINA' o 'COMTUR'
   selectedClient: null,
-  entityType: null, // 'CONTRACTS' o 'EDITIONS' (cambio de 'ORDERS')
-  selectedCurrency: "", // Filtro de moneda
+  contracts: [],
+  selectedContract: null,
 
-  // NUEVOS: Selección para ediciones
+  //Filtros de ordenes
+  products: [],
   selectedProduct: null,
+  editions: [],
   selectedEdition: null,
+  availableClientsForEdition: [],
+  orders: [],
+  selectedOrder: null,
 
   // Estado del carrito
   cartItems: [],
 
   // Estado de modales
-  showContractDialog: false,
-  selectedContract: null,
-  contractDialogEditMode: false,
-  showOrderDialog: false,
-  selectedOrder: null,
   showInvoiceDialog: false,
 
   // Resultado de facturación
@@ -104,16 +84,12 @@ export default function(state = initialState, action) {
   switch (action.type) {
     // Loading states
     case INITIAL_LOAD_INIT:
-    case FETCH_INVOICES_INIT:
     case FETCH_CLIENTS_INIT:
     case FETCH_CONTRACTS_INIT:
-    case FETCH_ORDERS_INIT:
-    case FETCH_XUBIO_PRODUCTS_INIT:
-    case SEND_TO_XUBIO_INIT:
-    case FILTER_CONTRACTS_INIT:
     case FETCH_PRODUCTS_INIT:
     case FETCH_EDITIONS_INIT:
-    case FETCH_VENDORS_INIT:
+    case FETCH_ORDERS_INIT:
+    case SEND_TO_XUBIO_INIT:
     case SEND_MULTIPLE_TO_XUBIO_INIT:
       return {
         ...state,
@@ -121,128 +97,70 @@ export default function(state = initialState, action) {
         errors: {},
       };
 
-    // Success states
     case INITIAL_LOAD_SUCCESS:
       return {
         ...state,
         loading: false,
         xubioProducts: action.payload.xubioProducts || [],
         xubioComturProducts: action.payload.xubioComturProducts || [],
+        xubioGenericProduct: action.payload.xubioGenericProduct || null,
+        xubioComturGenericProduct:
+          action.payload.xubioComturGenericProduct || null,
       };
 
-    case FETCH_CLIENTS_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        clients: action.payload.clients,
-      };
-
-    case FETCH_CONTRACTS_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        contracts: action.payload.contracts,
-      };
-
-    case FILTER_CONTRACTS_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        contracts: action.payload.contracts,
-      };
-
-    case FETCH_ORDERS_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        orders: action.payload.orders,
-      };
-
-    // NUEVOS: Success states para ediciones
-    case FETCH_PRODUCTS_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        products: action.payload.products,
-      };
-
-    case FETCH_EDITIONS_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        editions: action.payload.editions,
-      };
-
-    case FETCH_VENDORS_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        vendors: action.payload.vendors,
-      };
-
-    case FETCH_XUBIO_PRODUCTS_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        xubioProducts: action.payload.xubioProducts || [],
-        xubioComturProducts: action.payload.xubioComturProducts || [],
-      };
-
-    case SEND_TO_XUBIO_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        invoiceResult: action.payload.result,
-        cartItems: [], // Limpiamos el carrito después de facturar
-      };
-
-    // NUEVO: Success para facturación múltiple
-    case SEND_MULTIPLE_TO_XUBIO_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        multipleInvoiceResults: action.payload.results,
-        cartItems: [], // Limpiamos el carrito después de facturar
-      };
-
-    // Error states
-    case INITIAL_LOAD_FAILURE:
-    case FETCH_INVOICES_FAILURE:
-    case FETCH_CLIENTS_FAILURE:
-    case FETCH_CONTRACTS_FAILURE:
-    case FETCH_ORDERS_FAILURE:
-    case FETCH_XUBIO_PRODUCTS_FAILURE:
-    case SEND_TO_XUBIO_FAILURE:
-    case FILTER_CONTRACTS_FAILURE:
-
-    case FETCH_PRODUCTS_FAILURE:
-    case FETCH_EDITIONS_FAILURE:
-    case FETCH_VENDORS_FAILURE:
-    case SEND_MULTIPLE_TO_XUBIO_FAILURE:
-      return {
-        ...state,
-        loading: false,
-        errors: { ...action.errors },
-      };
-
-    // Selección de tipo de cliente, cliente y tipo de entidad
     case SET_CLIENT_TYPE:
       return {
         ...state,
         clientType: action.payload,
         // Reset completo de todas las selecciones
-        selectedClient: null,
         entityType: null,
-        selectedCurrency: "",
+        selectedClient: null,
         selectedProduct: null,
         selectedEdition: null,
+        selectedCurrency: "",
         // Reset de datos cargados
         clients: [],
         contracts: [],
-        orders: [],
         products: [],
         editions: [],
+        orders: [],
         cartItems: [],
+      };
+
+    case SET_ENTITY_TYPE:
+      return {
+        ...state,
+        entityType: action.payload,
+        // Reset datos que dependan del tipo de entidad
+        contracts:
+          action.payload === CONSTANTS.CONTRACTS_CODE ? state.contracts : [],
+        orders: action.payload === CONSTANTS.ORDERS_CODE ? state.orders : [],
+        cartItems: [],
+        selectedCurrency: "",
+        // Reset específico para cada tipo
+        ...(action.payload === CONSTANTS.CONTRACTS_CODE
+          ? {
+              // Si cambia a contratos, limpio datos de ediciones
+              products: [],
+              editions: [],
+              selectedProduct: null,
+              selectedEdition: null,
+            }
+          : action.payload === CONSTANTS.ORDERS_CODE
+          ? {
+              // Si cambia a ediciones, limpio datos de contratos
+              selectedClient: null,
+              contracts: [],
+            }
+          : {}),
+      };
+
+    // Flujo de Contratos
+    case FETCH_CLIENTS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        clients: action.payload.clients,
       };
 
     case SELECT_CLIENT:
@@ -255,34 +173,21 @@ export default function(state = initialState, action) {
         selectedCurrency: "",
       };
 
-    case SET_ENTITY_TYPE:
+    case FETCH_CONTRACTS_SUCCESS:
       return {
         ...state,
-        entityType: action.payload,
-        // Reset datos que dependan del tipo de entidad
-        contracts: action.payload === "CONTRACTS" ? state.contracts : [],
-        orders: action.payload === "EDITIONS" ? state.orders : [],
-        cartItems: [],
-        selectedCurrency: "",
-        // Reset específico para cada tipo
-        ...(action.payload === "CONTRACTS"
-          ? {
-              // Si cambia a contratos, limpio datos de ediciones
-              products: [],
-              editions: [],
-              selectedProduct: null,
-              selectedEdition: null,
-            }
-          : action.payload === "EDITIONS"
-          ? {
-              // Si cambia a ediciones, limpio datos de contratos
-              selectedClient: null,
-              contracts: [],
-            }
-          : {}),
+        loading: false,
+        contracts: action.payload.contracts,
       };
 
-    // NUEVOS: Selección de producto y edición
+    // Flujo de Órdenes
+    case FETCH_PRODUCTS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        products: action.payload.products,
+      };
+
     case SET_SELECTED_PRODUCT:
       return {
         ...state,
@@ -295,6 +200,13 @@ export default function(state = initialState, action) {
         selectedCurrency: "",
       };
 
+    case FETCH_EDITIONS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        editions: action.payload.editions,
+      };
+
     case SET_SELECTED_EDITION:
       return {
         ...state,
@@ -305,11 +217,36 @@ export default function(state = initialState, action) {
         selectedCurrency: "",
       };
 
+    case FETCH_ORDERS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        orders: action.payload.orders,
+      };
+
+    // Filtro compartido entre contratos y órdenes
     case SET_SELECTED_CURRENCY:
       return {
         ...state,
         selectedCurrency: action.payload,
         cartItems: [], // Limpiamos el carrito cuando cambia la moneda
+      };
+
+    // Envío a Xubio
+    case SEND_TO_XUBIO_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        invoiceResult: action.payload.result,
+        cartItems: [], // Limpiamos el carrito después de facturar
+      };
+
+    case SEND_MULTIPLE_TO_XUBIO_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        multipleInvoiceResults: action.payload.results,
+        cartItems: [], // Limpiamos el carrito después de facturar
       };
 
     // Manejo del carrito
@@ -331,46 +268,7 @@ export default function(state = initialState, action) {
         cartItems: [],
       };
 
-    case UPDATE_CART_ITEM:
-      return {
-        ...state,
-        cartItems: state.cartItems.map(item =>
-          item.id === action.payload.itemId
-            ? { ...item, ...action.payload.updatedItem }
-            : item
-        ),
-      };
-
     // Manejo de modales
-    case SHOW_CONTRACT_DIALOG:
-      return {
-        ...state,
-        showContractDialog: true,
-        selectedContract: action.payload,
-      };
-
-    case HIDE_CONTRACT_DIALOG:
-      return {
-        ...state,
-        showContractDialog: false,
-        selectedContract: null,
-        contractDialogEditMode: false,
-      };
-
-    case SHOW_ORDER_DIALOG:
-      return {
-        ...state,
-        showOrderDialog: true,
-        selectedOrder: action.payload,
-      };
-
-    case HIDE_ORDER_DIALOG:
-      return {
-        ...state,
-        showOrderDialog: false,
-        selectedOrder: null,
-      };
-
     case SHOW_INVOICE_DIALOG:
       return {
         ...state,
@@ -383,12 +281,19 @@ export default function(state = initialState, action) {
         showInvoiceDialog: false,
       };
 
-    case SHOW_CONTRACT_DIALOG_FOR_EDIT:
+    // Error states
+    case INITIAL_LOAD_FAILURE:
+    case FETCH_CLIENTS_FAILURE:
+    case FETCH_CONTRACTS_FAILURE:
+    case FETCH_PRODUCTS_FAILURE:
+    case FETCH_EDITIONS_FAILURE:
+    case FETCH_ORDERS_FAILURE:
+    case SEND_TO_XUBIO_FAILURE:
+    case SEND_MULTIPLE_TO_XUBIO_FAILURE:
       return {
         ...state,
-        showContractDialog: true,
-        selectedContract: action.payload.contract,
-        contractDialogEditMode: action.payload.editMode,
+        loading: false,
+        errors: { ...action.errors },
       };
 
     default:
@@ -396,7 +301,7 @@ export default function(state = initialState, action) {
   }
 }
 
-// Selectores - ESTRUCTURA ORIGINAL CON AGREGADOS MÍNIMOS
+// Selectores
 const getBillingReducer = state => state.billing;
 
 // Selectores básicos
@@ -416,22 +321,16 @@ export const getClientType = createSelector(
   billingReducer => billingReducer.clientType
 );
 
-export const getSelectedClient = createSelector(
-  getBillingReducer,
-  billingReducer => billingReducer.selectedClient
-);
-
 export const getEntityType = createSelector(
   getBillingReducer,
   billingReducer => billingReducer.entityType
 );
 
-export const getSelectedCurrency = createSelector(
+export const getSelectedClient = createSelector(
   getBillingReducer,
-  billingReducer => billingReducer.selectedCurrency
+  billingReducer => billingReducer.selectedClient
 );
 
-// NUEVOS: Selectores para ediciones
 export const getSelectedProduct = createSelector(
   getBillingReducer,
   billingReducer => billingReducer.selectedProduct
@@ -440,6 +339,21 @@ export const getSelectedProduct = createSelector(
 export const getSelectedEdition = createSelector(
   getBillingReducer,
   billingReducer => billingReducer.selectedEdition
+);
+
+export const getSelectedCurrency = createSelector(
+  getBillingReducer,
+  billingReducer => billingReducer.selectedCurrency
+);
+
+export const getSelectedContract = createSelector(
+  getBillingReducer,
+  billingReducer => billingReducer.selectedContract
+);
+
+export const getSelectedOrder = createSelector(
+  getBillingReducer,
+  billingReducer => billingReducer.selectedOrder
 );
 
 // Selectores de datos
@@ -453,12 +367,6 @@ export const getContracts = createSelector(
   billingReducer => billingReducer.contracts
 );
 
-export const getOrders = createSelector(
-  getBillingReducer,
-  billingReducer => billingReducer.orders
-);
-
-// NUEVOS: Selectores de datos para ediciones
 export const getProducts = createSelector(
   getBillingReducer,
   billingReducer => billingReducer.products
@@ -469,41 +377,9 @@ export const getEditions = createSelector(
   billingReducer => billingReducer.editions
 );
 
-export const getVendors = createSelector(
+export const getOrders = createSelector(
   getBillingReducer,
-  billingReducer => billingReducer.vendors
-);
-
-export const getAvailableClientsForEdition = createSelector(
-  getBillingReducer,
-  billingReducer => billingReducer.availableClientsForEdition
-);
-
-// Selector para obtener los contratos filtrados por moneda
-export const getContractsFilteredByCurrency = createSelector(
-  [getContracts, getSelectedCurrency],
-  (contracts, selectedCurrency) => {
-    if (!Array.isArray(contracts) || contracts.length === 0) {
-      return [];
-    }
-
-    if (!selectedCurrency) {
-      return contracts; // Podríamos mostrar todos los contratos si no hay moneda seleccionada
-    }
-
-    return contracts.filter(
-      contract => contract.currencyName === selectedCurrency
-    );
-  }
-);
-
-// Selector para obtener las órdenes filtradas por moneda
-export const getOrdersFilteredByCurrency = createSelector(
-  [getOrders, getSelectedCurrency],
-  (orders, selectedCurrency) => {
-    if (!selectedCurrency) return []; // Si no hay moneda seleccionada, no mostrar órdenes
-    return orders.filter(order => order.currencyName === selectedCurrency);
-  }
+  billingReducer => billingReducer.orders
 );
 
 // Selectores de productos Xubio
@@ -521,10 +397,32 @@ export const getXubioComturProducts = createSelector(
 export const getCurrentXubioProducts = createSelector(
   [getXubioProducts, getXubioComturProducts, getClientType],
   (argentinaProducts, comturProducts, clientType) => {
-    if (clientType === "COMTUR") {
+    if (clientType === CONSTANTS.COMTUR_CODE) {
       return comturProducts;
     }
     return argentinaProducts;
+  }
+);
+
+// Selectores del producto xubio generico
+export const getGenericXubioProduct = createSelector(
+  getBillingReducer,
+  billingReducer => billingReducer.xubioGenericProduct
+);
+
+export const getXubioComturGenericProduct = createSelector(
+  getBillingReducer,
+  billingReducer => billingReducer.xubioComturGenericProduct
+);
+
+// Selector para obtener el producto xubio generico según el tipo de cliente
+export const getCurrentXubioGenericProduct = createSelector(
+  [getGenericXubioProduct, getXubioComturGenericProduct, getClientType],
+  (argentinaGenericProduct, comturGenericProduct, clientType) => {
+    if (clientType === CONSTANTS.COMTUR_CODE) {
+      return comturGenericProduct;
+    }
+    return argentinaGenericProduct;
   }
 );
 
@@ -540,67 +438,43 @@ export const getCartTotal = createSelector(
 );
 
 // Selectores de modales
-export const getShowContractDialog = createSelector(
-  getBillingReducer,
-  billingReducer => billingReducer.showContractDialog
-);
-
-export const getSelectedContract = createSelector(
-  getBillingReducer,
-  billingReducer => billingReducer.selectedContract
-);
-
-export const getShowOrderDialog = createSelector(
-  getBillingReducer,
-  billingReducer => billingReducer.showOrderDialog
-);
-
-export const getSelectedOrder = createSelector(
-  getBillingReducer,
-  billingReducer => billingReducer.selectedOrder
-);
-
 export const getShowInvoiceDialog = createSelector(
   getBillingReducer,
   billingReducer => billingReducer.showInvoiceDialog
 );
 
-// Selector de resultado
-export const getInvoiceResult = createSelector(
-  getBillingReducer,
-  billingReducer => billingReducer.invoiceResult
-);
+// // Selector de resultado
+// export const getInvoiceResult = createSelector(
+//   getBillingReducer,
+//   billingReducer => billingReducer.invoiceResult
+// );
 
-// NUEVO: Selector de resultado múltiple
-export const getMultipleInvoiceResults = createSelector(
-  getBillingReducer,
-  billingReducer => billingReducer.multipleInvoiceResults
-);
+// // Selector de resultado múltiple
+// export const getMultipleInvoiceResults = createSelector(
+//   getBillingReducer,
+//   billingReducer => billingReducer.multipleInvoiceResults
+// );
 
-// Selector para obtener el ítem del carrito correspondiente a un contrato específico
-export const getCartItemByContractId = createSelector(
-  [getCartItems, (state, contractId) => contractId],
-  (cartItems, contractId) => {
-    return cartItems.find(
-      item => item.type === "CONTRACT" && item.contractId === contractId
-    );
-  }
-);
+// // Selector para obtener el ítem del carrito correspondiente a un contrato específico
+// export const getCartItemByContractId = createSelector(
+//   [getCartItems, (state, contractId) => contractId],
+//   (cartItems, contractId) => {
+//     return cartItems.find(
+//       item =>
+//         item.type === CONSTANTS.CONTRACTS_CODE && item.contractId === contractId
+//     );
+//   }
+// );
 
-// Selector para verificar si un ítem específico está en el carrito
-export const isItemInCart = createSelector(
-  [getCartItems, (state, itemId, contractId) => ({ itemId, contractId })],
-  (cartItems, { itemId, contractId }) => {
-    return cartItems.some(
-      item =>
-        item.type === "CONTRACT" &&
-        item.contractId === contractId &&
-        item.items.some(subItem => subItem.id === itemId)
-    );
-  }
-);
-
-export const getContractDialogEditMode = createSelector(
-  getBillingReducer,
-  billingReducer => billingReducer.contractDialogEditMode
-);
+// // Selector para verificar si un ítem específico está en el carrito
+// export const isItemInCart = createSelector(
+//   [getCartItems, (state, itemId, contractId) => ({ itemId, contractId })],
+//   (cartItems, { itemId, contractId }) => {
+//     return cartItems.some(
+//       item =>
+//         item.type === CONSTANTS.CONTRACTS_CODE &&
+//         item.contractId === contractId &&
+//         item.items.some(subItem => subItem.id === itemId)
+//     );
+//   }
+// );

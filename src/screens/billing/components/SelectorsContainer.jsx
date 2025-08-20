@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { CONSTANTS } from "../constants";
 import {
   setClientType,
   fetchClientsInit,
@@ -8,7 +9,6 @@ import {
   fetchContractsInit,
   fetchOrdersInit,
   setSelectedCurrency,
-  // Nuevas acciones para productos y ediciones
   fetchProductsInit,
   fetchEditionsInit,
   setSelectedProduct,
@@ -23,7 +23,6 @@ import {
   getContracts,
   getOrders,
   getSelectedCurrency,
-  // Nuevos selectores
   getProducts,
   getEditions,
   getSelectedProduct,
@@ -34,93 +33,100 @@ import InputSelectFieldSimple from "shared/components/InputSelectFieldSimple";
 const SelectorsContainer = () => {
   const dispatch = useDispatch();
 
-  // Selectores existentes
+  /* Estados globales */
+  const loading = useSelector(getLoading);
   const clientType = useSelector(getClientType);
+  const entityType = useSelector(getEntityType);
+  const selectedCurrency = useSelector(getSelectedCurrency);
+
+  /* Estados para  el manejo de contratos */
   const clients = useSelector(getClients);
   const selectedClient = useSelector(getSelectedClient);
-  const entityType = useSelector(getEntityType);
-  const loading = useSelector(getLoading);
   const contracts = useSelector(getContracts);
-  const orders = useSelector(getOrders);
-  const selectedCurrency = useSelector(getSelectedCurrency);
+
+  /* Estados para el manejo de ordenes*/
   const products = useSelector(getProducts);
   const editions = useSelector(getEditions);
   const selectedProduct = useSelector(getSelectedProduct);
   const selectedEdition = useSelector(getSelectedEdition);
+  const orders = useSelector(getOrders);
 
   // Estado local para las opciones de moneda
   const [currencyOptions, setCurrencyOptions] = useState([]);
 
-  // Cargar clientes cuando cambia el tipo de cliente
+  // Cargar clientes cuando cambia el tipo de entidad
   useEffect(() => {
-    if (clientType) {
+    if (entityType && entityType === CONSTANTS.CONTRACTS_CODE) {
       dispatch(fetchClientsInit(clientType));
     }
-  }, [dispatch, clientType]);
+  }, [dispatch, entityType]);
 
+  // Cargar contratos inmediatamente al seleccionar cliente
   useEffect(() => {
-    if (selectedClient && entityType === "CONTRACTS") {
-      dispatch(fetchContractsInit(selectedClient.id)); // ← ESTO faltaba
+    if (selectedClient && entityType === CONSTANTS.CONTRACTS_CODE) {
+      dispatch(fetchContractsInit(selectedClient.id));
     }
   }, [dispatch, selectedClient, entityType]);
 
   // Cargar productos cuando se selecciona tipo ediciones
   useEffect(() => {
-    if (entityType === "EDITIONS" && clientType) {
+    if (entityType === CONSTANTS.ORDERS_CODE && clientType) {
       dispatch(fetchProductsInit(clientType));
     }
   }, [dispatch, entityType, clientType]);
 
   // Cargar ediciones cuando se selecciona un producto
   useEffect(() => {
-    if (selectedProduct && entityType === "EDITIONS") {
-      dispatch(fetchEditionsInit(selectedProduct, clientType !== "ARGENTINA"));
+    if (selectedProduct && entityType === CONSTANTS.ORDERS_CODE) {
+      dispatch(
+        fetchEditionsInit(
+          selectedProduct,
+          clientType !== CONSTANTS.ARGENTINA_CODE
+        )
+      );
     }
   }, [dispatch, selectedProduct, entityType, clientType]);
 
   // Cargar órdenes inmediatamente al seleccionar edición
   useEffect(() => {
-    if (selectedEdition && entityType === "EDITIONS") {
+    if (selectedEdition && entityType === CONSTANTS.ORDERS_CODE) {
       console.log("Cargando órdenes para edición:", selectedEdition);
-      dispatch(fetchOrdersInit({ editionId: selectedEdition }));
+      dispatch(
+        fetchOrdersInit({
+          editionId: selectedEdition,
+        })
+      );
     }
   }, [dispatch, selectedEdition, entityType]);
 
   // Extraer opciones de moneda únicas cuando se cargan contratos u órdenes
   useEffect(() => {
-    if (entityType === "CONTRACTS" && contracts && contracts.length > 0) {
-      // Extraer monedas únicas de los contratos
-      const uniqueCurrencies = new Set();
-      contracts.forEach(contract => {
-        if (contract.currencyName) {
-          uniqueCurrencies.add(contract.currencyName);
-        }
-      });
+    var entityDocuments = [];
 
-      // Convertir a array de opciones
-      const currencyOpts = [];
-      uniqueCurrencies.forEach(currency => {
-        currencyOpts.push({ id: currency, name: currency });
-      });
-
-      setCurrencyOptions(currencyOpts);
-    } else if (entityType === "EDITIONS" && orders && orders.length > 0) {
-      // Extraer monedas únicas de las órdenes
-      const uniqueCurrencies = new Set();
-      orders.forEach(order => {
-        if (order.currencyName) {
-          uniqueCurrencies.add(order.currencyName);
-        }
-      });
-
-      // Convertir a array de opciones
-      const currencyOpts = [];
-      uniqueCurrencies.forEach(currency => {
-        currencyOpts.push({ id: currency, name: currency });
-      });
-
-      setCurrencyOptions(currencyOpts);
+    if (entityType === CONSTANTS.CONTRACTS_CODE) {
+      entityDocuments = contracts;
+    } else if (entityType === CONSTANTS.ORDERS_CODE) {
+      entityDocuments = orders;
     }
+
+    // Extraer monedas únicas de la opcion seleccionada (contrato u órdenes)
+    const uniqueCurrencies = new Set();
+    entityDocuments.forEach(entityDocument => {
+      if (entityDocument.currencyName) {
+        uniqueCurrencies.add(entityDocument.currencyName);
+      }
+    });
+
+    // Convertir a array de opciones
+    const currencyOpts = [];
+    uniqueCurrencies.forEach(currency => {
+      currencyOpts.push({
+        id: currency,
+        name: currency,
+      });
+    });
+
+    setCurrencyOptions(currencyOpts);
   }, [entityType, contracts, orders, selectedCurrency, dispatch]);
 
   const handleClientTypeChange = selected => {
@@ -134,12 +140,6 @@ const SelectorsContainer = () => {
     setCurrencyOptions([]);
   };
 
-  const handleClientChange = selected => {
-    dispatch(selectClient(selected));
-    // Reset currency when client changes
-    dispatch(setSelectedCurrency(""));
-  };
-
   const handleEntityTypeChange = selected => {
     dispatch(setEntityType(selected.id));
 
@@ -147,18 +147,24 @@ const SelectorsContainer = () => {
     dispatch(setSelectedCurrency(""));
 
     // Cargar datos según el tipo seleccionado
-    if (selected.id === "CONTRACTS" && selectedClient) {
+    if (selected.id === CONSTANTS.CONTRACTS_CODE && selectedClient) {
       dispatch(fetchContractsInit(selectedClient.id));
       // Reset edition-related selections
       dispatch(setSelectedProduct(null));
       dispatch(setSelectedEdition(null));
-    } else if (selected.id === "EDITIONS") {
+    } else if (selected.id === CONSTANTS.ORDERS_CODE) {
       // Para ediciones, reset client selection y otras relacionadas
       dispatch(selectClient(null));
       dispatch(setSelectedProduct(null));
       dispatch(setSelectedEdition(null));
       // Los productos se cargan automáticamente en el useEffect
     }
+  };
+
+  const handleClientChange = selected => {
+    dispatch(selectClient(selected));
+    // Reset currency when client changes
+    dispatch(setSelectedCurrency(""));
   };
 
   const handleProductChange = selected => {
@@ -204,20 +210,30 @@ const SelectorsContainer = () => {
 
   // Opciones para el selector de tipo de cliente
   const clientTypeOptions = [
-    { id: "", name: "Seleccione tipo de cliente" },
-    { id: "ARGENTINA", name: "Cliente de Argentina" },
-    { id: "COMTUR", name: "Cliente COMTUR" },
+    {
+      id: CONSTANTS.ARGENTINA_CODE,
+      name: "Cliente de Argentina",
+    },
+    {
+      id: CONSTANTS.COMTUR_CODE,
+      name: "Cliente COMTUR",
+    },
   ];
 
   // Opciones para el selector de tipo de entidad - CAMBIO PRINCIPAL
   const entityTypeOptions = [
-    { id: "CONTRACTS", name: "Contratos" },
-    { id: "EDITIONS", name: "Ediciones" }, // Cambio de "ORDERS" a "EDITIONS"
+    {
+      id: CONSTANTS.CONTRACTS_CODE,
+      name: "Contratos",
+    },
+    {
+      id: CONSTANTS.ORDERS_CODE,
+      name: "Órdenes",
+    },
   ];
-
   // Filtros para mostrar según el tipo de entidad seleccionado
-  const isContractFlow = entityType === "CONTRACTS";
-  const isEditionFlow = entityType === "EDITIONS";
+  const isContractFlow = entityType === CONSTANTS.CONTRACTS_CODE;
+  const isEditionFlow = entityType === CONSTANTS.ORDERS_CODE;
 
   return (
     <div className="card mb-4">
@@ -226,10 +242,10 @@ const SelectorsContainer = () => {
       </div>
       <div className="card-body">
         <div className="row">
-          {/* Tipo de cliente - siempre primero */}
-          <div className="col-md-3 mb-3">
+          <div className="col-md-2 mb-3">
             <InputSelectFieldSimple
               labelText="Tipo de cliente *"
+              fontSize="13px"
               name="clientType"
               options={clientTypeOptions}
               value={clientType || ""}
@@ -240,7 +256,6 @@ const SelectorsContainer = () => {
             />
           </div>
 
-          {/* Tipo de entidad - segundo */}
           <div className="col-md-2 mb-3">
             <InputSelectFieldSimple
               labelText="¿Qué desea facturar? *"
@@ -255,10 +270,10 @@ const SelectorsContainer = () => {
             />
           </div>
 
-          {/* FLUJO PARA CONTRATOS - igual que antes */}
+          {/* FLUJO PARA CONTRATOS */}
           {isContractFlow && (
             <>
-              <div className="col-md-5 mb-3">
+              <div className="col-md-6 mb-3">
                 <InputSelectFieldSimple
                   labelText="Cliente *"
                   name="client"
@@ -294,7 +309,7 @@ const SelectorsContainer = () => {
             </>
           )}
 
-          {/* NUEVO FLUJO PARA EDICIONES */}
+          {/* FLUJO PARA EDICIONES */}
           {isEditionFlow && (
             <>
               <div className="col-md-3 mb-3">
@@ -323,10 +338,9 @@ const SelectorsContainer = () => {
                 />
               </div>
 
-              <div className="col-md-1 mb-3">
+              <div className="col-md-2 mb-3">
                 <InputSelectFieldSimple
                   labelText="Moneda *"
-                  fontSize="10px"
                   name="currency"
                   options={currencyOptions}
                   value={selectedCurrency || ""}
