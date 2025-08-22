@@ -157,9 +157,10 @@ const OrdersTable = () => {
       quantity: order.quantity,
       amount: order.total,
       totalTaxes: order.totalTaxes || 0,
+      unitPriceWithDiscounts: order.unitPriceWithDiscounts || 0,
       currencyName: order.currencyName,
       xubioProductCode: order.xubioProductCode,
-      description: `${order.productAdvertisingSpaceName} - ${order.advertisingSpaceLocationTypeName}`,
+      description: `${order.productAdvertisingSpaceName}`,
     };
 
     dispatch(addToCart(cartItem));

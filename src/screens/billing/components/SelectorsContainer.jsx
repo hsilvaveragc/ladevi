@@ -228,7 +228,7 @@ const SelectorsContainer = () => {
     },
     {
       id: CONSTANTS.ORDERS_CODE,
-      name: "Órdenes",
+      name: "Ediciones",
     },
   ];
   // Filtros para mostrar según el tipo de entidad seleccionado

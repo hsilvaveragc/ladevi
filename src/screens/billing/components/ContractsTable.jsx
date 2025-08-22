@@ -183,11 +183,12 @@ const ContractsTable = () => {
       advertisingSpaceLocationTypeName:
         contractItem.advertisingSpaceLocationTypeName,
       quantity: contractItem.quantity,
+      unitPriceWithDiscounts: contractItem.unitPriceWithDiscounts,
       total: contractItem.total,
       totalTaxes: contractItem.totalTaxes || 0,
       xubioProductCode:
         contractItem.xubioProductCode || contract.xubioProductCode,
-      observations: `${contractItem.productAdvertisingSpaceName} - ${contractItem.advertisingSpaceLocationTypeName}`,
+      observations: `${contractItem.productAdvertisingSpaceName}`,
     }));
 
     // Calcular el total de TODOS los items
