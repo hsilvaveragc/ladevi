@@ -4,8 +4,11 @@ import {
   EDIT_EDITION_INIT,
   DELETE_EDITION_INIT,
   EDITIONS_SHOW_ADD_MODAL,
+  EDITIONS_HIDE_ADD_MODAL,
   EDITIONS_SHOW_EDIT_MODAL,
+  EDITIONS_HIDE_EDIT_MODAL,
   EDITIONS_SHOW_DELETE_MODAL,
+  EDITIONS_HIDE_DELETE_MODAL,
   EDITIONS_INITIAL_LOAD_INIT,
   EDITIONS_FILTER_INIT,
   IMPORT_EDITIONS_INIT,
@@ -39,12 +42,24 @@ export const showEditionsAddModal = () => ({
   type: EDITIONS_SHOW_ADD_MODAL,
 });
 
+export const hideEditionsAddModal = () => ({
+  type: EDITIONS_HIDE_ADD_MODAL,
+});
+
 export const showEditionsEditModal = () => ({
   type: EDITIONS_SHOW_EDIT_MODAL,
 });
 
+export const hideEditionsEditModal = () => ({
+  type: EDITIONS_HIDE_EDIT_MODAL,
+});
+
 export const showEditionsDeleteModal = () => ({
   type: EDITIONS_SHOW_DELETE_MODAL,
+});
+
+export const hideEditionsDeleteModal = () => ({
+  type: EDITIONS_HIDE_DELETE_MODAL,
 });
 
 export const editionsFilterBy = payload => ({

@@ -13,8 +13,11 @@ import {
   DELETE_EDITION_SUCCESS,
   DELETE_EDITION_FAILURE,
   EDITIONS_SHOW_ADD_MODAL,
+  EDITIONS_HIDE_ADD_MODAL,
   EDITIONS_SHOW_EDIT_MODAL,
+  EDITIONS_HIDE_EDIT_MODAL,
   EDITIONS_SHOW_DELETE_MODAL,
+  EDITIONS_HIDE_DELETE_MODAL,
   EDITIONS_FILTER_INIT,
   EDITIONS_FILTER_SUCCESS,
   EDITIONS_FILTER_FAILURE,
@@ -62,21 +65,39 @@ export default function(state = initialState, action) {
     case EDITIONS_SHOW_ADD_MODAL:
       return {
         ...state,
-        showAddModal: !state.showAddModal,
+        showAddModal: true,
+        errors: {},
+      };
+    case EDITIONS_HIDE_ADD_MODAL:
+      return {
+        ...state,
+        showAddModal: false,
         errors: {},
       };
     case EDIT_EDITION_SUCCESS:
     case EDITIONS_SHOW_EDIT_MODAL:
       return {
         ...state,
-        showEditModal: !state.showEditModal,
+        showEditModal: true,
+        errors: {},
+      };
+    case EDITIONS_HIDE_EDIT_MODAL:
+      return {
+        ...state,
+        showEditModal: false,
         errors: {},
       };
     case DELETE_EDITION_SUCCESS:
     case EDITIONS_SHOW_DELETE_MODAL:
       return {
         ...state,
-        showDeleteModal: !state.showDeleteModal,
+        showDeleteModal: true,
+        errors: {},
+      };
+    case EDITIONS_HIDE_DELETE_MODAL:
+      return {
+        ...state,
+        showDeleteModal: false,
         errors: {},
       };
     case EDITIONS_INITIAL_LOAD_FAILURE:
