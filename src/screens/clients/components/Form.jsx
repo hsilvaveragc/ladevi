@@ -136,10 +136,10 @@ const ClientForm = ({
         electronicBillByPaper: addMode
           ? false
           : selectedItem.electronicBillByPaper,
-        taxTypeId: addMode ? "" : selectedItem.taxTypeId,
+        taxTypeId: addMode ? undefined : selectedItem.taxTypeId,
         identificationValue: addMode ? "" : selectedItem.identificationValue,
         taxPercentage: addMode ? 0.21 : selectedItem.taxPercentage,
-        taxCategoryId: addMode ? "" : selectedItem.taxCategoryId ?? "",
+        taxCategoryId: addMode ? undefined : selectedItem.taxCategoryId ?? "",
         isBigCompany: addMode ? false : selectedItem.isBigCompany ?? false,
       }}
       onSubmit={(values, { setSubmitting }) => {

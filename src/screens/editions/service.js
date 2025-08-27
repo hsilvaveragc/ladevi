@@ -51,6 +51,7 @@ export default {
         }
       )
       .then(response => response.data.data),
+
   addEdition: payload => {
     const { name, productId, code, closed, end } = payload;
 
@@ -70,18 +71,21 @@ export default {
       )
       .then(response => response.data.data);
   },
+
   editEdition: payload =>
     axios
       .put(`ProductEdition/Put/${payload.id}`, payload, {
         headers: getHeaders(),
       })
       .then(response => response.data.data),
+
   deleteEdition: payload =>
     axios
       .delete(`ProductEdition/Delete/${payload.id}`, {
         headers: getHeaders(),
       })
       .then(response => response.data.data),
+
   filterEditions: payload =>
     axios
       .post(
@@ -95,6 +99,7 @@ export default {
         }
       )
       .then(response => response.data.data),
+
   importEditions: payload => {
     return axios
       .post(`ProductEdition/Import`, payload, {

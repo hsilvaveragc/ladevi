@@ -12,6 +12,8 @@ import {
   editClient,
   fetchCitiesById,
   deleteClient,
+  confirmDuplicateCuitAssociation,
+  hideDuplicateCuitModal,
 } from "./actionCreators.js";
 
 import {
@@ -24,6 +26,8 @@ import {
   getErrors,
   getAllCities,
   getAllTaxCategories,
+  getShowDuplicateCuitModal,
+  getDuplicateCuitData,
 } from "./reducer";
 
 import Page from "./Page.jsx";
@@ -38,6 +42,8 @@ const mapStateToProps = state => ({
   showEditModal: getShowEditModal(state),
   showDeleteModal: getShowDeleteModal(state),
   errors: getErrors(state),
+  showDuplicateCuitModal: getShowDuplicateCuitModal(state),
+  duplicateCuitData: getDuplicateCuitData(state),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -54,6 +60,8 @@ const mapDispatchToProps = dispatch => ({
       filterClients,
       editClient,
       deleteClient,
+      confirmDuplicateCuitAssociation,
+      hideDuplicateCuitModal,
     },
     dispatch
   ),

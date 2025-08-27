@@ -26,6 +26,11 @@ import {
   GET_EUROPARITY_INIT,
   GET_EUROPARITY_SUCCESS,
   GET_EUROPARITY_FAILURE,
+  CHECK_ORDERS_EDITIONS_INIT,
+  CHECK_ORDERS_EDITIONS_SUCCESS,
+  CHECK_ORDERS_EDITIONS_FAILURE,
+  UPDATE_CONTRACT_HISTORIAL,
+  UPDATE_ORDERS_CONTRACT,
 } from "./actionTypes.js";
 
 const initialState = {
@@ -43,6 +48,8 @@ const initialState = {
   showAddModal: false,
   showEditModal: false,
   showDeleteModal: false,
+  ordersEditions: {},
+  checkingordersEditions: false,
 };
 
 export default function(state = initialState, action) {
@@ -148,7 +155,7 @@ export default function(state = initialState, action) {
     case GET_CURRENCIES_FAILURE:
     case GET_EUROPARITY_FAILURE:
       return { ...state, loading: false, errors: { ...action.errors } };
-    case "UPDATE_CONTRACT_HISTORIAL":
+    case UPDATE_CONTRACT_HISTORIAL:
       const indexContract = state.contracts.findIndex(
         c => c.id === action.payload[0].contractId
       );
@@ -166,7 +173,7 @@ export default function(state = initialState, action) {
         ...state,
         contracts: newContracts,
       };
-    case "UPDATE_ORDERS_CONTRACT":
+    case UPDATE_ORDERS_CONTRACT:
       console.log(action.payload);
       const indexContractSelected = state.contracts.findIndex(
         c => c.id === action.payload.contractId
@@ -302,3 +309,6 @@ export const getLoading = createSelector(
   getContractsReducer,
   contractsReducer => contractsReducer.loading
 );
+
+export const gethasOrdersEditions = (state, contractId) =>
+  state.contracts.ordersEditions[contractId] || false;

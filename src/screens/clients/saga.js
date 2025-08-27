@@ -38,6 +38,9 @@ import {
   GET_ALL_TAX_CATEGORIES_INIT,
   GET_ALL_TAX_CATEGORIES_SUCCESS,
   GET_ALL_TAX_CATEGORIES_FAILURE,
+  SHOW_DUPLICATE_CUIT_MODAL,
+  HIDE_DUPLICATE_CUIT_MODAL,
+  CONFIRM_DUPLICATE_CUIT_ASSOCIATION,
 } from "./actionTypes.js";
 
 import clientsService from "./service";
@@ -124,6 +127,7 @@ export function* filterClients({ payload }) {
 
 export function* addClient({ payload }) {
   try {
+    payload = { ...payload, id: 0 };
     const addClientPayload = yield call(clientsService.addClient, payload);
     yield all([
       put({ type: ADD_CLIENT_SUCCESS, payload: addClientPayload }),
@@ -133,11 +137,31 @@ export function* addClient({ payload }) {
   } catch (err) {
     let auxError = {};
 
-    // Verificar si existe la respuesta y los datos de error
     if (err.response && err.response.data && err.response.data.errors) {
       auxError = {
         ...err.response.data.errors,
       };
+
+      if (
+        auxError.identificationValue &&
+        auxError.identificationValue[0] &&
+        auxError.identificationValue[0].startsWith("DUPLICATE_CUIT|")
+      ) {
+        const errorMsg = auxError.identificationValue[0];
+        const [, xubioId, existingClientName, cuit] = errorMsg.split("|");
+
+        yield put({
+          type: SHOW_DUPLICATE_CUIT_MODAL,
+          payload: {
+            xubioId: parseInt(xubioId),
+            existingClientName,
+            cuit,
+            isEdit: false,
+            originalPayload: payload,
+          },
+        });
+        return; // Salir sin procesar otros errores
+      }
 
       // Manejar errores específicos con mensajes personalizados
       if (
@@ -153,6 +177,7 @@ export function* addClient({ payload }) {
         auxError.legalName[0] &&
         auxError.legalName[0].includes("Unicidad")
       ) {
+        // AGREGAR esta verificación ANTES de los otros manejos:
         auxError.legalName = "La razón social ya se encuentra en uso";
       }
 
@@ -191,6 +216,35 @@ export function* editClient({ payload }) {
     ]);
   } catch (err) {
     console.log(err);
+
+    // Verificar si es error de CUIT duplicado
+    if (err.response && err.response.data && err.response.data.errors) {
+      const auxError = err.response.data.errors;
+
+      if (
+        auxError.identificationValue &&
+        auxError.identificationValue[0] &&
+        auxError.identificationValue[0].startsWith("DUPLICATE_CUIT|")
+      ) {
+        const errorMsg = auxError.identificationValue[0];
+        const [, xubioId, existingClientName, cuit] = errorMsg.split("|");
+
+        yield put({
+          type: SHOW_DUPLICATE_CUIT_MODAL,
+          payload: {
+            xubioId: parseInt(xubioId),
+            existingClientName,
+            cuit,
+            clientId: payload.id,
+            isEdit: true,
+            originalPayload: payload,
+          },
+        });
+        return; // Salir sin procesar otros errores
+      }
+    }
+
+    // Manejo de errores normal
     yield put({
       type: EDIT_CLIENT_FAILURE,
       errors: { ...err.response.data.errors },
@@ -316,6 +370,56 @@ export function* getAllTaxCategories({ payload }) {
   }
 }
 
+// Saga para confirmar asociación
+export function* confirmDuplicateCuitAssociation({ payload }) {
+  try {
+    const { xubioId, clientId, isEdit, originalPayload } = payload;
+
+    if (isEdit) {
+      debugger;
+      // Para edición: cliente ya existe, solo asociar
+      const confirmResponse = yield call(
+        clientsService.editAndAssociate,
+        originalPayload,
+        xubioId
+      );
+      debugger;
+      yield all([
+        put({ type: EDIT_CLIENT_SUCCESS, payload: confirmResponse }),
+        put({ type: HIDE_DUPLICATE_CUIT_MODAL }),
+        call(toast.success, "Cliente editado con éxito"),
+        put({
+          type: FILTER_CLIENTS_INIT,
+          payload: originalPayload.params || {},
+        }),
+      ]);
+    } else {
+      // Para creación: crear cliente y asociar en una sola operación
+      const createResponse = yield call(
+        clientsService.createAndAssociate,
+        originalPayload,
+        xubioId
+      );
+
+      yield all([
+        put({ type: ADD_CLIENT_SUCCESS, payload: createResponse }),
+        put({ type: HIDE_DUPLICATE_CUIT_MODAL }),
+        call(toast.success, "Cliente creado con éxito"),
+        put({
+          type: FILTER_CLIENTS_INIT,
+          payload: originalPayload.params || {},
+        }),
+      ]);
+    }
+  } catch (error) {
+    debugger;
+    yield all([
+      put({ type: HIDE_DUPLICATE_CUIT_MODAL }),
+      call(toast.error, "Error al asociar cliente"),
+    ]);
+  }
+}
+
 export default function* rootClientsSaga() {
   yield all([
     // takeLatest(SEARCH_CLIENTS_INIT, searchClients),
@@ -330,5 +434,9 @@ export default function* rootClientsSaga() {
     takeLatest(FETCH_CITIES_INIT, getAllCities),
     takeLatest(DELETE_CLIENT_INIT, deleteClient),
     takeLatest(GET_ALL_TAX_CATEGORIES_INIT, getAllTaxCategories),
+    takeLatest(
+      CONFIRM_DUPLICATE_CUIT_ASSOCIATION,
+      confirmDuplicateCuitAssociation
+    ),
   ]);
 }

@@ -80,11 +80,19 @@ function InputSelect({
               <small
                 id={`${field.name}-error`}
                 className={
-                  isNil(formikError[field.name]) ? "inactive" : "form-text"
+                  isNil(formikError[field.name]) && isNil(error)
+                    ? "inactive"
+                    : "form-text"
                 }
-                style={{ display: formikError[field.name] ? "inline" : "none" }}
+                style={{
+                  display: formikError[field.name] || error ? "inline" : "none",
+                }}
               >
-                {isNil(error) ? formikError[field.name] : head(error)}
+                {isNil(error)
+                  ? formikError[field.name]
+                  : Array.isArray(error)
+                  ? error[0]
+                  : error}
               </small>
             ) : null}
           </InputSelectContainer>

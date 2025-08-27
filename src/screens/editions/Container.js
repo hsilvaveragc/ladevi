@@ -24,7 +24,7 @@ import {
   getShowDeleteModal,
 } from "./reducer.js";
 
-import EditionsPage from "./EditionsPage";
+import EditionsPage from "./Page.jsx";
 
 const mapStateToProps = state => ({
   editionsAvailable: getEditions(state),
@@ -55,6 +55,9 @@ const mapDispatchToProps = dispatch => ({
   ),
 });
 
-export default compose(connect(mapStateToProps, mapDispatchToProps))(
-  EditionsPage
-);
+export default compose(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
+)(EditionsPage);

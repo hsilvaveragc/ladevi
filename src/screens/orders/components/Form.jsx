@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Formik, Form } from "formik";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import useUser from "shared/security/useUser";
 import InputTextField from "shared/components/InputTextField";
 import InputSelectField from "shared/components/InputSelectField";
@@ -75,7 +77,7 @@ const Order = ({
 }) => {
   const { userRol, userId } = useUser();
 
-  const disabledByCloseDate =
+  const disabledByClosedEdition =
     editMode && !selectedItem.canDelete && selectedItem.productEdition.closed;
 
   const disabledByPageNumber =
@@ -383,7 +385,7 @@ const Order = ({
                     disabled={
                       isFromContract ||
                       deleteMode ||
-                      disabledByCloseDate ||
+                      disabledByClosedEdition ||
                       (editMode && formikProps.values.latent) ||
                       disabledByPageNumber
                     }
@@ -428,7 +430,7 @@ const Order = ({
                           isFromContract ||
                           deleteMode ||
                           formikProps.values.contractId > 0 ||
-                          disabledByCloseDate ||
+                          disabledByClosedEdition ||
                           disabledByPageNumber
                         }
                         error={errors.latent}
@@ -459,29 +461,57 @@ const Order = ({
                 )}
               </div>
               <div className="form-row">
-                <div className="col-md-12">
-                  <InputSelectField
-                    labelText="Edición *"
-                    name="productEditionId"
-                    options={availableEditions}
-                    disabled={
-                      deleteMode ||
-                      (editMode && formikProps.values.latent) ||
-                      disabledByCloseDate ||
-                      disabledByPageNumber
-                    }
-                    error={errors.productEditionId}
-                    onChangeHandler={edicion => {
-                      if (formikProps.values.latent) {
-                        getSpaceTypesAvailableHandler({
-                          latent: true,
-                          contractId: 0,
-                          productId: formikProps.values.productId,
-                          soldSpaceId: 0,
-                        });
-                      }
+                <div className="col-md-12" style={{ position: "relative" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
                     }}
-                  />
+                  >
+                    <div style={{ flex: 1 }}>
+                      <InputSelectField
+                        labelText="Edición *"
+                        name="productEditionId"
+                        options={availableEditions}
+                        disabled={
+                          deleteMode ||
+                          (editMode && formikProps.values.latent) ||
+                          disabledByClosedEdition ||
+                          disabledByPageNumber
+                        }
+                        error={errors.productEditionId}
+                        onChangeHandler={edicion => {
+                          if (formikProps.values.latent) {
+                            getSpaceTypesAvailableHandler({
+                              latent: true,
+                              contractId: 0,
+                              productId: formikProps.values.productId,
+                              soldSpaceId: 0,
+                            });
+                          }
+                        }}
+                      />
+                    </div>
+                    {editMode && selectedItem.productEdition.closed && (
+                      <div
+                        style={{
+                          position: "relative",
+                          top: "0.5rem",
+                          cursor: "pointer",
+                        }}
+                        title="No se puede modificar el aviso ya que la edición está cerrada"
+                      >
+                        <FontAwesomeIcon
+                          icon={faInfoCircle}
+                          className="text-info"
+                          style={{
+                            fontSize: "1.25rem",
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="form-row">
@@ -505,7 +535,7 @@ const Order = ({
                     disabled={
                       isFromContract ||
                       deleteMode ||
-                      disabledByCloseDate ||
+                      disabledByClosedEdition ||
                       disabledByPageNumber ||
                       isLoadingClients
                     }
@@ -556,7 +586,7 @@ const Order = ({
                     disabled={
                       isFromContract ||
                       deleteMode ||
-                      disabledByCloseDate ||
+                      disabledByClosedEdition ||
                       formikProps.values.latent ||
                       disabledByPageNumber ||
                       isLoadingContracts
@@ -597,7 +627,7 @@ const Order = ({
                     isLoading={isLoadingSpaceTypes}
                     disabled={
                       deleteMode ||
-                      disabledByCloseDate ||
+                      disabledByClosedEdition ||
                       (editMode && formikProps.values.latent) ||
                       disabledByPageNumber ||
                       isLoadingSpaceTypes
@@ -640,7 +670,7 @@ const Order = ({
                     type="number"
                     disabled={
                       deleteMode ||
-                      disabledByCloseDate ||
+                      disabledByClosedEdition ||
                       (editMode && formikProps.values.latent) ||
                       disabledByPageNumber
                     }
@@ -659,7 +689,7 @@ const Order = ({
                           deleteMode ||
                           userRol.isSeller ||
                           !enableInvoice ||
-                          disabledByCloseDate ||
+                          disabledByClosedEdition ||
                           disabledByPageNumber
                         }
                         error={errors.invoiceNumber}
@@ -691,7 +721,9 @@ const Order = ({
                     labelText="Página"
                     name="pageNumber"
                     disabled={
-                      deleteMode || disabledByCloseDate || disabledByPageNumber
+                      deleteMode ||
+                      disabledByClosedEdition ||
+                      disabledByPageNumber
                     }
                     error={errors.pageNumber}
                     type="text"
@@ -708,7 +740,7 @@ const Order = ({
                       deleteMode ||
                       (editMode && formikProps.values.latent) ||
                       formikProps.values.auxProductAdvertisingSpaceId === -1 ||
-                      disabledByCloseDate ||
+                      disabledByClosedEdition ||
                       disabledByPageNumber ||
                       isLoadingSpaceLocations
                     }
@@ -724,7 +756,7 @@ const Order = ({
                     disabled={
                       deleteMode ||
                       (editMode && formikProps.values.latent) ||
-                      disabledByCloseDate ||
+                      disabledByClosedEdition ||
                       disabledByPageNumber
                     }
                   />
@@ -751,7 +783,7 @@ const Order = ({
                     </DangerButton>
                     <SaveButton
                       type="button"
-                      disabled={disabledByCloseDate || disabledByPageNumber}
+                      disabled={disabledByClosedEdition || disabledByPageNumber}
                       onClickHandler={evt => {
                         formikProps.validateForm();
                       }}

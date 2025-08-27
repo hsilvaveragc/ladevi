@@ -184,7 +184,7 @@ export default {
       .post(
         `Clients/Post`,
         {
-          ...dissoc("id", buildAddPayload(payload)),
+          ...buildAddPayload(payload),
         },
         {
           headers: getHeaders(),
@@ -304,4 +304,32 @@ export default {
         }
       )
       .then(response => sortAlphabetically(response.data.data, "name")),
+
+  createAndAssociate: (clientData, xubioId) =>
+    axios
+      .post(
+        "/clients/CreateAndAssociate",
+        {
+          ClientData: dissoc("id", buildAddPayload(clientData)),
+          XubioId: xubioId,
+        },
+        {
+          headers: getHeaders(),
+        }
+      )
+      .then(x => x.data),
+
+  editAndAssociate: (clientData, xubioId) =>
+    axios
+      .put(
+        `Clients/EditAndAssociate/${clientData.id}`,
+        {
+          ClientData: buildAddPayload(clientData),
+          XubioId: xubioId,
+        },
+        {
+          headers: getHeaders(),
+        }
+      )
+      .then(x => x.data),
 };

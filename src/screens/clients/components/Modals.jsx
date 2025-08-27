@@ -1,6 +1,7 @@
 import React from "react";
 import Modal from "shared/components/Modal";
 import ClientForm from "./Form";
+import DuplicateCuitModal from "./DuplicateCuitModal";
 
 export default props => (
   <>
@@ -64,5 +65,13 @@ export default props => (
         params={props.params}
       />
     </Modal>
+    <DuplicateCuitModal
+      isOpen={props.showDuplicateCuitModal}
+      data={props.duplicateCuitData}
+      onConfirm={() =>
+        props.actions.confirmDuplicateCuitAssociation(props.duplicateCuitData)
+      }
+      onCancel={props.actions.hideDuplicateCuitModal}
+    />
   </>
 );

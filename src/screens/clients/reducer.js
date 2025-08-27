@@ -34,6 +34,8 @@ import {
   GET_ALL_TAX_CATEGORIES_INITS_INIT,
   GET_ALL_TAX_CATEGORIES_SUCCESS,
   GET_ALL_TAX_CATEGORIES_FAILURE,
+  SHOW_DUPLICATE_CUIT_MODAL,
+  HIDE_DUPLICATE_CUIT_MODAL,
 } from "./actionTypes.js";
 
 const initialState = {
@@ -50,6 +52,8 @@ const initialState = {
   showAddModal: false,
   showEditModal: false,
   showDeleteModal: false,
+  showDuplicateCuitModal: false,
+  duplicateCuitData: null,
 };
 
 export default function(state = initialState, action) {
@@ -176,6 +180,19 @@ export default function(state = initialState, action) {
     case FETCH_CITIES_FAILURE:
     case GET_LOCATION_DATA_FAILURE:
       return { ...state, loading: false, errors: { ...action.errors } };
+    case SHOW_DUPLICATE_CUIT_MODAL:
+      return {
+        ...state,
+        showDuplicateCuitModal: true,
+        duplicateCuitData: action.payload,
+      };
+
+    case HIDE_DUPLICATE_CUIT_MODAL:
+      return {
+        ...state,
+        showDuplicateCuitModal: false,
+        duplicateCuitData: null,
+      };
     default:
       return state;
   }
@@ -246,4 +263,14 @@ export const fetchDistricts = createSelector(
 export const getAllCities = createSelector(
   getClientsReducer,
   clientsReducer => clientsReducer.cities
+);
+
+export const getShowDuplicateCuitModal = createSelector(
+  getClientsReducer,
+  clientsReducer => clientsReducer.showDuplicateCuitModal
+);
+
+export const getDuplicateCuitData = createSelector(
+  getClientsReducer,
+  clientsReducer => clientsReducer.duplicateCuitData
 );

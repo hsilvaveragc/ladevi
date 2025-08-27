@@ -13,6 +13,8 @@ import {
   FETCH_DISTRICTS_INIT,
   FETCH_CITIES_INIT,
   DELETE_CLIENT_INIT,
+  CONFIRM_DUPLICATE_CUIT_ASSOCIATION,
+  HIDE_DUPLICATE_CUIT_MODAL,
 } from "./actionTypes.js";
 
 export const initialLoad = () => ({
@@ -78,4 +80,13 @@ export const fetchCitiesById = payload => ({
 export const deleteClient = payload => ({
   type: DELETE_CLIENT_INIT,
   payload,
+});
+
+export const confirmDuplicateCuitAssociation = payload => ({
+  type: CONFIRM_DUPLICATE_CUIT_ASSOCIATION,
+  payload,
+});
+
+export const hideDuplicateCuitModal = () => ({
+  type: HIDE_DUPLICATE_CUIT_MODAL,
 });

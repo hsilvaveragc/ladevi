@@ -148,18 +148,14 @@ export default function ExcelImport({
 
   return (
     <>
-      <div className="button-container">
-        &nbsp;
-        <button
-          type="button"
-          className="btn btn-info"
-          onClick={() => setOpen(true)}
-        >
-          <FontAwesomeIcon icon={faDownload}></FontAwesomeIcon>
-          Importar
-        </button>
-      </div>
-
+      <button
+        type="button"
+        className="btn btn-info"
+        onClick={() => setOpen(true)}
+      >
+        <FontAwesomeIcon icon={faDownload}></FontAwesomeIcon>
+        Importar
+      </button>
       <Modal
         shouldClose={true}
         closeHandler={() => setOpen(false)}

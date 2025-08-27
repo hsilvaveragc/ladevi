@@ -249,8 +249,11 @@ export default function(state = initialState, action) {
     case ADD_ORDER_FAILURE:
     case EDIT_ORDER_FAILURE:
     case DELETE_ORDER_FAILURE:
-      return { ...state, errors: { ...action.errors } };
-
+      return {
+        ...state,
+        loading: false,
+        errors: { ...action.errors },
+      };
     default:
       return state;
   }
