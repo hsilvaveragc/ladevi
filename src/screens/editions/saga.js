@@ -33,7 +33,7 @@ export function* initialLoad() {
   try {
     const [availableEditions, availableProducts] = yield all([
       call(editionsService.getAllEditions),
-      call(productService.getAllProducts),
+      call(productService.getAllProductsOptionsFull),
     ]);
     yield put({
       type: EDITIONS_INITIAL_LOAD_SUCCESS,

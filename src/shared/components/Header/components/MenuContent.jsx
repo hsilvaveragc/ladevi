@@ -34,6 +34,9 @@ export default function MenuContent({ menuToggler }) {
       <Link to="/ordenes" onClick={menuToggler}>
         Órdenes de Publicación
       </Link>
+      <Link to="/produccion" onClick={menuToggler}>
+        Producción
+      </Link>
       <Link to="/facturacion" onClick={menuToggler}>
         Facturación
       </Link>

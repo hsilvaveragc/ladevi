@@ -1,7 +1,7 @@
 FROM postgres:17
 
-# Copiar scripts de inicialización desde Tests/init-scripts
-COPY Tests/init-scripts/ /docker-entrypoint-initdb.d/
+# Copiar scripts de inicialización
+COPY init-scripts/ /docker-entrypoint-initdb.d/
 
 # Variables de entorno por defecto
 ENV POSTGRES_DB=ladevi_ventas_test

@@ -1,20 +1,23 @@
 import React, { useState, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import * as XLSX from "xlsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import Moment from "moment";
 import { toast } from "react-toastify";
 import exampleImportEditions from "./Example_import_editions.xlsx";
-
+import { importEditions } from "../actionCreators";
+import { getEditions } from "../reducer";
 import { DangerButton } from "shared/components/Buttons";
 import Modal from "shared/components/Modal";
 import { tryCatch } from "ramda";
 
-export default function ExcelImport({
-  editions,
-  importHandler,
-  importHandlerFailure,
-}) {
+export default function ExcelImport() {
+  const dispatch = useDispatch();
+
+  // Estados del Redux store
+  const editions = useSelector(getEditions);
+
   // onchange states
   const [open, setOpen] = useState(null);
   const [excelFile, setExcelFile] = useState(null);
@@ -22,6 +25,11 @@ export default function ExcelImport({
 
   // submit state
   const [excelData, setExcelData] = useState(null);
+
+  // Handlers
+  const importHandler = data => {
+    dispatch(importEditions(data));
+  };
 
   const ExcelDateToJSDate = date => {
     try {
@@ -108,6 +116,7 @@ export default function ExcelImport({
     }
     return true;
   };
+
   // submit event
   const handleFileSubmit = e => {
     if (excelFile !== null) {
@@ -148,18 +157,14 @@ export default function ExcelImport({
 
   return (
     <>
-      <div className="button-container">
-        &nbsp;
-        <button
-          type="button"
-          className="btn btn-info"
-          onClick={() => setOpen(true)}
-        >
-          <FontAwesomeIcon icon={faDownload}></FontAwesomeIcon>
-          Importar
-        </button>
-      </div>
-
+      <button
+        type="button"
+        className="btn btn-info ml-2"
+        onClick={() => setOpen(true)}
+      >
+        <FontAwesomeIcon icon={faDownload}></FontAwesomeIcon>
+        Importar
+      </button>
       <Modal
         shouldClose={true}
         closeHandler={() => setOpen(false)}

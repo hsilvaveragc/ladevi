@@ -11,6 +11,7 @@ import reportesIcon from "shared/images/icon-reportes.png";
 import configuracionIcon from "shared/images/icon-configuracion.png";
 import auditoriaIcon from "shared/images/auditoria.png";
 import facturacionIcon from "shared/images/icon-facturacion.png";
+import bookIcon from "shared/images/icon-book.png";
 
 export default function HomePage() {
   const { userRol } = useUser();
@@ -56,6 +57,10 @@ export default function HomePage() {
           <Link to="/ordenes">
             <img src={ordenesIcon} alt="Icono" />
             <span>Órdenes de Publicación</span>
+          </Link>
+          <Link to="/produccion">
+            <img src={bookIcon} alt="Icono" />
+            <span>Producción</span>
           </Link>
           <Link to="/facturacion">
             <img src={facturacionIcon} alt="Icono" />

@@ -181,7 +181,9 @@ const Table = props => {
                 },
               })}
               sorted={sorted}
-              onSortedChange={newSorted => setSorted(newSorted)}
+              onSortedChange={newSorted => {
+                setSorted(newSorted);
+              }}
               defaultSortMethod={(a, b, desc) => {
                 const isEmpty = value =>
                   value === null || value === undefined || value === "";

@@ -21,7 +21,7 @@ services:
       - ASPNETCORE_URLS=http://+:80
       - DefaultConnection=Server=test-db;Database=ladevi_ventas_test;User Id=sa;Password=test123;Port=5432;
       # - EnableTestingEndpoints=true
-      - IntegrationTestSeedToken=tfENXZ840DEO7GKVPQi3
+      # - IntegrationTestSeedToken=tfENXZ840DEO7GKVPQi3
     ports:
       - "5003:80"
     depends_on:

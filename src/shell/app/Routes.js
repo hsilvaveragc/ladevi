@@ -12,6 +12,7 @@ import HomePage from "../../screens/home";
 import OrdersPage from "../../screens/orders";
 import ReportsPage from "../../screens/reports";
 import SettingsPage from "../../screens/settings";
+import Production from "../../screens/production";
 import Billing from "../../screens/billing";
 import UsersPage from "../../screens/users";
 import AccountingFields from "../../screens/accounting-fields";
@@ -99,6 +100,11 @@ const Routes = () => {
               routeTitle="Órdenes de Publicación"
             />
             <PrivateRoute path="/reportes" component={ReportsPage} />
+            <PrivateRoute
+              path="/produccion"
+              component={Production}
+              routeTitle="Producción"
+            />
             <PrivateRoute
               path="/facturacion"
               component={Billing}

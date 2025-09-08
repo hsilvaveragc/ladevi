@@ -51,18 +51,14 @@ export default {
         }
       )
       .then(response => response.data.data),
-  addEdition: payload => {
-    const { name, productId, code, closed, end } = payload;
 
+  addEdition: payload => {
     return axios
       .post(
         `ProductEdition/Post`,
         {
-          name,
-          productId,
-          code,
-          closed,
-          end: end.toDateString(),
+          ...payload,
+          end: payload.end.toDateString(),
         },
         {
           headers: getHeaders(),
@@ -70,18 +66,21 @@ export default {
       )
       .then(response => response.data.data);
   },
+
   editEdition: payload =>
     axios
       .put(`ProductEdition/Put/${payload.id}`, payload, {
         headers: getHeaders(),
       })
       .then(response => response.data.data),
+
   deleteEdition: payload =>
     axios
       .delete(`ProductEdition/Delete/${payload.id}`, {
         headers: getHeaders(),
       })
       .then(response => response.data.data),
+
   filterEditions: payload =>
     axios
       .post(
@@ -95,6 +94,7 @@ export default {
         }
       )
       .then(response => response.data.data),
+
   importEditions: payload => {
     return axios
       .post(`ProductEdition/Import`, payload, {

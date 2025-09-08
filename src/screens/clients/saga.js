@@ -376,14 +376,13 @@ export function* confirmDuplicateCuitAssociation({ payload }) {
     const { xubioId, clientId, isEdit, originalPayload } = payload;
 
     if (isEdit) {
-      debugger;
       // Para edición: cliente ya existe, solo asociar
       const confirmResponse = yield call(
         clientsService.editAndAssociate,
         originalPayload,
         xubioId
       );
-      debugger;
+
       yield all([
         put({ type: EDIT_CLIENT_SUCCESS, payload: confirmResponse }),
         put({ type: HIDE_DUPLICATE_CUIT_MODAL }),
@@ -412,7 +411,6 @@ export function* confirmDuplicateCuitAssociation({ payload }) {
       ]);
     }
   } catch (error) {
-    debugger;
     yield all([
       put({ type: HIDE_DUPLICATE_CUIT_MODAL }),
       call(toast.error, "Error al asociar cliente"),

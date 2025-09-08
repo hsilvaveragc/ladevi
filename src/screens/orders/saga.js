@@ -119,7 +119,7 @@ export function* addOrder({ payload }) {
     }
   } catch (err) {
     let auxError = {};
-    debugger;
+
     // Verificar si existe la respuesta y los datos de error
     if (err.response && err.response.data && err.response.data.errors) {
       auxError = {

@@ -13,11 +13,15 @@ import {
   DELETE_EDITION_SUCCESS,
   DELETE_EDITION_FAILURE,
   EDITIONS_SHOW_ADD_MODAL,
+  EDITIONS_HIDE_ADD_MODAL,
   EDITIONS_SHOW_EDIT_MODAL,
+  EDITIONS_HIDE_EDIT_MODAL,
   EDITIONS_SHOW_DELETE_MODAL,
+  EDITIONS_HIDE_DELETE_MODAL,
   EDITIONS_FILTER_INIT,
   EDITIONS_FILTER_SUCCESS,
   EDITIONS_FILTER_FAILURE,
+  SET_SELECTED_EDITION,
 } from "./actionTypes.js";
 
 const initialState = {
@@ -28,6 +32,7 @@ const initialState = {
   showAddModal: false,
   showEditModal: false,
   showDeleteModal: false,
+  selectedItem: {},
 };
 
 export default function(state = initialState, action) {
@@ -58,26 +63,50 @@ export default function(state = initialState, action) {
         loading: false,
         editions: [...action.payload],
       };
-    case ADD_EDITION_SUCCESS:
     case EDITIONS_SHOW_ADD_MODAL:
       return {
         ...state,
-        showAddModal: !state.showAddModal,
+        showAddModal: true,
+        selectedItem: {},
         errors: {},
       };
-    case EDIT_EDITION_SUCCESS:
+    case ADD_EDITION_SUCCESS:
+    case EDITIONS_HIDE_ADD_MODAL:
+      return {
+        ...state,
+        showAddModal: false,
+        errors: {},
+      };
     case EDITIONS_SHOW_EDIT_MODAL:
       return {
         ...state,
-        showEditModal: !state.showEditModal,
+        showEditModal: true,
+        errors: {},
+      };
+    case EDIT_EDITION_SUCCESS:
+    case EDITIONS_HIDE_EDIT_MODAL:
+      return {
+        ...state,
+        showEditModal: false,
         errors: {},
       };
     case DELETE_EDITION_SUCCESS:
     case EDITIONS_SHOW_DELETE_MODAL:
       return {
         ...state,
-        showDeleteModal: !state.showDeleteModal,
+        showDeleteModal: true,
         errors: {},
+      };
+    case EDITIONS_HIDE_DELETE_MODAL:
+      return {
+        ...state,
+        showDeleteModal: false,
+        errors: {},
+      };
+    case SET_SELECTED_EDITION:
+      return {
+        ...state,
+        selectedItem: action.payload,
       };
     case EDITIONS_INITIAL_LOAD_FAILURE:
     case GET_ALL_EDITIONS_FAILURE:
@@ -125,4 +154,9 @@ export const getShowEditModal = createSelector(
 export const getShowDeleteModal = createSelector(
   getEditionsReducer,
   editionReducer => editionReducer.showDeleteModal
+);
+
+export const getSelectedItem = createSelector(
+  getEditionsReducer,
+  editionReducer => editionReducer.selectedItem
 );

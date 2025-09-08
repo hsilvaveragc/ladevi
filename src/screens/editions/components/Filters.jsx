@@ -1,15 +1,14 @@
 import React from "react";
-//import PropTypes from "prop-types";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { Formik, Form } from "formik";
-import * as Yup from "yup";
-
-import { FILTERS } from "../constants";
 import InputTextField from "shared/components/InputTextField";
 import InputSelectField from "shared/components/InputSelectField";
 import { SaveButton, DangerButton } from "shared/components/Buttons";
+import { editionsFilterBy, getAllEditions } from "../actionCreators";
+import { getProducts } from "../reducer";
 
-const FilterFormContainer = styled.div`
+const FiltersContainer = styled.div`
   width: 70vw;
   margin: 2rem 0 4rem;
   .buttons-container {
@@ -24,34 +23,40 @@ const FilterFormContainer = styled.div`
   }
 `;
 
-const defaultOption = {
-  id: -1,
-  name: "Todos",
-};
+const Filters = () => {
+  const dispatch = useDispatch();
 
-const FiltersForm = ({
-  handleFilter,
-  productsAvailable,
-  resetFilterHandler,
-  handleChangeParams,
-}) => (
-  <Formik
-    validateOnChange={false}
-    validateOnBlur={false}
-    initialValues={{
-      name: "",
-      code: "",
-      productId: -1,
-    }}
-    onSubmit={values => {
-      handleFilter(values);
-      handleChangeParams(values);
-    }}
-    enableReinitialize={true}
-  >
-    {formikProps => {
-      return (
-        <FilterFormContainer>
+  // Estados del Redux store
+  const productsAvailable = useSelector(getProducts);
+
+  // Handlers
+  const handleFilter = payload => {
+    dispatch(editionsFilterBy(payload));
+  };
+
+  const handleReset = () => {
+    dispatch(getAllEditions());
+  };
+
+  const defaultOption = {
+    id: -1,
+    name: "Todos",
+  };
+
+  const initialValues = {
+    code: "",
+    name: "",
+    productId: -1,
+  };
+
+  return (
+    <Formik
+      initialValues={initialValues}
+      enableReinitialize={true}
+      onSubmit={handleFilter}
+    >
+      {formikProps => (
+        <FiltersContainer>
           <Form>
             <div className="form-row">
               <div className="col-3">
@@ -72,7 +77,7 @@ const FiltersForm = ({
                   <DangerButton
                     onClickHandler={() => {
                       formikProps.resetForm();
-                      resetFilterHandler();
+                      handleReset();
                     }}
                   >
                     Limpiar
@@ -82,12 +87,10 @@ const FiltersForm = ({
               </div>
             </div>
           </Form>
-        </FilterFormContainer>
-      );
-    }}
-  </Formik>
-);
+        </FiltersContainer>
+      )}
+    </Formik>
+  );
+};
 
-FiltersForm.propTypes = {};
-
-export default FiltersForm;
+export default Filters;
