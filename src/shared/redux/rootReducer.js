@@ -19,6 +19,7 @@ import auditoryReducer from "screens/auditory/reducer";
 import currencyReducer from "screens/currency/reducer";
 import euroParityReducer from "screens/euro-parity/reducer";
 import billingReducer from "screens/billing/reducer";
+import productionReducer from "screens/production/reducer";
 
 const reducers = {
   login: loginReducer,
@@ -39,6 +40,7 @@ const reducers = {
   currency: currencyReducer,
   euroParity: euroParityReducer,
   billing: billingReducer,
+  production: productionReducer,
 };
 
 export default function createRootReducer(history) {

@@ -1,29 +1,16 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { PageContainer } from "shared/utils";
-// import { CONSTANTS } from "./constants";
-// import { initialLoad } from "./actionCreators";
-// import {
-//   getLoading,
-//   getSelectedClient,
-//   getEntityType,
-//   getSelectedEdition,
-// } from "./reducer";
+import { initialLoad } from "./actionCreators";
+import { getLoading } from "./reducer";
 import FullWidthProgressBar from "shared/components/FullWidthProgressBar";
-// import SelectorsContainer from "./components/SelectorsContainer";
-// import ContractsTable from "./components/ContractsTable";
-// import OrdersTable from "./components/OrdersTable";
-// import Cart from "./components/Cart";
-// import InvoiceContractDialog from "./components/InvoiceContractDialog";
-// import InvoiceOrderDialog from "./components/InvoiceOrderDialog";
+import SelectorsContainer from "./components/SelectorsContainer";
+import ProductionGrid from "./components/ProductionGrid";
 
-const ProductionPage = () => {
+const BillingPage = () => {
   const dispatch = useDispatch();
 
-  // const loading = useSelector(getLoading);
-  // const entityType = useSelector(getEntityType);
-  // const selectedClient = useSelector(getSelectedClient);
-  // const selectedEdition = useSelector(getSelectedEdition);
+  const loading = useSelector(getLoading);
 
   useEffect(() => {
     // dispatch(initialLoad());
@@ -31,13 +18,22 @@ const ProductionPage = () => {
 
   return (
     <>
-      {/* <FullWidthProgressBar show={loading} /> */}
+      <FullWidthProgressBar show={loading} />
 
       <PageContainer>
-        <div className="row" style={{ width: "100%" }}></div>
+        <div className="row" style={{ width: "100%" }}>
+          <div className="col-md-12">
+            <SelectorsContainer />
+          </div>
+        </div>
+        <div className="row" style={{ width: "100%" }}>
+          <div className="col-md-12">
+            <ProductionGrid />
+          </div>
+        </div>
       </PageContainer>
     </>
   );
 };
 
-export default ProductionPage;
+export default BillingPage;

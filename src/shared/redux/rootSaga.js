@@ -18,6 +18,7 @@ import rootAuditory from "screens/auditory/saga";
 import rootCurrency from "screens/currency/saga";
 import rootEuroParity from "screens/euro-parity/saga";
 import rootBillingSaga from "screens/billing/saga";
+import rootProductionSaga from "screens/production/saga";
 
 export default function* rootSaga() {
   yield all([
@@ -39,5 +40,6 @@ export default function* rootSaga() {
     rootCurrency(),
     rootEuroParity(),
     rootBillingSaga(),
+    rootProductionSaga(),
   ]);
 }

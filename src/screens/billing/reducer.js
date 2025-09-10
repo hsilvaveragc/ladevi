@@ -442,39 +442,3 @@ export const getShowInvoiceDialog = createSelector(
   getBillingReducer,
   billingReducer => billingReducer.showInvoiceDialog
 );
-
-// // Selector de resultado
-// export const getInvoiceResult = createSelector(
-//   getBillingReducer,
-//   billingReducer => billingReducer.invoiceResult
-// );
-
-// // Selector de resultado múltiple
-// export const getMultipleInvoiceResults = createSelector(
-//   getBillingReducer,
-//   billingReducer => billingReducer.multipleInvoiceResults
-// );
-
-// // Selector para obtener el ítem del carrito correspondiente a un contrato específico
-// export const getCartItemByContractId = createSelector(
-//   [getCartItems, (state, contractId) => contractId],
-//   (cartItems, contractId) => {
-//     return cartItems.find(
-//       item =>
-//         item.type === CONSTANTS.CONTRACTS_CODE && item.contractId === contractId
-//     );
-//   }
-// );
-
-// // Selector para verificar si un ítem específico está en el carrito
-// export const isItemInCart = createSelector(
-//   [getCartItems, (state, itemId, contractId) => ({ itemId, contractId })],
-//   (cartItems, { itemId, contractId }) => {
-//     return cartItems.some(
-//       item =>
-//         item.type === CONSTANTS.CONTRACTS_CODE &&
-//         item.contractId === contractId &&
-//         item.items.some(subItem => subItem.id === itemId)
-//     );
-//   }
-// );

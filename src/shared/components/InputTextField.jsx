@@ -23,10 +23,12 @@ function InputTextField({
   disabled = false,
   displayErrorMsg = true,
   showLabel = true,
+  customStyles = {}, // Nuevo prop para estilos personalizados
   onChangeHandler = () => {},
   onBlurHandler = () => {},
   maxlength,
   "data-testid": dataTestId,
+  withoutFormGroup = false,
 }) {
   const makeid = length => {
     var result = "";
@@ -43,7 +45,7 @@ function InputTextField({
     <Field name={name}>
       {({ field, form: { touched, errors: formikError, setFieldValue } }) => {
         return (
-          <InputTextContainer className="form-group">
+          <InputTextContainer className={withoutFormGroup ? "" : "form-group"}>
             {showLabel ? <label htmlFor={field.name}>{labelText}</label> : null}
             <input
               className={
@@ -51,6 +53,7 @@ function InputTextField({
                   ? "form-control is-invalid"
                   : "form-control"
               }
+              style={customStyles} // Aplicar estilos personalizados
               autoComplete={makeid(5)}
               placeholder={placeholder}
               disabled={disabled}
@@ -95,6 +98,7 @@ InputTextField.propTypes = {
   labelText: PropTypes.string,
   placeholder: PropTypes.string,
   disabled: PropTypes.bool,
+  customStyles: PropTypes.object, // Nuevo PropType
 };
 
 export default InputTextField;

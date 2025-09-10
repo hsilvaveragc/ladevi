@@ -68,7 +68,7 @@ const SelectorsContainer = () => {
     }
   }, [dispatch, selectedClient, entityType]);
 
-  // Cargar productos cuando se selecciona tipo ediciones
+  // Cargar productos cuando se selecciona tipo de cliente
   useEffect(() => {
     if (entityType === CONSTANTS.ORDERS_CODE && clientType) {
       dispatch(fetchProductsInit(clientType));

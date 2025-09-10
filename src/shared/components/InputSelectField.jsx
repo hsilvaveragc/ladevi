@@ -30,10 +30,12 @@ function InputSelect({
   placeholderText = "",
   disabled = false,
   displayErrorMsg = true,
+  customStyles = {},
   onChangeHandler = () => {},
   getOptionLabel = option => option.name,
   getOptionValue = option => option.id,
   isLoading,
+  showLabel = true,
 }) {
   return (
     <Field name={name}>
@@ -47,9 +49,11 @@ function InputSelect({
         )[0];
         return (
           <InputSelectContainer className="form-group">
-            <label htmlFor={field.name}>{labelText}</label>
+            {showLabel && <label htmlFor={field.name}>{labelText}</label>}
+
             <Select
               {...field}
+              styles={customStyles}
               className={
                 (touched[field.name] && formikError[field.name]) || error
                   ? "is-invalid"
