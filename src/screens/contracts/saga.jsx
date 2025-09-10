@@ -1,6 +1,6 @@
 import { put, all, takeLatest, call } from "redux-saga/effects";
 import { toast } from "react-toastify";
-import { getErrorMessage } from "../../shared/utils/index.js";
+import { getErrorMessage } from "../../shared/utils/index.jsx";
 
 import {
   INITIAL_LOAD_INIT,
@@ -31,11 +31,11 @@ import {
   GET_EUROPARITY_FAILURE,
 } from "./actionTypes.js";
 
-import contractsService from "./service";
-import usersService from "../users/service";
-import productsService from "../products/service";
-import clientsService from "../clients/service";
-import adSpacesService from "../ad-spaces/service";
+import contractsService from "./service.js";
+import usersService from "../users/service.js";
+import productsService from "../products/service.js";
+import clientsService from "../clients/service.js";
+import adSpacesService from "../ad-spaces/service.js";
 
 export function* initialLoad() {
   try {

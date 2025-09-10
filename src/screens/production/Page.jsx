@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { PageContainer } from "shared/utils";
-import { initialLoad } from "./actionCreators";
 import { getLoading } from "./reducer";
 import FullWidthProgressBar from "shared/components/FullWidthProgressBar";
 import SelectorsContainer from "./components/SelectorsContainer";
@@ -12,9 +11,7 @@ const BillingPage = () => {
 
   const loading = useSelector(getLoading);
 
-  useEffect(() => {
-    // dispatch(initialLoad());
-  }, [dispatch]);
+  useEffect(() => {}, [dispatch]);
 
   return (
     <>

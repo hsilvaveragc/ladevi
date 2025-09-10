@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import Moment from "moment";
 import { toast } from "react-toastify";
-import exampleImportEditions from "./Example_import_editions.xlsx";
 import { importEditions } from "../actionCreators";
 import { getEditions } from "../reducer";
 import { DangerButton } from "shared/components/Buttons";
@@ -13,6 +12,7 @@ import Modal from "shared/components/Modal";
 import { tryCatch } from "ramda";
 
 export default function ExcelImport() {
+  const exampleImportEditions = "/assets/Example_import_editions.xlsx";
   const dispatch = useDispatch();
 
   // Estados del Redux store

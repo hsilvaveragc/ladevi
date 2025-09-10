@@ -2,7 +2,7 @@ import React from "react";
 import Moment from "moment";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
-import { enhanceWordBreak } from "../../../../shared/utils/index.js";
+import { enhanceWordBreak } from "../../../../shared/utils/index.jsx";
 import pdfIcon from "shared/images/iconPdf.png";
 
 const exportPDF = (

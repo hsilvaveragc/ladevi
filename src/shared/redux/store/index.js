@@ -1,6 +1,6 @@
 const store =
-  process.env.NODE_ENV === "production"
-    ? require("./configureStore.prod").default
-    : require("./configureStore.dev").default;
+  import.meta.env.MODE === "production"
+    ? (await import("./configureStore.prod")).default
+    : (await import("./configureStore.dev")).default;
 
 export default store;

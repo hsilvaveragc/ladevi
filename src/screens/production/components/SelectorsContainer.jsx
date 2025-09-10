@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { CONSTANTS } from "../constants";
 import {
   setClientType,
-  fetchOrdersInit,
   setSelectedCurrency,
   fetchProductsInit,
   fetchEditionsInit,
@@ -13,7 +12,6 @@ import {
 import {
   getClientType,
   getLoading,
-  getOrders,
   getSelectedCurrency,
   getProducts,
   getEditions,

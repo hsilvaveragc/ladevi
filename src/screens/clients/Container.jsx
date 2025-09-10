@@ -28,7 +28,7 @@ import {
   getAllTaxCategories,
   getShowDuplicateCuitModal,
   getDuplicateCuitData,
-} from "./reducer";
+} from "./reducer.js";
 
 import Page from "./Page.jsx";
 
