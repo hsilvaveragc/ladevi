@@ -1,14 +1,15 @@
-import { FieldArray } from 'formik';
-import styled from 'styled-components';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FieldArray } from "formik";
+import styled from "styled-components";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faInfoCircle,
   faGripVertical,
-} from '@fortawesome/free-solid-svg-icons';
-import InputTextField from 'shared/components/InputTextField';
-import InputSelectField from 'shared/components/InputSelectField';
-import InputMultiSelectField from 'shared/components/InputMultiSelectField';
-import FormFieldset from 'shared/components/FormFieldset';
+} from "@fortawesome/free-solid-svg-icons";
+import InputTextField from "shared/components/InputTextField";
+import InputSelectField from "shared/components/InputSelectField";
+import InputMultiSelectField from "shared/components/InputMultiSelectField";
+import FormFieldset from "shared/components/FormFieldset";
 
 const InventoryContainer = styled.div`
   margin-bottom: 2rem;
@@ -36,6 +37,7 @@ const InventoryContainer = styled.div`
         border: 2px dashed #ddd;
         border-radius: 8px;
         background-color: #f9f9f9;
+        min-height: 80px;
       }
     }
 
@@ -67,13 +69,6 @@ const InventoryContainer = styled.div`
           flex-direction: column;
           gap: 0.4rem;
           min-height: 50px;
-
-          &.drag-over {
-            background-color: #e3f2fd;
-            border: 2px dashed #2196f3;
-            border-radius: 4px;
-            padding: 0.25rem;
-          }
         }
       }
 
@@ -105,7 +100,6 @@ const InventoryContainer = styled.div`
     border: 1px solid #ddd;
     border-radius: 6px;
     padding: 0.5rem;
-    cursor: grab;
     user-select: none;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     transition: all 0.2s ease;
@@ -119,12 +113,6 @@ const InventoryContainer = styled.div`
     &:hover {
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
       transform: translateY(-1px);
-    }
-
-    &.dragging {
-      opacity: 0.5;
-      cursor: grabbing;
-      transform: rotate(2deg);
     }
 
     .drag-handle {
@@ -217,20 +205,6 @@ const InventoryContainer = styled.div`
       color: #0056b3;
     }
   }
-
-  /* Estado de arrastre para toda la zona */
-  .drag-over {
-    animation: dragPulse 0.6s ease-in-out infinite alternate;
-  }
-
-  @keyframes dragPulse {
-    from {
-      background-color: #e3f2fd;
-    }
-    to {
-      background-color: #bbdefb;
-    }
-  }
 `;
 
 const InventorySpacesSection = ({
@@ -240,17 +214,117 @@ const InventorySpacesSection = ({
   generateInteriorPageOptions,
   handlePageLocationChange,
   handleAllPagesChange,
-  handleDragStart,
-  handleDragOver,
-  handleDragEnter,
-  handleDragLeave,
-  handleDrop,
 }) => {
+  // Handler para @hello-pangea/dnd
+  const handleOnDragEnd = (result) => {
+    if (!result.destination) return;
+
+    const { source, destination, draggableId } = result;
+    const sourceDroppableId = source.droppableId;
+    const destinationDroppableId = destination.droppableId;
+
+    // Si se mueve dentro de la misma zona, no hacemos nada por ahora
+    if (sourceDroppableId === destinationDroppableId) {
+      return;
+    }
+
+    // Crear una copia del inventario para manipular
+    let updatedInventory = [
+      ...formikProps.values.inventoryProductAdvertisingSpaces,
+    ];
+
+    if (sourceDroppableId === "available-spaces") {
+      // Mover desde espacios disponibles a una zona
+      const spaceId = parseInt(draggableId.replace("space-", ""));
+      const targetZone = destinationDroppableId;
+
+      // Encontrar si ya existe un item para este espacio
+      const existingItemIndex = updatedInventory.findIndex(
+        (item) => item.productAdvertisingSpaceId === spaceId
+      );
+
+      if (existingItemIndex !== -1) {
+        // Actualizar zona del item existente
+        updatedInventory[existingItemIndex] = {
+          ...updatedInventory[existingItemIndex],
+          zone: targetZone,
+          order: destination.index,
+        };
+      } else {
+        // Crear nuevo item
+        const newItem = {
+          productAdvertisingSpaceId: spaceId,
+          zone: targetZone,
+          order: destination.index,
+          quantity: 1,
+          pageLocation: targetZone === "interior" ? "ambas" : null,
+          selectedPages: [],
+          allPages: targetZone === "interior" ? true : false,
+        };
+        updatedInventory.push(newItem);
+      }
+    } else {
+      // Mover entre zonas
+      const spaceId = parseInt(draggableId.replace("space-", ""));
+      const targetZone =
+        destinationDroppableId === "available-spaces"
+          ? null
+          : destinationDroppableId;
+
+      const itemIndex = updatedInventory.findIndex(
+        (item) => item.productAdvertisingSpaceId === spaceId
+      );
+
+      if (itemIndex !== -1) {
+        if (targetZone === null) {
+          // Mover de vuelta a espacios disponibles
+          updatedInventory[itemIndex] = {
+            ...updatedInventory[itemIndex],
+            zone: null,
+            order: 0,
+          };
+        } else {
+          // Mover a otra zona
+          updatedInventory[itemIndex] = {
+            ...updatedInventory[itemIndex],
+            zone: targetZone,
+            order: destination.index,
+          };
+        }
+      }
+    }
+
+    // Reordenar elementos en la zona origen si es necesario
+    if (sourceDroppableId !== "available-spaces") {
+      updatedInventory
+        .filter((item) => item.zone === sourceDroppableId)
+        .sort((a, b) => a.order - b.order)
+        .forEach((item, index) => {
+          const itemIndex = updatedInventory.findIndex(
+            (inv) =>
+              inv.productAdvertisingSpaceId === item.productAdvertisingSpaceId
+          );
+          if (itemIndex !== -1) {
+            updatedInventory[itemIndex] = {
+              ...updatedInventory[itemIndex],
+              order: index,
+            };
+          }
+        });
+    }
+
+    // Actualizar el estado
+    formikProps.setFieldValue(
+      "inventoryProductAdvertisingSpaces",
+      updatedInventory
+    );
+  };
+
   return (
     <InventoryContainer>
-      <FormFieldset title='Inventario de tipos de espacios'>
+      <FormFieldset title="Inventario de tipos de espacios">
         <FieldArray
-          name='inventoryProductAdvertisingSpaces'
+          name="inventoryProductAdvertisingSpaces"
           render={() => {
             const currentProductAdvertisingSpaces = getProductAdvertisingSpaces(
               formikProps.values.productId
@@ -258,12 +332,12 @@ const InventorySpacesSection = ({
 
             if (currentProductAdvertisingSpaces.length === 0) {
               return (
-                <div className='alert alert-info'>
+                <div className="alert alert-info">
                   <FontAwesomeIcon
                     icon={faInfoCircle}
-                    className='text-info'
-                    style={{ fontSize: '1.25rem' }}
-                  />{' '}
+                    className="text-info"
+                    style={{ fontSize: "1.25rem" }}
+                  />{" "}
                   Seleccione un producto para configurar el inventario de sus
                   tipos de espacios
                 </div>
@@ -271,307 +345,272 @@ const InventorySpacesSection = ({
             }
 
             // Espacios que ya están asignados a alguna zona
-            const assignedSpaceIds =
-              formikProps.values.inventoryProductAdvertisingSpaces
-                .filter((item) => item.zone && item.zone !== null)
-                .map((item) => item.productAdvertisingSpaceId);
+            const assignedSpaceIds = formikProps.values.inventoryProductAdvertisingSpaces
+              .filter((item) => item.zone && item.zone !== null)
+              .map((item) => item.productAdvertisingSpaceId);
 
             // Espacios disponibles para arrastrar
             const availableSpaces = currentProductAdvertisingSpaces.filter(
               (space) => !assignedSpaceIds.includes(space.id)
             );
 
+            // Obtener espacios por zona
+            const getSpacesByZone = (zone) => {
+              return formikProps.values.inventoryProductAdvertisingSpaces
+                .filter((item) => item.zone === zone)
+                .sort((a, b) => a.order - b.order)
+                .map((item) => {
+                  const space = currentProductAdvertisingSpaces.find(
+                    (space) => space.id === item.productAdvertisingSpaceId
+                  );
+                  return { ...space, inventoryItem: item };
+                });
+            };
+
             return (
-              <div className='drag-drop-container'>
-                {/* Espacios disponibles */}
-                <div className='available-spaces'>
-                  <h5>Tipos de Espacio Disponibles</h5>
-                  <div className='spaces-grid'>
-                    {availableSpaces.map((space) => (
-                      <div
-                        key={space.id}
-                        className='space-card'
-                        draggable
-                        title={space.name.length > 12 ? space.name : undefined}
-                        onDragStart={(e) => handleDragStart(e, space)}
-                      >
-                        <FontAwesomeIcon
-                          icon={faGripVertical}
-                          className='drag-handle'
-                        />
-                        <span className='space-name'>{space.name}</span>
-                      </div>
+              <DragDropContext onDragEnd={handleOnDragEnd}>
+                <div className="drag-drop-container">
+                  {/* Espacios disponibles */}
+                  <div className="available-spaces">
+                    <h5>Tipos de Espacio Disponibles</h5>
+                    <Droppable
+                      droppableId="available-spaces"
+                      direction="horizontal"
+                    >
+                      {(provided, snapshot) => (
+                        <div
+                          {...provided.droppableProps}
+                          ref={provided.innerRef}
+                          className="spaces-grid"
+                          style={{
+                            backgroundColor: snapshot.isDraggingOver
+                              ? "#e3f2fd"
+                              : "#f9f9f9",
+                          }}
+                        >
+                          {availableSpaces.map((space, index) => (
+                            <Draggable
+                              key={space.id}
+                              draggableId={`space-${space.id}`}
+                              index={index}
+                            >
+                              {(provided, snapshot) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className="space-card"
+                                  title={
+                                    space.name.length > 12
+                                      ? space.name
+                                      : undefined
+                                  }
+                                  style={{
+                                    ...provided.draggableProps.style,
+                                    opacity: snapshot.isDragging ? 0.5 : 1,
+                                    transform: snapshot.isDragging
+                                      ? `${provided.draggableProps.style?.transform} rotate(2deg)`
+                                      : provided.draggableProps.style
+                                          ?.transform,
+                                  }}
+                                >
+                                  <FontAwesomeIcon
+                                    icon={faGripVertical}
+                                    className="drag-handle"
+                                  />
+                                  <span className="space-name">
+                                    {space.name}
+                                  </span>
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                          {provided.placeholder}
+                        </div>
+                      )}
+                    </Droppable>
+                  </div>
+
+                  {/* Zonas de drop */}
+                  <div className="drop-zones">
+                    {["tapa", "interior", "contratapa"].map((zone) => (
+                      <Droppable key={zone} droppableId={zone}>
+                        {(provided, snapshot) => (
+                          <div
+                            {...provided.droppableProps}
+                            ref={provided.innerRef}
+                            className={`drop-zone ${zone}`}
+                            style={{
+                              backgroundColor: snapshot.isDraggingOver
+                                ? "#e3f2fd"
+                                : "#f8f9fa",
+                            }}
+                          >
+                            <div className="zone-header">
+                              {zone.charAt(0).toUpperCase() + zone.slice(1)}
+                            </div>
+                            <div className="cards-container">
+                              {getSpacesByZone(zone).map((space, index) => {
+                                const inventoryItem = space.inventoryItem;
+                                const inventoryIndex = formikProps.values.inventoryProductAdvertisingSpaces.findIndex(
+                                  (item) =>
+                                    item.productAdvertisingSpaceId === space.id
+                                );
+
+                                return (
+                                  <Draggable
+                                    key={space.id}
+                                    draggableId={`space-${space.id}`}
+                                    index={index}
+                                  >
+                                    {(provided, snapshot) => (
+                                      <div
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                        className="space-card"
+                                        title={
+                                          space.name.length > 12
+                                            ? space.name
+                                            : undefined
+                                        }
+                                        style={{
+                                          ...provided.draggableProps.style,
+                                          opacity: snapshot.isDragging
+                                            ? 0.5
+                                            : 1,
+                                        }}
+                                      >
+                                        <FontAwesomeIcon
+                                          icon={faGripVertical}
+                                          className="drag-handle"
+                                        />
+                                        <span className="space-name">
+                                          {space.name}
+                                        </span>
+
+                                        {/* Controles para zona Interior */}
+                                        {zone === "interior" && inventoryItem && (
+                                          <>
+                                            <span className="label-inputs">
+                                              Cantidad
+                                            </span>
+                                            <InputTextField
+                                              name={`inventoryProductAdvertisingSpaces[${inventoryIndex}].quantity`}
+                                              showLabel={false}
+                                              disabled={deleteMode}
+                                              type="number"
+                                              min="0"
+                                              withoutFormGroup={true}
+                                              customStyles={{
+                                                height: "35px",
+                                                width: "70px",
+                                                fontSize: "12px",
+                                              }}
+                                            />
+                                            <span className="label-inputs">
+                                              Ubicación
+                                            </span>
+                                            <div className="page-location-select">
+                                              <InputSelectField
+                                                name={`inventoryProductAdvertisingSpaces[${inventoryIndex}].pageLocation`}
+                                                showLabel={false}
+                                                disabled={deleteMode}
+                                                options={[
+                                                  {
+                                                    value: "ambas",
+                                                    label: "Ambas",
+                                                  },
+                                                  {
+                                                    value: "izquierda",
+                                                    label: "Izquierda",
+                                                  },
+                                                  {
+                                                    value: "derecha",
+                                                    label: "Derecha",
+                                                  },
+                                                ]}
+                                                withoutFormGroup={true}
+                                                onChange={(e) =>
+                                                  handlePageLocationChange(
+                                                    e,
+                                                    inventoryIndex,
+                                                    formikProps.setFieldValue
+                                                  )
+                                                }
+                                              />
+                                            </div>
+
+                                            {/* Selección de páginas específicas */}
+                                            {!inventoryItem.allPages &&
+                                              inventoryItem.pageLocation && (
+                                                <div className="page-selection-container">
+                                                  <InputMultiSelectField
+                                                    name={`inventoryProductAdvertisingSpaces[${inventoryIndex}].selectedPages`}
+                                                    showLabel={false}
+                                                    disabled={deleteMode}
+                                                    options={generateInteriorPageOptions(
+                                                      formikProps.values
+                                                        .pageCount,
+                                                      inventoryItem.pageLocation
+                                                    )}
+                                                    withoutFormGroup={true}
+                                                  />
+                                                </div>
+                                              )}
+
+                                            {/* Checkbox para todas las páginas */}
+                                            <InputCheckboxField
+                                              name={`inventoryProductAdvertisingSpaces[${inventoryIndex}].allPages`}
+                                              label="Todas las páginas"
+                                              disabled={deleteMode}
+                                              withoutFormGroup={true}
+                                              onChange={(e) =>
+                                                handleAllPagesChange(
+                                                  e,
+                                                  inventoryIndex,
+                                                  formikProps.setFieldValue
+                                                )
+                                              }
+                                            />
+                                          </>
+                                        )}
+
+                                        {/* Controles para otras zonas */}
+                                        {zone !== "interior" && inventoryItem && (
+                                          <>
+                                            <span className="label-inputs">
+                                              Cantidad
+                                            </span>
+                                            <InputTextField
+                                              name={`inventoryProductAdvertisingSpaces[${inventoryIndex}].quantity`}
+                                              showLabel={false}
+                                              disabled={deleteMode}
+                                              type="number"
+                                              min="0"
+                                              withoutFormGroup={true}
+                                              customStyles={{
+                                                height: "35px",
+                                                width: "70px",
+                                                fontSize: "12px",
+                                              }}
+                                            />
+                                          </>
+                                        )}
+                                      </div>
+                                    )}
+                                  </Draggable>
+                                );
+                              })}
+                              {provided.placeholder}
+                            </div>
+                          </div>
+                        )}
+                      </Droppable>
                     ))}
-                    {availableSpaces.length === 0 && (
-                      <div
-                        style={{
-                          gridColumn: '1 / -1',
-                          textAlign: 'center',
-                          color: '#6c757d',
-                          fontSize: '0.9rem',
-                          padding: '1rem',
-                        }}
-                      >
-                        Todos los tipos de espacio han sido asignados
-                      </div>
-                    )}
                   </div>
                 </div>
-
-                {/* Zonas de destino */}
-                <div className='drop-zones'>
-                  {['tapa', 'interior', 'contratapa'].map((zone) => {
-                    const zoneSpaces =
-                      formikProps.values.inventoryProductAdvertisingSpaces
-                        .filter((item) => item.zone === zone)
-                        .sort((a, b) => a.order - b.order)
-                        .map((item) => {
-                          const space = currentProductAdvertisingSpaces.find(
-                            (s) => s.id === item.productAdvertisingSpaceId
-                          );
-                          return { ...space, quantity: item.quantity };
-                        });
-
-                    return (
-                      <div key={zone} className={`drop-zone ${zone}`}>
-                        <div className='zone-header'>
-                          {zone.charAt(0).toUpperCase() + zone.slice(1)}
-                          {zoneSpaces.length > 0 && (
-                            <span
-                              style={{
-                                fontSize: '0.8rem',
-                                fontWeight: 'normal',
-                                marginLeft: '0.5rem',
-                              }}
-                            >
-                              ({zoneSpaces.length})
-                            </span>
-                          )}
-                        </div>
-                        <div
-                          className='cards-container'
-                          onDragOver={handleDragOver}
-                          onDragEnter={handleDragEnter}
-                          onDragLeave={handleDragLeave}
-                          onDrop={(e) =>
-                            handleDrop(
-                              e,
-                              zone,
-                              formikProps.setFieldValue,
-                              formikProps.values
-                            )
-                          }
-                        >
-                          {zoneSpaces.length === 0 && (
-                            <div
-                              style={{
-                                textAlign: 'center',
-                                color: '#adb5bd',
-                                fontSize: '0.85rem',
-                                padding: '1rem',
-                                fontStyle: 'italic',
-                              }}
-                            >
-                              Arrastra aquí los tipos de espacio
-                            </div>
-                          )}
-
-                          {zoneSpaces.map((space, index) => {
-                            // Encontrar el item del inventario correspondiente
-                            const inventoryItem =
-                              formikProps.values.inventoryProductAdvertisingSpaces.find(
-                                (item) =>
-                                  item.productAdvertisingSpaceId === space.id &&
-                                  item.zone === zone
-                              );
-
-                            return (
-                              <div
-                                key={`${space.id}-${zone}`}
-                                className='space-card'
-                                draggable
-                                title={
-                                  space.name.length > 15
-                                    ? space.name
-                                    : undefined
-                                }
-                                onDragStart={(e) =>
-                                  handleDragStart(e, space, zone)
-                                }
-                              >
-                                <FontAwesomeIcon
-                                  icon={faGripVertical}
-                                  className='drag-handle'
-                                />
-                                <span className='space-name'>{space.name}</span>
-
-                                {/* Controles para zona Interior */}
-                                {zone === 'interior' && inventoryItem && (
-                                  <>
-                                    <span className='label-inputs'>
-                                      Cantidad
-                                    </span>{' '}
-                                    <InputTextField
-                                      name={`space[${index}].quantity`}
-                                      showLabel={false}
-                                      disabled={deleteMode}
-                                      type='number'
-                                      min='0'
-                                      withoutFormGroup={true}
-                                      customStyles={{
-                                        height: '35px',
-                                        width: '70px',
-                                        fontSize: '12px',
-                                      }}
-                                    />
-                                    {/* Select de ubicación de páginas */}
-                                    {'      '}
-                                    <span className='label-inputs'>
-                                      Ubicación
-                                    </span>{' '}
-                                    <div className='page-location-select'>
-                                      <InputSelectField
-                                        customStyles={{
-                                          control: (provided) => ({
-                                            ...provided,
-                                            minHeight: '35px',
-                                            height: '35px',
-                                            width: '150px',
-                                            fontSize: '12px',
-                                          }),
-                                          valueContainer: (provided) => ({
-                                            ...provided,
-                                            height: '35px',
-                                            padding: '0 6px',
-                                            fontSize: '12px',
-                                          }),
-                                          indicatorsContainer: (provided) => ({
-                                            ...provided,
-                                            height: '35px',
-                                            fontSize: '12px',
-                                          }),
-                                        }}
-                                        showLabel={false}
-                                        name={`pageLocation-${space.id}`}
-                                        options={[
-                                          { code: 'ambas', text: 'Ambas' },
-                                          { code: 'pares', text: 'Pares' },
-                                          { code: 'impares', text: 'Impares' },
-                                        ]}
-                                        getOptionLabel={(option) => option.text}
-                                        disabled={deleteMode}
-                                        onChange={(e) =>
-                                          handlePageLocationChange(
-                                            space.id,
-                                            e.target.value,
-                                            formikProps.setFieldValue,
-                                            formikProps.values
-                                          )
-                                        }
-                                      />
-                                    </div>
-                                    {/* Selección múltiple de páginas específicas */}
-                                    {formikProps.values.pageCount > 2 && (
-                                      <>
-                                        <div className='page-selection-container'>
-                                          <InputMultiSelectField
-                                            customStyles={{
-                                              control: (provided) => ({
-                                                ...provided,
-                                                minHeight: '35px',
-                                                height: '35px',
-                                                width: '150px',
-                                                fontSize: '12px',
-                                              }),
-                                              valueContainer: (provided) => ({
-                                                ...provided,
-                                                height: '35px',
-                                                padding: '0 6px',
-                                                fontSize: '12px',
-                                              }),
-                                              indicatorsContainer: (
-                                                provided
-                                              ) => ({
-                                                ...provided,
-                                                height: '35px',
-                                                fontSize: '12px',
-                                              }),
-                                              multiValue: (provided) => ({
-                                                ...provided,
-                                                fontSize: '12px',
-                                              }),
-                                              multiValueLabel: (provided) => ({
-                                                ...provided,
-                                                fontSize: '12px',
-                                              }),
-                                            }}
-                                            name={`specificPages-${space.id}`}
-                                            showLabel={false}
-                                            allOptionText='Todas'
-                                            placeholder='Páginas'
-                                            disabled={deleteMode}
-                                            options={generateInteriorPageOptions(
-                                              formikProps.values.pageCount,
-                                              inventoryItem.pageLocation
-                                            ).map((pageNum) => ({
-                                              value: pageNum,
-                                              text: `Pág ${pageNum}`,
-                                            }))}
-                                            onChangeHandler={(
-                                              selectedPages,
-                                              allSelected
-                                            ) => {
-                                              const updatedInventory =
-                                                formikProps.values.inventoryProductAdvertisingSpaces.map(
-                                                  (item) => {
-                                                    if (
-                                                      item.productAdvertisingSpaceId ===
-                                                      space.id
-                                                    ) {
-                                                      return {
-                                                        ...item,
-                                                        specificPages:
-                                                          selectedPages,
-                                                        allPages: allSelected,
-                                                      };
-                                                    }
-                                                    return item;
-                                                  }
-                                                );
-                                              formikProps.setFieldValue(
-                                                'inventoryProductAdvertisingSpaces',
-                                                updatedInventory
-                                              );
-                                            }}
-                                            onAllChangeHandler={(
-                                              allSelected
-                                            ) => {
-                                              handleAllPagesChange(
-                                                space.id,
-                                                allSelected,
-                                                formikProps.setFieldValue,
-                                                formikProps.values
-                                              );
-                                            }}
-                                          />
-                                        </div>
-                                      </>
-                                    )}
-                                  </>
-                                )}
-
-                                {/* <span className="quantity-badge">
-                                  {space.quantity || 0}
-                                </span> */}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+              </DragDropContext>
             );
           }}
         />

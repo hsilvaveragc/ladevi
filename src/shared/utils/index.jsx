@@ -2,6 +2,14 @@ import { sortBy, prop } from 'ramda';
 import styled from 'styled-components';
 import { RemoveButton } from 'shared/components/Buttons';
 
+// Exportar funciones de fecha
+export {
+  formatDateSafe,
+  formatDateForTable,
+  formatDateTimeForPDF,
+  formatDateWithSlashes,
+} from './dateHelpers';
+
 export const sortAlphabetically = (list, accessor) =>
   sortBy(prop(accessor), list);
 

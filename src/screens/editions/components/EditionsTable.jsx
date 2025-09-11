@@ -1,8 +1,4 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { format } from 'date-fns';
-import { getHeaderStyleTable, createDeleteColumn } from 'shared/utils';
-import Table from 'shared/components/Table';
-
 import {
   showEditionsAddModal,
   showEditionsEditModal,
@@ -10,6 +6,8 @@ import {
   setSelectedEdition,
 } from '../actionCreators';
 import { getEditions, getLoading } from '../reducer';
+import { getHeaderStyleTable, createDeleteColumn } from 'shared/utils';
+import Table from 'shared/components/Table';
 
 const EditionsTable = ({ element }) => {
   const dispatch = useDispatch();
@@ -31,6 +29,11 @@ const EditionsTable = ({ element }) => {
   const handleDelete = (item) => {
     dispatch(setSelectedEdition(item));
     dispatch(showEditionsDeleteModal());
+  };
+
+  // Función para formatear fecha de forma segura
+  const formatDate = (dateValue) => {
+    return formatDateForTable(dateValue);
   };
 
   // Definición de columnas
@@ -72,7 +75,7 @@ const EditionsTable = ({ element }) => {
       width: '20%',
       headerStyle: getHeaderStyleTable(),
       Cell: (row) => {
-        return format(row.value, 'DD-MM-YYYY');
+        return formatDate(row.value);
       },
     },
     createDeleteColumn(handleDelete),
