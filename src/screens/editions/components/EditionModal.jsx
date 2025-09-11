@@ -1,4 +1,4 @@
-import React, { useSelector, useDispatch } from 'react-redux';
+import React, { useSelector, useDispatch } from 'react';
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import styled from 'styled-components';
