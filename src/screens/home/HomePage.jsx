@@ -1,17 +1,17 @@
-import React from "react";
-import styled from "styled-components";
-import { Link } from "react-router-dom";
-import useUser from "shared/security/useUser";
-import Footer from "shared/components/Footer";
-import usuariosIcon from "shared/images/icon-usuarios.png";
-import contratosIcon from "shared/images/icon-contratos.png";
-import clientesIcon from "shared/images/icon-clientes.png";
-import ordenesIcon from "shared/images/icon-ordenes.png";
-import reportesIcon from "shared/images/icon-reportes.png";
-import configuracionIcon from "shared/images/icon-configuracion.png";
-import auditoriaIcon from "shared/images/auditoria.png";
-import facturacionIcon from "shared/images/icon-facturacion.png";
-import bookIcon from "shared/images/icon-book.png";
+import styled from 'styled-components';
+import { Link } from 'react-router-dom';
+import Footer from 'shared/components/Footer';
+
+import useUser from 'shared/security/useUser';
+import usuariosIcon from 'shared/images/icon-usuarios.png';
+import contratosIcon from 'shared/images/icon-contratos.png';
+import clientesIcon from 'shared/images/icon-clientes.png';
+import ordenesIcon from 'shared/images/icon-ordenes.png';
+import reportesIcon from 'shared/images/icon-reportes.png';
+import configuracionIcon from 'shared/images/icon-configuracion.png';
+import auditoriaIcon from 'shared/images/auditoria.png';
+import facturacionIcon from 'shared/images/icon-facturacion.png';
+import bookIcon from 'shared/images/icon-book.png';
 
 export default function HomePage() {
   const { userRol } = useUser();
@@ -45,43 +45,43 @@ export default function HomePage() {
   return (
     <>
       <HomePageContainer>
-        <div className="menu-container">
-          <Link to="/clientes">
-            <img src={clientesIcon} alt="Icono" />
+        <div className='menu-container'>
+          <Link to='/clientes'>
+            <img src={clientesIcon} alt='Icono' />
             <span>Clientes</span>
           </Link>
-          <Link to="/contratos">
-            <img src={contratosIcon} alt="Icono" />
+          <Link to='/contratos'>
+            <img src={contratosIcon} alt='Icono' />
             <span>Contratos</span>
           </Link>
-          <Link to="/ordenes">
-            <img src={ordenesIcon} alt="Icono" />
+          <Link to='/ordenes'>
+            <img src={ordenesIcon} alt='Icono' />
             <span>Órdenes de Publicación</span>
           </Link>
-          <Link to="/produccion">
-            <img src={bookIcon} alt="Icono" />
+          <Link to='/produccion'>
+            <img src={bookIcon} alt='Icono' />
             <span>Producción</span>
           </Link>
-          <Link to="/facturacion">
-            <img src={facturacionIcon} alt="Icono" />
+          <Link to='/facturacion'>
+            <img src={facturacionIcon} alt='Icono' />
             <span>Facturación</span>
           </Link>
-          <Link to="/reportes">
-            <img src={reportesIcon} alt="Icono" />
+          <Link to='/reportes'>
+            <img src={reportesIcon} alt='Icono' />
             <span>Reportes</span>
           </Link>
           {userRol.isAdmin && (
             <>
-              <Link to="/usuarios">
-                <img src={usuariosIcon} alt="Icono" />
+              <Link to='/usuarios'>
+                <img src={usuariosIcon} alt='Icono' />
                 <span>Usuarios</span>
               </Link>
-              <Link to="/auditoria">
-                <img src={auditoriaIcon} alt="Icono" />
+              <Link to='/auditoria'>
+                <img src={auditoriaIcon} alt='Icono' />
                 <span>Auditoría</span>
               </Link>
-              <Link to="/configuracion">
-                <img src={configuracionIcon} alt="Icono" />
+              <Link to='/configuracion'>
+                <img src={configuracionIcon} alt='Icono' />
                 <span>Configuración</span>
               </Link>
             </>

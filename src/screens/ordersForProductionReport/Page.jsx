@@ -1,15 +1,16 @@
-import React, { useEffect } from "react";
-import styled from "styled-components";
+import React, { useEffect } from 'react';
+import styled from 'styled-components';
+
 // import Table from "shared/components/Table";
-import Filters from "./components/Filters";
-import "jspdf-autotable";
+import Filters from './components/Filters';
+import 'jspdf-autotable';
 
-import BootstrapTable from "react-bootstrap-table-next";
-import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
-import paginationFactory from "react-bootstrap-table2-paginator";
-import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
+import BootstrapTable from 'react-bootstrap-table-next';
+import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
+import paginationFactory from 'react-bootstrap-table2-paginator';
+import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 
-import Moment from "moment";
+import { format } from 'date-fns';
 
 // import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 // import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
@@ -38,26 +39,18 @@ export default function Page(props) {
 
   const customTotal = (from, to, size) => (
     <span
-      className="react-bootstrap-table-pagination-total"
-      style={{ marginLeft: "15px" }}
+      className='react-bootstrap-table-pagination-total'
+      style={{ marginLeft: '15px' }}
     >
       Mostrando {from} de {to} de {size} Resultados
     </span>
   );
 
   const columns = [
-    /*{
-      dataField: "creationDate",
-      text: "Fecha Alta",
-      formatter: fecha =>
-        fecha ? Moment(fecha).format("DD/MM/YYYY HH:mm:ss") : "",
-      headerStyle: () => ({ width: "10%" }),
-      sort: true,
-    },*/
     {
-      dataField: "legalName",
-      text: "Cliente",
-      headerStyle: () => ({ width: "15%" }),
+      dataField: 'legalName',
+      text: 'Cliente',
+      headerStyle: () => ({ width: '15%' }),
       sort: true,
       formatter: (cell, row) => (
         <div>
@@ -68,67 +61,67 @@ export default function Page(props) {
       ),
     },
     {
-      dataField: "spaceType",
-      text: "Tipo de Espacio",
-      headerStyle: () => ({ width: "10%" }),
+      dataField: 'spaceType',
+      text: 'Tipo de Espacio',
+      headerStyle: () => ({ width: '10%' }),
       sort: true,
     },
     {
-      dataField: "spaceLocation",
-      text: "Ubicación",
-      headerStyle: () => ({ width: "10%" }),
+      dataField: 'spaceLocation',
+      text: 'Ubicación',
+      headerStyle: () => ({ width: '10%' }),
       sort: true,
     },
     {
-      dataField: "bxA",
-      text: "B x A",
-      headerStyle: () => ({ width: "7%" }),
+      dataField: 'bxA',
+      text: 'B x A',
+      headerStyle: () => ({ width: '7%' }),
       sort: true,
     },
     {
-      dataField: "contractId",
-      text: "N°Cont.",
-      headerStyle: () => ({ width: "5%" }),
+      dataField: 'contractId',
+      text: 'N°Cont.',
+      headerStyle: () => ({ width: '5%' }),
       sort: true,
     },
     {
-      dataField: "contractName",
-      text: "Contrato",
-      headerStyle: () => ({ width: "12%" }),
+      dataField: 'contractName',
+      text: 'Contrato',
+      headerStyle: () => ({ width: '12%' }),
       sort: true,
     },
     {
-      dataField: "quantity",
-      text: "Cantidad",
-      headerStyle: () => ({ width: "12%" }),
+      dataField: 'quantity',
+      text: 'Cantidad',
+      headerStyle: () => ({ width: '12%' }),
       sort: true,
     },
     {
-      dataField: "pageNumber",
-      text: "Página",
-      headerStyle: () => ({ width: "3%" }),
+      dataField: 'pageNumber',
+      text: 'Página',
+      headerStyle: () => ({ width: '3%' }),
       sort: true,
     },
     {
-      dataField: "observations",
-      text: "Observaciones",
-      headerStyle: () => ({ width: "18%" }),
+      dataField: 'observations',
+      text: 'Observaciones',
+      headerStyle: () => ({ width: '18%' }),
       sort: true,
     },
     {
-      dataField: "seller",
-      text: "Vdor",
-      headerStyle: () => ({ width: "10%" }),
+      dataField: 'seller',
+      text: 'Vdor',
+      headerStyle: () => ({ width: '10%' }),
       sort: true,
     },
   ];
 
   const options = {
     // Tooltips botones de paginación
-    prePageTitle: "página previa",
-    nextPageTitle: "próxima página",
-    firstPageTitle: "primer página",
-    lastPageTitle: "última página",
+    prePageTitle: 'página previa',
+    nextPageTitle: 'próxima página',
+    firstPageTitle: 'primer página',
+    lastPageTitle: 'última página',
     showTotal: true,
     paginationTotalRenderer: customTotal,
   };
@@ -147,7 +140,7 @@ export default function Page(props) {
         isLoadingProductEditions={props.isLoadingProductEditions}
       />
       {props.data.length > 0 && (
-        <div style={{ margin: "15px 15px auto 15px" }}>
+        <div style={{ margin: '15px 15px auto 15px' }}>
           {/*<ToolkitProvider
               keyField="publishingOrderId"
               data={props.data}
@@ -174,12 +167,12 @@ export default function Page(props) {
             </ToolkitProvider> */}
 
           <BootstrapTable
-            keyField="publishingOrderId"
+            keyField='publishingOrderId'
             striped
             hover
             condensed
             bootstrap4
-            headerClasses="thead-light"
+            headerClasses='thead-light'
             data={props.data}
             columns={columns}
             pagination={paginationFactory(options)}

@@ -15,19 +15,19 @@ import {
   GENERATE_AUTO_LAYOUT_INIT,
   VALIDATE_PAGE_REDUCTION_INIT,
   VALIDATE_INVENTORY_REDUCTION_INIT,
-} from "./actionTypes";
+} from './actionTypes';
 
-export const setClientType = clientType => ({
+export const setClientType = (clientType) => ({
   type: SET_CLIENT_TYPE,
   payload: clientType,
 });
 
-export const fetchProductsInit = clientType => ({
+export const fetchProductsInit = (clientType) => ({
   type: FETCH_PRODUCTS_INIT,
   payload: clientType,
 });
 
-export const setSelectedProduct = productId => ({
+export const setSelectedProduct = (productId) => ({
   type: SET_SELECTED_PRODUCT,
   payload: productId,
 });
@@ -37,18 +37,18 @@ export const fetchEditionsInit = (productId, isComturClient) => ({
   payload: productId,
 });
 
-export const setSelectedEdition = editionId => ({
+export const setSelectedEdition = (editionId) => ({
   type: SET_SELECTED_EDITION,
   payload: editionId,
 });
 
-export const setSelectedCurrency = currency => ({
+export const setSelectedCurrency = (currency) => ({
   type: SET_SELECTED_CURRENCY,
   payload: currency,
 });
 
 // Obtener elementos de producción de una edición
-export const fetchProductionItems = editionId => ({
+export const fetchProductionItems = (editionId) => ({
   type: FETCH_PRODUCTION_ITEMS_INIT,
   payload: { editionId },
 });
@@ -66,7 +66,7 @@ export const addSlot = (editionId, pageNumber) => ({
 });
 
 // Remover slot
-export const removeSlot = itemId => ({
+export const removeSlot = (itemId) => ({
   type: REMOVE_SLOT_INIT,
   payload: { itemId },
 });
@@ -90,7 +90,7 @@ export const markAsCA = (itemId, isCA) => ({
 });
 
 // Generar layout automático
-export const generateAutoLayout = editionId => ({
+export const generateAutoLayout = (editionId) => ({
   type: GENERATE_AUTO_LAYOUT_INIT,
   payload: { editionId },
 });

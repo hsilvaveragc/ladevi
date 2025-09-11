@@ -1,6 +1,7 @@
-import { call, put, takeLatest, all } from "redux-saga/effects";
-import { toast } from "react-toastify";
-import productionService from "./service";
+import { call, put, takeLatest, all } from 'redux-saga/effects';
+import { toast } from 'react-toastify';
+
+import productionService from './service';
 import {
   FETCH_PRODUCTS_INIT,
   FETCH_PRODUCTS_SUCCESS,
@@ -38,7 +39,7 @@ import {
   VALIDATE_INVENTORY_REDUCTION_INIT,
   VALIDATE_INVENTORY_REDUCTION_SUCCESS,
   VALIDATE_INVENTORY_REDUCTION_FAILURE,
-} from "./actionTypes";
+} from './actionTypes';
 
 export function* fetchProducts({ payload }) {
   try {
@@ -50,16 +51,15 @@ export function* fetchProducts({ payload }) {
       },
     });
   } catch (err) {
-    console.log(err);
     yield put({
       type: FETCH_PRODUCTS_FAILURE,
       errors: {
         ...(err.response?.data?.errors || {
-          general: "Error al cargar productos",
+          general: 'Error al cargar productos',
         }),
       },
     });
-    yield call(toast.error, "Hubo un error al cargar los productos");
+    yield call(toast.error, 'Hubo un error al cargar los productos');
   }
 }
 
@@ -76,16 +76,15 @@ export function* fetchEditions({ payload }) {
       },
     });
   } catch (err) {
-    console.log(err);
     yield put({
       type: FETCH_EDITIONS_FAILURE,
       errors: {
         ...(err.response?.data?.errors || {
-          general: "Error al cargar ediciones",
+          general: 'Error al cargar ediciones',
         }),
       },
     });
-    yield call(toast.error, "Hubo un error al cargar las ediciones");
+    yield call(toast.error, 'Hubo un error al cargar las ediciones');
   }
 }
 
@@ -101,16 +100,15 @@ export function* fetchProductionItems({ payload }) {
       payload: response,
     });
   } catch (err) {
-    console.error("Error fetching production items:", err);
     yield put({
       type: FETCH_PRODUCTION_ITEMS_FAILURE,
       errors: {
         ...(err.response?.data?.errors || {
-          general: "Error al cargar elementos de producción",
+          general: 'Error al cargar elementos de producción',
         }),
       },
     });
-    yield call(toast.error, "Error al cargar los elementos de producción");
+    yield call(toast.error, 'Error al cargar los elementos de producción');
   }
 }
 
@@ -126,18 +124,17 @@ export function* moveItem({ payload }) {
       type: MOVE_ITEM_SUCCESS,
       payload,
     });
-    yield call(toast.success, "Elemento movido correctamente");
+    yield call(toast.success, 'Elemento movido correctamente');
   } catch (err) {
-    console.error("Error moving item:", err);
     yield put({
       type: MOVE_ITEM_FAILURE,
       errors: {
         ...(err.response?.data?.errors || {
-          general: "Error al mover el elemento",
+          general: 'Error al mover el elemento',
         }),
       },
     });
-    yield call(toast.error, "Error al mover el elemento");
+    yield call(toast.error, 'Error al mover el elemento');
   }
 }
 
@@ -153,16 +150,15 @@ export function* addSlot({ payload }) {
       type: ADD_SLOT_SUCCESS,
       payload: { newItem },
     });
-    yield call(toast.success, "Slot agregado correctamente");
+    yield call(toast.success, 'Slot agregado correctamente');
   } catch (err) {
-    console.error("Error adding slot:", err);
     yield put({
       type: ADD_SLOT_FAILURE,
       errors: {
-        ...(err.response?.data?.errors || { general: "Error al agregar slot" }),
+        ...(err.response?.data?.errors || { general: 'Error al agregar slot' }),
       },
     });
-    yield call(toast.error, "Error al agregar slot");
+    yield call(toast.error, 'Error al agregar slot');
   }
 }
 
@@ -174,18 +170,17 @@ export function* removeSlot({ payload }) {
       type: REMOVE_SLOT_SUCCESS,
       payload,
     });
-    yield call(toast.success, "Slot eliminado correctamente");
+    yield call(toast.success, 'Slot eliminado correctamente');
   } catch (err) {
-    console.error("Error removing slot:", err);
     yield put({
       type: REMOVE_SLOT_FAILURE,
       errors: {
         ...(err.response?.data?.errors || {
-          general: "Error al eliminar slot",
+          general: 'Error al eliminar slot',
         }),
       },
     });
-    yield call(toast.error, "Error al eliminar slot");
+    yield call(toast.error, 'Error al eliminar slot');
   }
 }
 
@@ -203,16 +198,15 @@ export function* updateObservation({ payload }) {
     });
     // No mostramos toast para esta acción para no ser intrusivos
   } catch (err) {
-    console.error("Error updating observation:", err);
     yield put({
       type: UPDATE_OBSERVATION_FAILURE,
       errors: {
         ...(err.response?.data?.errors || {
-          general: "Error al actualizar observación",
+          general: 'Error al actualizar observación',
         }),
       },
     });
-    yield call(toast.error, "Error al actualizar observación");
+    yield call(toast.error, 'Error al actualizar observación');
   }
 }
 
@@ -230,19 +224,18 @@ export function* markAsEditorial({ payload }) {
     });
     yield call(
       toast.success,
-      `Marcado como ${payload.isEditorial ? "Editorial" : "Publicidad"}`
+      `Marcado como ${payload.isEditorial ? 'Editorial' : 'Publicidad'}`
     );
   } catch (err) {
-    console.error("Error marking as editorial:", err);
     yield put({
       type: MARK_AS_EDITORIAL_FAILURE,
       errors: {
         ...(err.response?.data?.errors || {
-          general: "Error al actualizar tipo",
+          general: 'Error al actualizar tipo',
         }),
       },
     });
-    yield call(toast.error, "Error al actualizar el tipo");
+    yield call(toast.error, 'Error al actualizar el tipo');
   }
 }
 
@@ -256,19 +249,18 @@ export function* markAsCA({ payload }) {
     });
     yield call(
       toast.success,
-      `Marcado como ${payload.isCA ? "CA" : "Publicidad"}`
+      `Marcado como ${payload.isCA ? 'CA' : 'Publicidad'}`
     );
   } catch (err) {
-    console.error("Error marking as CA:", err);
     yield put({
       type: MARK_AS_CA_FAILURE,
       errors: {
         ...(err.response?.data?.errors || {
-          general: "Error al actualizar tipo",
+          general: 'Error al actualizar tipo',
         }),
       },
     });
-    yield call(toast.error, "Error al actualizar el tipo");
+    yield call(toast.error, 'Error al actualizar el tipo');
   }
 }
 
@@ -283,18 +275,17 @@ export function* generateAutoLayout({ payload }) {
       type: GENERATE_AUTO_LAYOUT_SUCCESS,
       payload: response,
     });
-    yield call(toast.success, "Layout automático generado correctamente");
+    yield call(toast.success, 'Layout automático generado correctamente');
   } catch (err) {
-    console.error("Error generating auto layout:", err);
     yield put({
       type: GENERATE_AUTO_LAYOUT_FAILURE,
       errors: {
         ...(err.response?.data?.errors || {
-          general: "Error al generar layout automático",
+          general: 'Error al generar layout automático',
         }),
       },
     });
-    yield call(toast.error, "Error al generar layout automático");
+    yield call(toast.error, 'Error al generar layout automático');
   }
 }
 
@@ -311,12 +302,11 @@ export function* validatePageReduction({ payload }) {
       payload: response,
     });
   } catch (err) {
-    console.error("Error validating page reduction:", err);
     yield put({
       type: VALIDATE_PAGE_REDUCTION_FAILURE,
       errors: {
         ...(err.response?.data?.errors || {
-          general: "Error al validar reducción de páginas",
+          general: 'Error al validar reducción de páginas',
         }),
       },
     });
@@ -336,12 +326,11 @@ export function* validateInventoryReduction({ payload }) {
       payload: response,
     });
   } catch (err) {
-    console.error("Error validating inventory reduction:", err);
     yield put({
       type: VALIDATE_INVENTORY_REDUCTION_FAILURE,
       errors: {
         ...(err.response?.data?.errors || {
-          general: "Error al validar reducción de inventario",
+          general: 'Error al validar reducción de inventario',
         }),
       },
     });

@@ -1,7 +1,8 @@
-import React from "react";
-import * as XLSX from "xlsx";
-import Moment from "moment";
-import excelIcon from "shared/images/iconExcel.png";
+import React from 'react';
+import * as XLSX from 'xlsx';
+import { format } from 'date-fns';
+
+import excelIcon from 'shared/images/iconExcel.png';
 
 export default function ExcelExport({ tableRef }) {
   const [excelD, setExcelD] = React.useState([]);
@@ -12,9 +13,9 @@ export default function ExcelExport({ tableRef }) {
     }
   }, [excelD]);
 
-  const downloadExcel = data => {
+  const downloadExcel = (data) => {
     // Preparar datos para Excel
-    const excelData = data.map(d => ({
+    const excelData = data.map((d) => ({
       CLIENTE: d.client,
       CONTRATO: d.contract,
       EDICIÓN: d.edition,
@@ -24,7 +25,7 @@ export default function ExcelExport({ tableRef }) {
       OBSERVACIONES: d.observations,
       VENDEDOR: d.seller,
       FACTURA: d.invoiceNumber,
-      "PÁG.": d.pageNumber,
+      'PÁG.': d.pageNumber,
     }));
 
     // Crear workbook
@@ -44,13 +45,15 @@ export default function ExcelExport({ tableRef }) {
       { wch: 15 }, // Factura
       { wch: 12 }, // Pág.
     ];
-    ws["!cols"] = colWidths;
+    ws['!cols'] = colWidths;
 
-    XLSX.utils.book_append_sheet(wb, ws, "Órdenes para Producción");
+    XLSX.utils.book_append_sheet(wb, ws, 'Órdenes para Producción');
 
     // Descargar archivo
-    const filename = `Órdenes para producción ${Moment(new Date()).format(
-      "DD-MM-YYYY HH:mm:ss"
+    const filename = `Órdenes para producción ${format(
+      new Date(),
+      'dd-MM-yyyy HH:mm:ss'
+    )}
     )}.xlsx`;
     XLSX.writeFile(wb, filename);
   };
@@ -60,7 +63,7 @@ export default function ExcelExport({ tableRef }) {
       tableRef?.current?.paginationContext?.props?.data ||
       tableRef?.current ||
       []
-    ).map(d => ({
+    ).map((d) => ({
       client: d.client,
       contract: d.contract,
       edition: d.edition,
@@ -80,8 +83,8 @@ export default function ExcelExport({ tableRef }) {
   };
 
   return (
-    <button type="button" className="btn" onClick={handleClickExcel}>
-      <img src={excelIcon} width="26" height="32" />
+    <button type='button' className='btn' onClick={handleClickExcel}>
+      <img src={excelIcon} width='26' height='32' />
     </button>
   );
 }

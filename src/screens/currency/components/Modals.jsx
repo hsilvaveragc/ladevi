@@ -1,8 +1,8 @@
-import React from "react";
-import Modal from "shared/components/Modal";
-import CurrencyForm from "./Form";
+import Modal from 'shared/components/Modal';
 
-export default props => (
+import CurrencyForm from './Form';
+
+const CurrencyModals = (props) => (
   <>
     <Modal
       shouldClose={true}
@@ -51,3 +51,5 @@ export default props => (
     </Modal>
   </>
 );
+
+export default CurrencyModals;

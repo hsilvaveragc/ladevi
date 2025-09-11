@@ -1,14 +1,12 @@
-import React from "react";
-import styled from "styled-components";
-import { Formik, Form, FieldArray } from "formik";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
-import * as Yup from "yup";
-
-import InputSelectField from "shared/components/InputSelectField";
-import InputTextField from "shared/components/InputTextField";
-import InputCheckboxField from "shared/components/InputCheckboxField";
-import { SaveButton, DangerButton } from "shared/components/Buttons";
+import styled from 'styled-components';
+import { Formik, Form, FieldArray } from 'formik';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
+import * as Yup from 'yup';
+import InputSelectField from 'shared/components/InputSelectField';
+import InputTextField from 'shared/components/InputTextField';
+import InputCheckboxField from 'shared/components/InputCheckboxField';
+import { SaveButton, DangerButton } from 'shared/components/Buttons';
 
 const ProductAdvertisingSpaceFormContainer = styled.div`
   width: 50vw;
@@ -67,45 +65,45 @@ const ProductAdvertisingSpaceForm = ({
     validateOnChange={false}
     validateOnBlur={false}
     initialValues={{
-      id: addMode ? "" : selectedItem.id,
-      name: addMode ? "" : selectedItem.name,
-      productId: addMode ? "" : selectedItem.productId,
+      id: addMode ? '' : selectedItem.id,
+      name: addMode ? '' : selectedItem.name,
+      productId: addMode ? '' : selectedItem.productId,
       dollarPrice: addMode
-        ? ""
-        : selectedItem.dollarPrice.toLocaleString("pt-BR", {
+        ? ''
+        : selectedItem.dollarPrice.toLocaleString('pt-BR', {
             maximumFractionDigits: 2,
           }),
       discountForCheck: addMode
-        ? ""
-        : selectedItem.discountForCheck.toLocaleString("pt-BR", {
+        ? ''
+        : selectedItem.discountForCheck.toLocaleString('pt-BR', {
             maximumFractionDigits: 2,
           }),
       discountForLoyalty: addMode
-        ? ""
-        : selectedItem.discountForLoyalty.toLocaleString("pt-BR", {
+        ? ''
+        : selectedItem.discountForLoyalty.toLocaleString('pt-BR', {
             maximumFractionDigits: 2,
           }),
       discountForSameCountry: addMode
-        ? ""
-        : selectedItem.discountForSameCountry.toLocaleString("pt-BR", {
+        ? ''
+        : selectedItem.discountForSameCountry.toLocaleString('pt-BR', {
             maximumFractionDigits: 2,
           }),
       discountForOtherCountry: addMode
-        ? ""
+        ? ''
         : selectedItem.discountForOtherCountry,
       discountForAgency: addMode
-        ? ""
-        : selectedItem.discountForAgency.toLocaleString("pt-BR", {
+        ? ''
+        : selectedItem.discountForAgency.toLocaleString('pt-BR', {
             maximumFractionDigits: 2,
           }),
       height: addMode
-        ? ""
-        : selectedItem.height.toLocaleString("pt-BR", {
+        ? ''
+        : selectedItem.height.toLocaleString('pt-BR', {
             maximumFractionDigits: 2,
           }),
       width: addMode
-        ? ""
-        : selectedItem.width.toLocaleString("pt-BR", {
+        ? ''
+        : selectedItem.width.toLocaleString('pt-BR', {
             maximumFractionDigits: 2,
           }),
       show: addMode ? true : selectedItem.show,
@@ -116,18 +114,20 @@ const ProductAdvertisingSpaceForm = ({
           ? [
               {
                 id: 0,
-                discount: "",
-                advertisingSpaceLocationTypeId: "",
+                discount: '',
+                advertisingSpaceLocationTypeId: '',
               },
             ]
-          : selectedItem.productAdvertisingSpaceLocationDiscounts.map(pld => ({
-              ...pld,
-              discount: pld.discount.toLocaleString("pt-BR", {
-                maximumFractionDigits: 2,
-              }),
-              advertisingSpaceLocationTypeId:
-                pld.advertisingSpaceLocationTypeId,
-            })),
+          : selectedItem.productAdvertisingSpaceLocationDiscounts.map(
+              (pld) => ({
+                ...pld,
+                discount: pld.discount.toLocaleString('pt-BR', {
+                  maximumFractionDigits: 2,
+                }),
+                advertisingSpaceLocationTypeId:
+                  pld.advertisingSpaceLocationTypeId,
+              })
+            ),
       productAdvertisingSpaceVolumeDiscounts:
         addMode ||
         (editMode &&
@@ -135,165 +135,165 @@ const ProductAdvertisingSpaceForm = ({
           ? [
               {
                 id: 0,
-                rangeStart: "",
+                rangeStart: '',
                 rangeEnd: 999999,
-                discount: "",
+                discount: '',
               },
             ]
           : selectedItem.productAdvertisingSpaceVolumeDiscounts
-              .map(pvd => ({
+              .map((pvd) => ({
                 ...pvd,
                 rangeStart: pvd.rangeStart,
                 rangeEnd: pvd.rangeEnd,
-                discount: pvd.discount.toLocaleString("pt-BR", {
+                discount: pvd.discount.toLocaleString('pt-BR', {
                   maximumFractionDigits: 2,
                 }),
               }))
               .slice()
               .sort((a, b) => a.rangeStart - b.rangeStart),
     }}
-    onSubmit={values => {
-      let data = { ...values, countryId: +values.countryId, params: params };
+    onSubmit={(values) => {
+      const data = { ...values, countryId: +values.countryId, params: params };
       // data.productAdvertisingSpaceVolumeDiscounts = data.productAdvertisingSpaceVolumeDiscounts.filter(
       //   x => x.id !== 0 && !x.rangeStart && x.discount
       // );
       saveHandler(data);
     }}
     validationSchema={Yup.object().shape({
-      name: Yup.string().required("Requerido"),
-      productId: Yup.string().required("Requerido"),
-      dollarPrice: Yup.string().required("Requerido"),
-      height: Yup.string().required("Requerido"),
-      width: Yup.string().required("Requerido"),
-      discountForCheck: Yup.string().required("Requerido"),
-      discountForLoyalty: Yup.string().required("Requerido"),
-      discountForAgency: Yup.string().required("Requerido"),
-      discountForSameCountry: Yup.string().required("Requerido"),
-      discountForOtherCountry: Yup.string().required("Requerido"),
+      name: Yup.string().required('Requerido'),
+      productId: Yup.string().required('Requerido'),
+      dollarPrice: Yup.string().required('Requerido'),
+      height: Yup.string().required('Requerido'),
+      width: Yup.string().required('Requerido'),
+      discountForCheck: Yup.string().required('Requerido'),
+      discountForLoyalty: Yup.string().required('Requerido'),
+      discountForAgency: Yup.string().required('Requerido'),
+      discountForSameCountry: Yup.string().required('Requerido'),
+      discountForOtherCountry: Yup.string().required('Requerido'),
     })}
   >
-    {formikProps => (
-      <ProductAdvertisingSpaceFormContainer className="container">
+    {(formikProps) => (
+      <ProductAdvertisingSpaceFormContainer className='container'>
         <h3>
-          {addMode ? "Agregar Tipo de Espacio" : null}
-          {editMode ? "Editar Tipo de Espacio" : null}
-          {deleteMode ? "Eliminar Tipo de Espacio" : null}
+          {addMode ? 'Agregar Tipo de Espacio' : null}
+          {editMode ? 'Editar Tipo de Espacio' : null}
+          {deleteMode ? 'Eliminar Tipo de Espacio' : null}
         </h3>
-        <Form autoComplete="off">
-          <div className="form-row">
-            <div className="col-md-10">
+        <Form autoComplete='off'>
+          <div className='form-row'>
+            <div className='col-md-10'>
               <InputTextField
-                labelText="Nombre"
-                name="name"
+                labelText='Nombre'
+                name='name'
                 readOnly={deleteMode}
                 error={errors.name}
               />
             </div>
-            <div className="col-md-2">
-              {" "}
+            <div className='col-md-2'>
+              {' '}
               <InputTextField
-                labelText="Precio (U$S):"
-                name="dollarPrice"
+                labelText='Precio (U$S):'
+                name='dollarPrice'
                 readOnly={deleteMode}
                 error={errors.dollarPrice}
               />
             </div>
           </div>
-          <div className="form-row"></div>
-          <div className="form-group">
+          <div className='form-row'></div>
+          <div className='form-group'>
             <InputSelectField
-              labelText="Producto"
-              name="productId"
+              labelText='Producto'
+              name='productId'
               readOnly={deleteMode}
               options={productsAvailable}
               error={errors.productId}
             />
           </div>
-          <div className="form-row">
-            <div className="col-md-6">
+          <div className='form-row'>
+            <div className='col-md-6'>
               <InputTextField
-                labelText="Ancho (cm)"
-                name="width"
+                labelText='Ancho (cm)'
+                name='width'
                 readOnly={deleteMode}
                 error={errors.width}
               />
             </div>
-            <div className="col-md-6">
+            <div className='col-md-6'>
               <InputTextField
-                labelText="Alto (cm)"
-                name="height"
+                labelText='Alto (cm)'
+                name='height'
                 readOnly={deleteMode}
                 error={errors.height}
               />
             </div>
           </div>
-          <div className="form-row">
+          <div className='form-row'>
             <div
               style={{
-                width: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-around",
-                columnGap: "5px",
-                paddingLeft: "5px",
-                paddingRight: "5px",
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-around',
+                columnGap: '5px',
+                paddingLeft: '5px',
+                paddingRight: '5px',
               }}
             >
               <InputTextField
-                labelText="Dto. Cheque (%)"
-                name="discountForCheck"
+                labelText='Dto. Cheque (%)'
+                name='discountForCheck'
                 disabled={deleteMode}
                 error={errors.discountForCheck}
-              />{" "}
+              />{' '}
               <InputTextField
-                labelText="Dto. Fidelización (%)"
-                name="discountForLoyalty"
+                labelText='Dto. Fidelización (%)'
+                name='discountForLoyalty'
                 disabled={deleteMode}
                 error={errors.discountForLoyalty}
-              />{" "}
+              />{' '}
               <InputTextField
-                labelText="Dto. Nacional (%)"
-                name="discountForSameCountry"
+                labelText='Dto. Nacional (%)'
+                name='discountForSameCountry'
                 disabled={deleteMode}
                 error={errors.discountForSameCountry}
-              />{" "}
+              />{' '}
               <InputTextField
-                labelText="Dto. Internacional (%)"
-                name="discountForOtherCountry"
+                labelText='Dto. Internacional (%)'
+                name='discountForOtherCountry'
                 disabled={deleteMode}
                 error={errors.discountForOtherCountry}
-              />{" "}
+              />{' '}
               <InputTextField
-                labelText="Dto. Agencia (%)"
-                name="discountForAgency"
+                labelText='Dto. Agencia (%)'
+                name='discountForAgency'
                 disabled={deleteMode}
                 error={errors.discountForAgency}
               />
             </div>
-          </div>{" "}
-          <div className="volume-group-container">
+          </div>{' '}
+          <div className='volume-group-container'>
             <fieldset
               style={{
-                width: "100%",
-                border: "1px solid black",
-                padding: "0 1.4em 1.4em 1.4em",
-                margin: "0 0 1.5em 0",
+                width: '100%',
+                border: '1px solid black',
+                padding: '0 1.4em 1.4em 1.4em',
+                margin: '0 0 1.5em 0',
               }}
             >
               <legend
                 style={{
-                  fontSize: "1.2em",
-                  fontWeight: "bold",
-                  textAlign: "left",
-                  width: "auto",
-                  padding: "0 10px",
-                  borderBottom: "none",
+                  fontSize: '1.2em',
+                  fontWeight: 'bold',
+                  textAlign: 'left',
+                  width: 'auto',
+                  padding: '0 10px',
+                  borderBottom: 'none',
                 }}
               >
                 Descuentos por Ubicación
               </legend>
               <FieldArray
-                name="productAdvertisingSpaceLocationDiscounts"
+                name='productAdvertisingSpaceLocationDiscounts'
                 validateOnChange={false}
                 render={({ insert, remove, push, form }) => {
                   return (
@@ -304,15 +304,15 @@ const ProductAdvertisingSpaceForm = ({
                           (item, index) => {
                             return (
                               <div
-                                className="form-row"
+                                className='form-row'
                                 key={index}
                                 style={{
-                                  display: item.shouldDelete ? "none" : "flex",
+                                  display: item.shouldDelete ? 'none' : 'flex',
                                 }}
                               >
-                                <div className="col-md-5">
+                                <div className='col-md-5'>
                                   <InputSelectField
-                                    labelText="Ubicación"
+                                    labelText='Ubicación'
                                     name={`productAdvertisingSpaceLocationDiscounts.${index}.advertisingSpaceLocationTypeId`}
                                     options={availableAdsSpaceLocationType}
                                     disabled={deleteMode}
@@ -321,18 +321,18 @@ const ProductAdvertisingSpaceForm = ({
                                     }
                                   />
                                 </div>
-                                <div className="col-md-5">
+                                <div className='col-md-5'>
                                   <InputTextField
-                                    labelText="Descuento por Ubicación"
+                                    labelText='Descuento por Ubicación'
                                     name={`productAdvertisingSpaceLocationDiscounts.${index}.discount`}
                                     disabled={deleteMode}
                                   />
                                 </div>
-                                <div className="col-md-2">
-                                  <div className="button-container">
+                                <div className='col-md-2'>
+                                  <div className='button-container'>
                                     <button
-                                      className="btn btn-outline-secondary"
-                                      onClick={e => {
+                                      className='btn btn-outline-secondary'
+                                      onClick={(e) => {
                                         e.preventDefault();
                                         if (deleteMode) {
                                           return;
@@ -353,12 +353,12 @@ const ProductAdvertisingSpaceForm = ({
                                     >
                                       <FontAwesomeIcon
                                         icon={faMinus}
-                                        size="xs"
+                                        size='xs'
                                       ></FontAwesomeIcon>
                                     </button>
                                     <button
-                                      className="btn btn-outline-secondary"
-                                      onClick={e => {
+                                      className='btn btn-outline-secondary'
+                                      onClick={(e) => {
                                         e.preventDefault();
                                         if (deleteMode) {
                                           return;
@@ -367,14 +367,14 @@ const ProductAdvertisingSpaceForm = ({
                                           productId: editMode
                                             ? selectedItem.id
                                             : 0,
-                                          advertisingSpaceLocationTypeId: "",
-                                          discount: "",
+                                          advertisingSpaceLocationTypeId: '',
+                                          discount: '',
                                         });
                                       }}
                                     >
                                       <FontAwesomeIcon
                                         icon={faPlus}
-                                        size="xs"
+                                        size='xs'
                                       ></FontAwesomeIcon>
                                     </button>
                                   </div>
@@ -387,31 +387,31 @@ const ProductAdvertisingSpaceForm = ({
                   );
                 }}
               />
-            </fieldset>{" "}
+            </fieldset>{' '}
           </div>
-          <div className="volume-group-container">
+          <div className='volume-group-container'>
             <fieldset
               style={{
-                width: "100%",
-                border: "1px solid black",
-                padding: "0 1.4em 1.4em 1.4em",
-                margin: "0 0 1.5em 0",
+                width: '100%',
+                border: '1px solid black',
+                padding: '0 1.4em 1.4em 1.4em',
+                margin: '0 0 1.5em 0',
               }}
             >
               <legend
                 style={{
-                  fontSize: "1.2em",
-                  fontWeight: "bold",
-                  textAlign: "left",
-                  width: "auto",
-                  padding: "0 10px",
-                  borderBottom: "none",
+                  fontSize: '1.2em',
+                  fontWeight: 'bold',
+                  textAlign: 'left',
+                  width: 'auto',
+                  padding: '0 10px',
+                  borderBottom: 'none',
                 }}
               >
                 Descuentos por Volumen
               </legend>
               <FieldArray
-                name="productAdvertisingSpaceVolumeDiscounts"
+                name='productAdvertisingSpaceVolumeDiscounts'
                 validateOnChange={false}
                 render={({ insert, remove, push, form }) => (
                   <>
@@ -421,31 +421,31 @@ const ProductAdvertisingSpaceForm = ({
                         (item, index) => {
                           return (
                             <div
-                              className="form-row"
+                              className='form-row'
                               key={index}
                               style={{
-                                display: item.shouldDelete ? "none" : "flex",
+                                display: item.shouldDelete ? 'none' : 'flex',
                               }}
                             >
-                              <div className="col-md-5">
+                              <div className='col-md-5'>
                                 <InputTextField
-                                  labelText="Volumen Min"
+                                  labelText='Volumen Min'
                                   name={`productAdvertisingSpaceVolumeDiscounts.${index}.rangeStart`}
                                   disabled={deleteMode}
                                 />
                               </div>
-                              <div className="col-md-5">
+                              <div className='col-md-5'>
                                 <InputTextField
-                                  labelText="Descuento"
+                                  labelText='Descuento'
                                   name={`productAdvertisingSpaceVolumeDiscounts.${index}.discount`}
                                   disabled={deleteMode}
                                 />
                               </div>
-                              <div className="col-md-2">
-                                <div className="button-container">
+                              <div className='col-md-2'>
+                                <div className='button-container'>
                                   <button
-                                    className="btn btn-outline-secondary"
-                                    onClick={e => {
+                                    className='btn btn-outline-secondary'
+                                    onClick={(e) => {
                                       e.preventDefault();
                                       if (deleteMode) {
                                         return;
@@ -469,8 +469,8 @@ const ProductAdvertisingSpaceForm = ({
                                     ></FontAwesomeIcon>
                                   </button>
                                   <button
-                                    className="btn btn-outline-secondary"
-                                    onClick={e => {
+                                    className='btn btn-outline-secondary'
+                                    onClick={(e) => {
                                       e.preventDefault();
                                       if (
                                         deleteMode
@@ -490,9 +490,9 @@ const ProductAdvertisingSpaceForm = ({
                                         productAdvertisingSpaceId: editMode
                                           ? selectedItem.id
                                           : 0,
-                                        rangeStart: "",
+                                        rangeStart: '',
                                         rangeEnd: 999999,
-                                        discount: "",
+                                        discount: '',
                                       });
                                     }}
                                   >
@@ -511,31 +511,31 @@ const ProductAdvertisingSpaceForm = ({
               />
             </fieldset>
           </div>
-          <div className="form-group form-row">
-            <div className="col-6">
+          <div className='form-group form-row'>
+            <div className='col-6'>
               <InputCheckboxField
-                labelText="Mostrar en nuevos contratos"
-                name="show"
+                labelText='Mostrar en nuevos contratos'
+                name='show'
                 readOnly={deleteMode}
                 showLabel={true}
                 inline
               />
             </div>
           </div>
-          <div className="button-container">
+          <div className='button-container'>
             {deleteMode ? (
               <>
                 <SaveButton onClickHandler={closeHandler}>Cancelar</SaveButton>
-                <DangerButton type="submit">Eliminar</DangerButton>
+                <DangerButton type='submit'>Eliminar</DangerButton>
               </>
             ) : (
               <>
                 <DangerButton onClickHandler={closeHandler}>
                   Cancelar
                 </DangerButton>
-                <SaveButton type="submit">
-                  {addMode ? "Agregar" : null}
-                  {editMode ? "Guardar" : null}
+                <SaveButton type='submit'>
+                  {addMode ? 'Agregar' : null}
+                  {editMode ? 'Guardar' : null}
                 </SaveButton>
               </>
             )}

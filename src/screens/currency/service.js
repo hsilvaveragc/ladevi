@@ -1,10 +1,11 @@
-import axios from "axios";
-import { dissoc } from "ramda";
-import { getHeaders } from "shared/services/utils";
-import { sortAlphabetically } from "shared/utils";
+import axios from 'axios';
+import { dissoc } from 'ramda';
+import { sortAlphabetically } from 'shared/utils';
 
-const setEndDateToCurrencies = currencies => {
-  var result = currencies
+import { getHeaders } from 'shared/services/utils';
+
+const setEndDateToCurrencies = (currencies) => {
+  const result = currencies
     .slice()
     .sort((a, b) => (new Date(a.start) < new Date(b.start) ? -1 : 1));
 
@@ -30,16 +31,15 @@ export default {
           headers: getHeaders(),
         }
       )
-      .then(response => {
-        console.log(response);
-        return sortAlphabetically(sortAlphabetically(response.data.data), "id");
+      .then((response) => {
+        return sortAlphabetically(sortAlphabetically(response.data.data), 'id');
       }),
-  addCurrency: payload =>
+  addCurrency: (payload) =>
     axios
       .post(
         `Currency/Post`,
         {
-          ...dissoc("id", {
+          ...dissoc('id', {
             ...payload,
             currencyParities: payload.useEuro
               ? []
@@ -50,8 +50,8 @@ export default {
           headers: getHeaders(),
         }
       )
-      .then(response => response.data.data),
-  editCurrency: payload =>
+      .then((response) => response.data.data),
+  editCurrency: (payload) =>
     axios
       .put(
         `Currency/Put/${payload.id}`,
@@ -65,11 +65,11 @@ export default {
           headers: getHeaders(),
         }
       )
-      .then(response => response.data.data),
-  deleteCurrency: payload =>
+      .then((response) => response.data.data),
+  deleteCurrency: (payload) =>
     axios
       .delete(`Currency/Delete/${payload.id}`, {
         headers: getHeaders(),
       })
-      .then(response => response.data.data),
+      .then((response) => response.data.data),
 };

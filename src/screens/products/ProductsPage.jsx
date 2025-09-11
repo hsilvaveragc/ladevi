@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
-import { find, propEq } from "ramda";
-import Modal from "../../shared/components/Modal";
-import Table from "../../shared/components/Table";
-import ProductsForm from "./components/ProductsForm";
-import { EditButton, RemoveButton } from "../../shared/components/Buttons";
-import Filters from "./components/Filters";
+import { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import { find, propEq } from 'ramda';
+
+import Modal from '../../shared/components/Modal';
+import Table from '../../shared/components/Table';
+import { EditButton, RemoveButton } from '../../shared/components/Buttons';
+
+import ProductsForm from './components/ProductsForm';
+import Filters from './components/Filters';
 
 const PageContainer = styled.div`
   display: flex;
@@ -18,7 +20,7 @@ const PageContainer = styled.div`
   box-sizing: border-box;
 `;
 
-const ProductsPage = props => {
+const ProductsPage = (props) => {
   const [selectedItem, setSelectedItem] = useState({});
   const [params, setParams] = useState();
 
@@ -26,14 +28,14 @@ const ProductsPage = props => {
     props.actions.initialLoad();
   }, [props.actions]);
 
-  const CountryCell = cellProps => {
-    const countryObj = find(propEq("id", cellProps.value.id))(
+  const CountryCell = (cellProps) => {
+    const countryObj = find(propEq('id', cellProps.value.id))(
       props.availableCountries
     );
     return countryObj.name;
   };
   const Cell = ({ original }) =>
-    `${original.aliquotForSalesCommission.toLocaleString("pt-BR", {
+    `${original.aliquotForSalesCommission.toLocaleString('pt-BR', {
       maximumFractionDigits: 2,
     })} %`;
 
@@ -44,27 +46,27 @@ const ProductsPage = props => {
 
   const columns = [
     {
-      Header: "Nombre",
-      accessor: "name",
+      Header: 'Nombre',
+      accessor: 'name',
     },
     {
-      Header: "Tipo de producto",
-      accessor: "productType.name",
+      Header: 'Tipo de producto',
+      accessor: 'productType.name',
     },
     {
-      Header: "País",
-      accessor: "country",
+      Header: 'País',
+      accessor: 'country',
       Cell: CountryCell,
     },
     {
-      Header: "Alícuota para comisión (%)",
-      accessor: "aliquotForSalesCommission",
+      Header: 'Alícuota para comisión (%)',
+      accessor: 'aliquotForSalesCommission',
       Cell,
     },
     {
-      Header: "Borrar",
+      Header: 'Borrar',
       filterable: false,
-      Cell: row =>
+      Cell: (row) =>
         row.original.canDelete ? (
           <RemoveButton
             onClickHandler={() => {
@@ -144,13 +146,13 @@ const ProductsPage = props => {
         handleResetFilters={props.actions.getAllProducts}
         handleChangeParams={setParams}
       />
-      <div style={{ width: "100%" }}>
+      <div style={{ width: '100%' }}>
         <Table
           data={props.products}
           columns={columns}
           loading={props.isLoading}
           buttonHandler={props.actions.showAddModal}
-          buttonText="Agregar Producto"
+          buttonText='Agregar Producto'
           showButton
           rowClickHandler={rowClickHandler}
         ></Table>

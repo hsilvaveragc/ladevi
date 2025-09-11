@@ -1,11 +1,10 @@
-import React, { useState } from "react";
-import * as XLSX from "xlsx";
-import Moment from "moment";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDownload } from "@fortawesome/free-solid-svg-icons";
-
-import Modal from "shared/components/Modal";
-import { DangerButton } from "shared/components/Buttons";
+import React, { useState } from 'react';
+import * as XLSX from 'xlsx';
+import { format } from 'date-fns';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import Modal from 'shared/components/Modal';
+import { DangerButton } from 'shared/components/Buttons';
 
 export default function ExcelExport({ data, showModal, modalToggler }) {
   const [excelD, setExcelD] = React.useState([]);
@@ -16,16 +15,14 @@ export default function ExcelExport({ data, showModal, modalToggler }) {
     }
   }, [excelD]);
 
-  const downloadExcel = data => {
+  const downloadExcel = (data) => {
     // Preparar datos para Excel
-    const excelData = data.map(d => ({
+    const excelData = data.map((d) => ({
       PRODUCTO: d.product.name,
       TÍTULO: d.name,
       CÓDIGO: d.code,
-      "EDICIÓN CERRADA": d.closed ? "Si" : "No",
-      "FECHA SALIDA": d.releaseDate
-        ? Moment(d.releaseDate).format("DD/MM/YYYY")
-        : "",
+      'EDICIÓN CERRADA': d.closed ? 'Si' : 'No',
+      'FECHA SALIDA': d.releaseDate ? format(d.releaseDate, 'DD/MM/YYYY') : '',
     }));
 
     // Crear workbook
@@ -40,13 +37,12 @@ export default function ExcelExport({ data, showModal, modalToggler }) {
       { wch: 20 }, // Edición Cerrada
       { wch: 15 }, // Fecha Salida
     ];
-    ws["!cols"] = colWidths;
+    ws['!cols'] = colWidths;
 
-    XLSX.utils.book_append_sheet(wb, ws, "Ediciones");
+    XLSX.utils.book_append_sheet(wb, ws, 'Ediciones');
 
     // Descargar archivo
-    const filename = `Ediciones ${Moment(new Date()).format(
-      "DD-MM-YYYY HH:mm:ss"
+    const filename = `Ediciones ${format(new Date(), 'dd-MM-yyyy HH:mm:ss')}
     )}.xlsx`;
     XLSX.writeFile(wb, filename);
   };
@@ -61,22 +57,22 @@ export default function ExcelExport({ data, showModal, modalToggler }) {
         <FontAwesomeIcon icon={faDownload} />
       </DangerButton>
       <Modal
-        title="Exportar a Excel"
+        title='Exportar a Excel'
         showModal={showModal}
         modalToggler={modalToggler}
       >
         <p>¿Está seguro que desea exportar las ediciones a Excel?</p>
         <div
           style={{
-            display: "flex",
-            justifyContent: "space-between",
-            marginTop: "20px",
+            display: 'flex',
+            justifyContent: 'space-between',
+            marginTop: '20px',
           }}
         >
-          <button className="btn btn-secondary" onClick={modalToggler}>
+          <button className='btn btn-secondary' onClick={modalToggler}>
             Cancelar
           </button>
-          <button className="btn btn-success" onClick={handleClickExcel}>
+          <button className='btn btn-success' onClick={handleClickExcel}>
             Exportar
           </button>
         </div>

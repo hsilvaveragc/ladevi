@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import * as XLSX from "xlsx";
-import Moment from "moment";
-import excelIcon from "shared/images/iconExcel.png";
+import React from 'react';
+import * as XLSX from 'xlsx';
+import { format } from 'date-fns';
+import excelIcon from 'shared/images/iconExcel.png';
 
 export default function ExcelExport({
   data,
@@ -18,23 +18,23 @@ export default function ExcelExport({
     }
   }, [excelD]);
 
-  const downloadExcel = data => {
+  const downloadExcel = (data) => {
     // Preparar datos para Excel
-    const excelData = data.map(d => ({
+    const excelData = data.map((d) => ({
       CLIENTE: d.brandName,
       CONTRATO: d.contractName,
       EDICIÓN: d.edition,
       ESPACIO: d.productAdvertisingSpace,
       UBICACIÓN: d.advertisingSpaceLocationType,
-      "CANT.": d.quantity,
+      'CANT.': d.quantity,
       OBSERVACIONES: d.observations,
       VENDEDOR: d.seller,
       FACTURA: d.invoiceNumber,
-      "PÁG.": !d.pageNumber
-        ? ""
+      'PÁG.': !d.pageNumber
+        ? ''
         : isNaN(d.pageNumber)
-        ? d.pageNumber
-        : Number(d.pageNumber),
+          ? d.pageNumber
+          : Number(d.pageNumber),
     }));
 
     // Crear workbook
@@ -54,13 +54,15 @@ export default function ExcelExport({
       { wch: 15 }, // Factura
       { wch: 12 }, // Pág.
     ];
-    ws["!cols"] = colWidths;
+    ws['!cols'] = colWidths;
 
-    XLSX.utils.book_append_sheet(wb, ws, "Reporte");
+    XLSX.utils.book_append_sheet(wb, ws, 'Reporte');
 
     // Descargar archivo
-    const filename = `Órdenes de publicación ${Moment(new Date()).format(
-      "DD-MM-YYYY HH:mm:ss"
+    const filename = `Órdenes de publicación ${format(
+      new Date(),
+      'dd-MM-yyyy HH:mm:ss'
+    )}
     )}.xlsx`;
     XLSX.writeFile(wb, filename);
   };
@@ -72,15 +74,15 @@ export default function ExcelExport({
     contractName,
     availableSalesmens
   ) => {
-    const result = (data || []).map(o => ({
-      brandName: availableClients.find(x => x.id === clientId).brandName,
+    const result = (data || []).map((o) => ({
+      brandName: availableClients.find((x) => x.id === clientId).brandName,
       contractName: contractName,
       edition: o.productEdition.name,
       productAdvertisingSpace: o.productAdvertisingSpace.name,
       advertisingSpaceLocationType: o.advertisingSpaceLocationType.name,
       quantity: o.quantity,
       observations: o.observations,
-      seller: availableSalesmens.find(x => x.id === o.sellerId).fullName,
+      seller: availableSalesmens.find((x) => x.id === o.sellerId).fullName,
       invoiceNumber: o.invoiceNumber,
       pageNumber: o.pageNumber,
     }));
@@ -100,8 +102,8 @@ export default function ExcelExport({
   };
 
   return (
-    <button type="button" className="btn" onClick={handleClickExcel}>
-      <img src={excelIcon} width="26" height="32" />
+    <button type='button' className='btn' onClick={handleClickExcel}>
+      <img src={excelIcon} width='26' height='32' />
     </button>
   );
 }

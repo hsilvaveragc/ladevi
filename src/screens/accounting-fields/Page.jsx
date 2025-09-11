@@ -1,10 +1,10 @@
-import React from "react";
-import BasePage from "shared/components/BasePage";
-import AccountingFieldModal from "./components/AccountingFieldModal";
-import Filters from "./components/Filters";
-import AccountingFieldsTable from "./components/AccountingFieldsTable";
+import BasePage from 'shared/components/BasePage';
 
-const Page = props => {
+import AccountingFieldModal from './components/AccountingFieldModal';
+import Filters from './components/Filters';
+import AccountingFieldsTable from './components/AccountingFieldsTable';
+
+const Page = (props) => {
   const filterProps = {
     countries: props.countries,
     handleFilter: props.actions.filterAccountingFields,

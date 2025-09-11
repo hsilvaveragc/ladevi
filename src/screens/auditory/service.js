@@ -1,5 +1,6 @@
-import axios from "axios";
-import { getHeaders } from "shared/services/utils";
+import axios from 'axios';
+
+import { getHeaders } from 'shared/services/utils';
 
 export default {
   getAuditoryEvents: () =>
@@ -7,5 +8,5 @@ export default {
       .get(`Auditory/GetAuditory`, {
         headers: getHeaders(),
       })
-      .then(response => response.data),
+      .then((response) => response.data),
 };

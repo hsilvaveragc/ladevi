@@ -1,15 +1,14 @@
-import React from "react";
-import { FieldArray } from "formik";
-import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FieldArray } from 'formik';
+import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faInfoCircle,
   faGripVertical,
-} from "@fortawesome/free-solid-svg-icons";
-import InputTextField from "shared/components/InputTextField";
-import InputSelectField from "shared/components/InputSelectField";
-import InputMultiSelectField from "shared/components/InputMultiSelectField";
-import FormFieldset from "shared/components/FormFieldset";
+} from '@fortawesome/free-solid-svg-icons';
+import InputTextField from 'shared/components/InputTextField';
+import InputSelectField from 'shared/components/InputSelectField';
+import InputMultiSelectField from 'shared/components/InputMultiSelectField';
+import FormFieldset from 'shared/components/FormFieldset';
 
 const InventoryContainer = styled.div`
   margin-bottom: 2rem;
@@ -249,9 +248,9 @@ const InventorySpacesSection = ({
 }) => {
   return (
     <InventoryContainer>
-      <FormFieldset title="Inventario de tipos de espacios">
+      <FormFieldset title='Inventario de tipos de espacios'>
         <FieldArray
-          name="inventoryProductAdvertisingSpaces"
+          name='inventoryProductAdvertisingSpaces'
           render={() => {
             const currentProductAdvertisingSpaces = getProductAdvertisingSpaces(
               formikProps.values.productId
@@ -259,12 +258,12 @@ const InventorySpacesSection = ({
 
             if (currentProductAdvertisingSpaces.length === 0) {
               return (
-                <div className="alert alert-info">
+                <div className='alert alert-info'>
                   <FontAwesomeIcon
                     icon={faInfoCircle}
-                    className="text-info"
-                    style={{ fontSize: "1.25rem" }}
-                  />{" "}
+                    className='text-info'
+                    style={{ fontSize: '1.25rem' }}
+                  />{' '}
                   Seleccione un producto para configurar el inventario de sus
                   tipos de espacios
                 </div>
@@ -272,44 +271,45 @@ const InventorySpacesSection = ({
             }
 
             // Espacios que ya están asignados a alguna zona
-            const assignedSpaceIds = formikProps.values.inventoryProductAdvertisingSpaces
-              .filter(item => item.zone && item.zone !== null)
-              .map(item => item.productAdvertisingSpaceId);
+            const assignedSpaceIds =
+              formikProps.values.inventoryProductAdvertisingSpaces
+                .filter((item) => item.zone && item.zone !== null)
+                .map((item) => item.productAdvertisingSpaceId);
 
             // Espacios disponibles para arrastrar
             const availableSpaces = currentProductAdvertisingSpaces.filter(
-              space => !assignedSpaceIds.includes(space.id)
+              (space) => !assignedSpaceIds.includes(space.id)
             );
 
             return (
-              <div className="drag-drop-container">
+              <div className='drag-drop-container'>
                 {/* Espacios disponibles */}
-                <div className="available-spaces">
+                <div className='available-spaces'>
                   <h5>Tipos de Espacio Disponibles</h5>
-                  <div className="spaces-grid">
-                    {availableSpaces.map(space => (
+                  <div className='spaces-grid'>
+                    {availableSpaces.map((space) => (
                       <div
                         key={space.id}
-                        className="space-card"
+                        className='space-card'
                         draggable
                         title={space.name.length > 12 ? space.name : undefined}
-                        onDragStart={e => handleDragStart(e, space)}
+                        onDragStart={(e) => handleDragStart(e, space)}
                       >
                         <FontAwesomeIcon
                           icon={faGripVertical}
-                          className="drag-handle"
+                          className='drag-handle'
                         />
-                        <span className="space-name">{space.name}</span>
+                        <span className='space-name'>{space.name}</span>
                       </div>
                     ))}
                     {availableSpaces.length === 0 && (
                       <div
                         style={{
-                          gridColumn: "1 / -1",
-                          textAlign: "center",
-                          color: "#6c757d",
-                          fontSize: "0.9rem",
-                          padding: "1rem",
+                          gridColumn: '1 / -1',
+                          textAlign: 'center',
+                          color: '#6c757d',
+                          fontSize: '0.9rem',
+                          padding: '1rem',
                         }}
                       >
                         Todos los tipos de espacio han sido asignados
@@ -319,28 +319,29 @@ const InventorySpacesSection = ({
                 </div>
 
                 {/* Zonas de destino */}
-                <div className="drop-zones">
-                  {["tapa", "interior", "contratapa"].map(zone => {
-                    const zoneSpaces = formikProps.values.inventoryProductAdvertisingSpaces
-                      .filter(item => item.zone === zone)
-                      .sort((a, b) => a.order - b.order)
-                      .map(item => {
-                        const space = currentProductAdvertisingSpaces.find(
-                          s => s.id === item.productAdvertisingSpaceId
-                        );
-                        return { ...space, quantity: item.quantity };
-                      });
+                <div className='drop-zones'>
+                  {['tapa', 'interior', 'contratapa'].map((zone) => {
+                    const zoneSpaces =
+                      formikProps.values.inventoryProductAdvertisingSpaces
+                        .filter((item) => item.zone === zone)
+                        .sort((a, b) => a.order - b.order)
+                        .map((item) => {
+                          const space = currentProductAdvertisingSpaces.find(
+                            (s) => s.id === item.productAdvertisingSpaceId
+                          );
+                          return { ...space, quantity: item.quantity };
+                        });
 
                     return (
                       <div key={zone} className={`drop-zone ${zone}`}>
-                        <div className="zone-header">
+                        <div className='zone-header'>
                           {zone.charAt(0).toUpperCase() + zone.slice(1)}
                           {zoneSpaces.length > 0 && (
                             <span
                               style={{
-                                fontSize: "0.8rem",
-                                fontWeight: "normal",
-                                marginLeft: "0.5rem",
+                                fontSize: '0.8rem',
+                                fontWeight: 'normal',
+                                marginLeft: '0.5rem',
                               }}
                             >
                               ({zoneSpaces.length})
@@ -348,11 +349,11 @@ const InventorySpacesSection = ({
                           )}
                         </div>
                         <div
-                          className="cards-container"
+                          className='cards-container'
                           onDragOver={handleDragOver}
                           onDragEnter={handleDragEnter}
                           onDragLeave={handleDragLeave}
-                          onDrop={e =>
+                          onDrop={(e) =>
                             handleDrop(
                               e,
                               zone,
@@ -364,11 +365,11 @@ const InventorySpacesSection = ({
                           {zoneSpaces.length === 0 && (
                             <div
                               style={{
-                                textAlign: "center",
-                                color: "#adb5bd",
-                                fontSize: "0.85rem",
-                                padding: "1rem",
-                                fontStyle: "italic",
+                                textAlign: 'center',
+                                color: '#adb5bd',
+                                fontSize: '0.85rem',
+                                padding: '1rem',
+                                fontStyle: 'italic',
                               }}
                             >
                               Arrastra aquí los tipos de espacio
@@ -377,88 +378,89 @@ const InventorySpacesSection = ({
 
                           {zoneSpaces.map((space, index) => {
                             // Encontrar el item del inventario correspondiente
-                            const inventoryItem = formikProps.values.inventoryProductAdvertisingSpaces.find(
-                              item =>
-                                item.productAdvertisingSpaceId === space.id &&
-                                item.zone === zone
-                            );
+                            const inventoryItem =
+                              formikProps.values.inventoryProductAdvertisingSpaces.find(
+                                (item) =>
+                                  item.productAdvertisingSpaceId === space.id &&
+                                  item.zone === zone
+                              );
 
                             return (
                               <div
                                 key={`${space.id}-${zone}`}
-                                className="space-card"
+                                className='space-card'
                                 draggable
                                 title={
                                   space.name.length > 15
                                     ? space.name
                                     : undefined
                                 }
-                                onDragStart={e =>
+                                onDragStart={(e) =>
                                   handleDragStart(e, space, zone)
                                 }
                               >
                                 <FontAwesomeIcon
                                   icon={faGripVertical}
-                                  className="drag-handle"
+                                  className='drag-handle'
                                 />
-                                <span className="space-name">{space.name}</span>
+                                <span className='space-name'>{space.name}</span>
 
                                 {/* Controles para zona Interior */}
-                                {zone === "interior" && inventoryItem && (
+                                {zone === 'interior' && inventoryItem && (
                                   <>
-                                    <span className="label-inputs">
+                                    <span className='label-inputs'>
                                       Cantidad
-                                    </span>{" "}
+                                    </span>{' '}
                                     <InputTextField
                                       name={`space[${index}].quantity`}
                                       showLabel={false}
                                       disabled={deleteMode}
-                                      type="number"
-                                      min="0"
+                                      type='number'
+                                      min='0'
                                       withoutFormGroup={true}
                                       customStyles={{
-                                        height: "35px",
-                                        width: "70px",
-                                        fontSize: "12px",
+                                        height: '35px',
+                                        width: '70px',
+                                        fontSize: '12px',
                                       }}
                                     />
                                     {/* Select de ubicación de páginas */}
-                                    {"      "}
-                                    <span className="label-inputs">
+                                    {'      '}
+                                    <span className='label-inputs'>
                                       Ubicación
-                                    </span>{" "}
-                                    <div className="page-location-select">
+                                    </span>{' '}
+                                    <div className='page-location-select'>
                                       <InputSelectField
                                         customStyles={{
-                                          control: provided => ({
+                                          control: (provided) => ({
                                             ...provided,
-                                            minHeight: "35px",
-                                            height: "35px",
-                                            width: "150px",
-                                            fontSize: "12px",
+                                            minHeight: '35px',
+                                            height: '35px',
+                                            width: '150px',
+                                            fontSize: '12px',
                                           }),
-                                          valueContainer: provided => ({
+                                          valueContainer: (provided) => ({
                                             ...provided,
-                                            height: "35px",
-                                            padding: "0 6px",
-                                            fontSize: "12px",
+                                            height: '35px',
+                                            padding: '0 6px',
+                                            fontSize: '12px',
                                           }),
-                                          indicatorsContainer: provided => ({
+                                          indicatorsContainer: (provided) => ({
                                             ...provided,
-                                            height: "35px",
-                                            fontSize: "12px",
+                                            height: '35px',
+                                            fontSize: '12px',
                                           }),
                                         }}
                                         showLabel={false}
                                         name={`pageLocation-${space.id}`}
                                         options={[
-                                          { code: "ambas", text: "Ambas" },
-                                          { code: "pares", text: "Pares" },
-                                          { code: "impares", text: "Impares" },
+                                          { code: 'ambas', text: 'Ambas' },
+                                          { code: 'pares', text: 'Pares' },
+                                          { code: 'impares', text: 'Impares' },
                                         ]}
-                                        getOptionLabel={option => option.text}
+                                        getOptionLabel={(option) => option.text}
                                         disabled={deleteMode}
-                                        onChange={e =>
+                                        onChange={(e) =>
                                           handlePageLocationChange(
                                             space.id,
                                             e.target.value,
@@ -471,45 +473,47 @@ const InventorySpacesSection = ({
                                     {/* Selección múltiple de páginas específicas */}
                                     {formikProps.values.pageCount > 2 && (
                                       <>
-                                        <div className="page-selection-container">
+                                        <div className='page-selection-container'>
                                           <InputMultiSelectField
                                             customStyles={{
-                                              control: provided => ({
+                                              control: (provided) => ({
                                                 ...provided,
-                                                minHeight: "35px",
-                                                height: "35px",
-                                                width: "150px",
-                                                fontSize: "12px",
+                                                minHeight: '35px',
+                                                height: '35px',
+                                                width: '150px',
+                                                fontSize: '12px',
                                               }),
-                                              valueContainer: provided => ({
+                                              valueContainer: (provided) => ({
                                                 ...provided,
-                                                height: "35px",
-                                                padding: "0 6px",
-                                                fontSize: "12px",
+                                                height: '35px',
+                                                padding: '0 6px',
+                                                fontSize: '12px',
                                               }),
-                                              indicatorsContainer: provided => ({
+                                              indicatorsContainer: (
+                                                provided
+                                              ) => ({
                                                 ...provided,
-                                                height: "35px",
-                                                fontSize: "12px",
+                                                height: '35px',
+                                                fontSize: '12px',
                                               }),
-                                              multiValue: provided => ({
+                                              multiValue: (provided) => ({
                                                 ...provided,
-                                                fontSize: "12px",
+                                                fontSize: '12px',
                                               }),
-                                              multiValueLabel: provided => ({
+                                              multiValueLabel: (provided) => ({
                                                 ...provided,
-                                                fontSize: "12px",
+                                                fontSize: '12px',
                                               }),
                                             }}
                                             name={`specificPages-${space.id}`}
                                             showLabel={false}
-                                            allOptionText="Todas"
-                                            placeholder="Páginas"
+                                            allOptionText='Todas'
+                                            placeholder='Páginas'
                                             disabled={deleteMode}
                                             options={generateInteriorPageOptions(
                                               formikProps.values.pageCount,
                                               inventoryItem.pageLocation
-                                            ).map(pageNum => ({
+                                            ).map((pageNum) => ({
                                               value: pageNum,
                                               text: `Pág ${pageNum}`,
                                             }))}
@@ -517,27 +521,31 @@ const InventorySpacesSection = ({
                                               selectedPages,
                                               allSelected
                                             ) => {
-                                              const updatedInventory = formikProps.values.inventoryProductAdvertisingSpaces.map(
-                                                item => {
-                                                  if (
-                                                    item.productAdvertisingSpaceId ===
-                                                    space.id
-                                                  ) {
-                                                    return {
-                                                      ...item,
-                                                      specificPages: selectedPages,
-                                                      allPages: allSelected,
-                                                    };
+                                              const updatedInventory =
+                                                formikProps.values.inventoryProductAdvertisingSpaces.map(
+                                                  (item) => {
+                                                    if (
+                                                      item.productAdvertisingSpaceId ===
+                                                      space.id
+                                                    ) {
+                                                      return {
+                                                        ...item,
+                                                        specificPages:
+                                                          selectedPages,
+                                                        allPages: allSelected,
+                                                      };
+                                                    }
+                                                    return item;
                                                   }
-                                                  return item;
-                                                }
-                                              );
+                                                );
                                               formikProps.setFieldValue(
-                                                "inventoryProductAdvertisingSpaces",
+                                                'inventoryProductAdvertisingSpaces',
                                                 updatedInventory
                                               );
                                             }}
-                                            onAllChangeHandler={allSelected => {
+                                            onAllChangeHandler={(
+                                              allSelected
+                                            ) => {
                                               handleAllPagesChange(
                                                 space.id,
                                                 allSelected,

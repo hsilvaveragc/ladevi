@@ -1,9 +1,8 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { Field } from "formik";
-import styled from "styled-components";
-import { isNil } from "ramda";
-import Select from "react-select";
+import PropTypes from 'prop-types';
+import { Field } from 'formik';
+import styled from 'styled-components';
+import { isNil } from 'ramda';
+import Select from 'react-select';
 
 const InputMultiSelectContainer = styled.div`
   label {
@@ -30,18 +29,18 @@ function InputMultiSelectField({
   disabled = false,
   displayErrorMsg = true,
   showLabel = true,
-  allOptionText = "Todas las opciones",
-  placeholder = "Seleccionar opciones",
+  allOptionText = 'Todas las opciones',
+  placeholder = 'Seleccionar opciones',
   customStyles = {},
   onChangeHandler = () => {},
   onAllChangeHandler = () => {},
-  getOptionLabel = option => option.text,
-  getOptionValue = option => option.value,
+  getOptionLabel = (option) => option.text,
+  getOptionValue = (option) => option.value,
   isLoading = false,
 }) {
   // Agregar la opción "Todas las opciones" al inicio
   const allOption = {
-    value: "__ALL__",
+    value: '__ALL__',
     text: allOptionText,
     isAllOption: true,
   };
@@ -57,7 +56,7 @@ function InputMultiSelectField({
         // Verificar si todas las opciones están seleccionadas (excluyendo la opción "Todas")
         const allSelected =
           options.length > 0 &&
-          options.every(opt => fieldValue.includes(opt.value));
+          options.every((opt) => fieldValue.includes(opt.value));
 
         // Convertir valores a objetos para react-select
         let selectValue = [];
@@ -65,30 +64,30 @@ function InputMultiSelectField({
         if (allSelected) {
           selectValue = [allOption];
         } else {
-          selectValue = options.filter(option =>
+          selectValue = options.filter((option) =>
             fieldValue.includes(option.value)
           );
         }
 
-        const handleChange = selectedOptions => {
+        const handleChange = (selectedOptions) => {
           const selectedArray = selectedOptions || [];
 
           // Verificar si se seleccionó "Todas las opciones"
           const allOptionSelected = selectedArray.some(
-            opt => opt.value === "__ALL__"
+            (opt) => opt.value === '__ALL__'
           );
 
           let newValues = [];
 
           if (allOptionSelected) {
             // Si se selecciona "Todas", seleccionar todas las opciones reales
-            newValues = options.map(opt => opt.value);
+            newValues = options.map((opt) => opt.value);
             onAllChangeHandler(true);
           } else {
             // Solo las opciones seleccionadas (sin la opción "Todas")
             newValues = selectedArray
-              .filter(opt => opt.value !== "__ALL__")
-              .map(opt => opt.value);
+              .filter((opt) => opt.value !== '__ALL__')
+              .map((opt) => opt.value);
 
             // Si se deseleccionaron todas, llamar onAllChangeHandler(false)
             if (newValues.length === 0 && fieldValue.length > 0) {
@@ -101,7 +100,7 @@ function InputMultiSelectField({
         };
 
         return (
-          <InputMultiSelectContainer className="form-group">
+          <InputMultiSelectContainer className='form-group'>
             {showLabel && <label htmlFor={field.name}>{labelText}</label>}
 
             <Select
@@ -109,8 +108,8 @@ function InputMultiSelectField({
               styles={customStyles}
               className={
                 (form.touched[field.name] && form.errors[field.name]) || error
-                  ? "is-invalid"
-                  : ""
+                  ? 'is-invalid'
+                  : ''
               }
               isDisabled={disabled}
               isMulti={true}
@@ -122,7 +121,7 @@ function InputMultiSelectField({
               onBlur={() => {
                 form.setFieldTouched(field.name, true);
               }}
-              placeholder={isLoading ? "Cargando..." : placeholder}
+              placeholder={isLoading ? 'Cargando...' : placeholder}
               isLoading={isLoading}
               closeMenuOnSelect={false}
               hideSelectedOptions={false}
@@ -138,14 +137,14 @@ function InputMultiSelectField({
                     displayText = allOptionText;
                   } else if (selectedCount > 0) {
                     displayText = `${selectedCount} opción${
-                      selectedCount !== 1 ? "es" : ""
-                    } seleccionada${selectedCount !== 1 ? "s" : ""}`;
+                      selectedCount !== 1 ? 'es' : ''
+                    } seleccionada${selectedCount !== 1 ? 's' : ''}`;
                   }
 
                   return (
                     <div
                       {...props.innerProps}
-                      style={props.getStyles("placeholder", props)}
+                      style={props.getStyles('placeholder', props)}
                     >
                       {displayText}
                     </div>
@@ -154,7 +153,7 @@ function InputMultiSelectField({
               }}
               // Personalizar cómo se muestran las opciones en el dropdown
               formatOptionLabel={(option, { context }) => {
-                if (context === "value" && option.value === "__ALL__") {
+                if (context === 'value' && option.value === '__ALL__') {
                   return allOptionText;
                 }
                 return option.text;
@@ -166,11 +165,11 @@ function InputMultiSelectField({
                 id={`${field.name}-error`}
                 className={
                   isNil(form.errors[field.name]) && isNil(error)
-                    ? "inactive"
-                    : "form-text"
+                    ? 'inactive'
+                    : 'form-text'
                 }
                 style={{
-                  display: form.errors[field.name] || error ? "inline" : "none",
+                  display: form.errors[field.name] || error ? 'inline' : 'none',
                 }}
               >
                 {isNil(error) ? form.errors[field.name] : error}

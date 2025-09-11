@@ -1,4 +1,5 @@
-import { createSelector } from "reselect";
+import { createSelector } from 'reselect';
+
 import {
   SEARCH_CLIENTS_INIT,
   SEARCH_CLIENTS_SUCCESS,
@@ -35,7 +36,7 @@ import {
   GET_ALL_TAX_CATEGORIES_FAILURE,
   SHOW_DUPLICATE_CUIT_MODAL,
   HIDE_DUPLICATE_CUIT_MODAL,
-} from "./actionTypes.js";
+} from './actionTypes.js';
 
 const initialState = {
   clients: [],
@@ -55,7 +56,7 @@ const initialState = {
   duplicateCuitData: null,
 };
 
-export default function(state = initialState, action) {
+export default function (state = initialState, action) {
   switch (action.type) {
     case INITIAL_LOAD_INIT:
     case SEARCH_CLIENTS_INIT:
@@ -197,79 +198,79 @@ export default function(state = initialState, action) {
   }
 }
 
-const getClientsReducer = state => state.clients;
+const getClientsReducer = (state) => state.clients;
 
 export const getAllClients = createSelector(
   getClientsReducer,
-  clientsReducer => clientsReducer.clients
+  (clientsReducer) => clientsReducer.clients
 );
 
 export const getErrors = createSelector(
   getClientsReducer,
-  clientsReducer => clientsReducer.errors
+  (clientsReducer) => clientsReducer.errors
 );
 
 export const getSearchClientsLoading = createSelector(
   getClientsReducer,
-  clientsReducer => clientsReducer.searchClientsLoading
+  (clientsReducer) => clientsReducer.searchClientsLoading
 );
 
 export const getUsers = createSelector(
   getClientsReducer,
-  clientsReducer => clientsReducer.users
+  (clientsReducer) => clientsReducer.users
 );
 
 export const getTaxes = createSelector(
   getClientsReducer,
-  clientsReducer => clientsReducer.taxes
+  (clientsReducer) => clientsReducer.taxes
 );
 
 export const getAllTaxCategories = createSelector(
   getClientsReducer,
-  clientsReducer => clientsReducer.taxCategories
+  (clientsReducer) => clientsReducer.taxCategories
 );
 
 export const getShowAddModal = createSelector(
   getClientsReducer,
-  clientsReducer => clientsReducer.showAddModal
+  (clientsReducer) => clientsReducer.showAddModal
 );
 
 export const getShowEditModal = createSelector(
   getClientsReducer,
-  clientsReducer => clientsReducer.showEditModal
+  (clientsReducer) => clientsReducer.showEditModal
 );
 
 export const getShowDeleteModal = createSelector(
   getClientsReducer,
-  clientsReducer => clientsReducer.showDeleteModal
+  (clientsReducer) => clientsReducer.showDeleteModal
 );
 
 export const fetchCountries = createSelector(
   getClientsReducer,
-  clientsReducer => clientsReducer.countries
+  (clientsReducer) => clientsReducer.countries
 );
 
 export const fetchStates = createSelector(
   getClientsReducer,
-  clientsReducer => clientsReducer.states
+  (clientsReducer) => clientsReducer.states
 );
 
 export const fetchDistricts = createSelector(
   getClientsReducer,
-  clientsReducer => clientsReducer.districts
+  (clientsReducer) => clientsReducer.districts
 );
 
 export const getAllCities = createSelector(
   getClientsReducer,
-  clientsReducer => clientsReducer.cities
+  (clientsReducer) => clientsReducer.cities
 );
 
 export const getShowDuplicateCuitModal = createSelector(
   getClientsReducer,
-  clientsReducer => clientsReducer.showDuplicateCuitModal
+  (clientsReducer) => clientsReducer.showDuplicateCuitModal
 );
 
 export const getDuplicateCuitData = createSelector(
   getClientsReducer,
-  clientsReducer => clientsReducer.duplicateCuitData
+  (clientsReducer) => clientsReducer.duplicateCuitData
 );

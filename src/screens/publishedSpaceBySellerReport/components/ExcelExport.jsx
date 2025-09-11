@@ -1,7 +1,8 @@
-import React from "react";
-import * as XLSX from "xlsx";
-import Moment from "moment";
-import excelIcon from "shared/images/iconExcel.png";
+import React from 'react';
+import * as XLSX from 'xlsx';
+import { format } from 'date-fns';
+
+import excelIcon from 'shared/images/iconExcel.png';
 
 export default function ExcelExport({ tableRef }) {
   const [excelD, setExcelD] = React.useState([]);
@@ -12,19 +13,19 @@ export default function ExcelExport({ tableRef }) {
     }
   }, [excelD]);
 
-  const downloadExcel = data => {
+  const downloadExcel = (data) => {
     // Preparar datos para Excel
-    const excelData = data.map(d => ({
+    const excelData = data.map((d) => ({
       EDICIÓN: d.edition,
       SALIDA: d.releaseDate,
-      "TIPO DE ESPACIO": d.productAdvertisingSpace,
+      'TIPO DE ESPACIO': d.productAdvertisingSpace,
       CANTIDAD: d.quantity,
       MONEDA: d.currency,
       IMPORTE: d.total,
-      "Nº FACTURA": d.invoiceNumber,
-      "Nº CONT.": d.contractNumber,
-      VENDEDOR: d.seller,
+      'Nº FACTURA': d.invoiceNumber,
+      'Nº CONT.': d.contractNumber,
       CLIENTE: d.client,
+      VENDEDOR: d.seller,
     }));
 
     // Crear workbook
@@ -41,17 +42,18 @@ export default function ExcelExport({ tableRef }) {
       { wch: 12 }, // Importe
       { wch: 15 }, // Nº Factura
       { wch: 12 }, // Nº Cont.
-      { wch: 25 }, // Vendedor
       { wch: 40 }, // Cliente
+      { wch: 25 }, // Vendedor
     ];
-    ws["!cols"] = colWidths;
+    ws['!cols'] = colWidths;
 
-    XLSX.utils.book_append_sheet(wb, ws, "Reporte por Cliente");
+    XLSX.utils.book_append_sheet(wb, ws, 'Reporte por Cliente');
 
     // Descargar archivo
-    const filename = `Espacios publicados por cliente ${Moment(
-      new Date()
-    ).format("DD-MM-YYYY HH:mm:ss")}.xlsx`;
+    const filename = `Espacios publicados por cliente ${format(
+      new Date(),
+      'dd-MM-yyyy HH:mm:ss'
+    )}.xlsx`;
     XLSX.writeFile(wb, filename);
   };
 
@@ -60,7 +62,7 @@ export default function ExcelExport({ tableRef }) {
       tableRef?.current?.paginationContext?.props?.data ||
       tableRef?.current ||
       []
-    ).map(d => ({
+    ).map((d) => ({
       edition: d.edition,
       releaseDate: d.releaseDate,
       productAdvertisingSpace: d.productAdvertisingSpace,
@@ -69,8 +71,8 @@ export default function ExcelExport({ tableRef }) {
       total: d.total,
       invoiceNumber: d.invoiceNumber,
       contractNumber: d.contractNumber,
-      seller: d.seller,
       client: d.client,
+      seller: d.seller,
     }));
     return data;
   };
@@ -80,8 +82,8 @@ export default function ExcelExport({ tableRef }) {
   };
 
   return (
-    <button type="button" className="btn" onClick={handleClickExcel}>
-      <img src={excelIcon} width="26" height="32" />
+    <button type='button' className='btn' onClick={handleClickExcel}>
+      <img src={excelIcon} width='26' height='32' />
     </button>
   );
 }

@@ -1,8 +1,8 @@
-import React from "react";
-import Modal from "shared/components/Modal";
-import AccountingFieldForm from "./AccountingFieldForm";
+import Modal from 'shared/components/Modal';
 
-const AccountingFieldModal = props => (
+import AccountingFieldForm from './AccountingFieldForm';
+
+const AccountingFieldModal = (props) => (
   <>
     <Modal
       shouldClose={true}

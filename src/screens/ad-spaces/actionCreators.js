@@ -8,23 +8,23 @@ import {
   PRODUCT_ADVERTISING_SPACE_SHOW_DELETE_MODAL,
   PRODUCT_ADVERTISING_SPACE_INITIAL_LOAD_INIT,
   FILTER_PRODUCT_ADVERTISING_SPACES_INIT,
-} from "./actionTypes";
+} from './actionTypes';
 
 export const getAllProductAdvertisingSpaces = () => ({
   type: GET_ALL_PRODUCT_ADVERTISING_SPACES_INIT,
 });
 
-export const addProductAdvertisingSpace = payload => ({
+export const addProductAdvertisingSpace = (payload) => ({
   type: ADD_PRODUCT_ADVERTISING_SPACE_INIT,
   payload,
 });
 
-export const editProductAdvertisingSpace = payload => ({
+export const editProductAdvertisingSpace = (payload) => ({
   type: EDIT_PRODUCT_ADVERTISING_SPACE_INIT,
   payload,
 });
 
-export const deleteProductAdvertisingSpace = payload => ({
+export const deleteProductAdvertisingSpace = (payload) => ({
   type: DELETE_PRODUCT_ADVERTISING_SPACE_INIT,
   payload,
 });
@@ -45,7 +45,7 @@ export const initialLoad = () => ({
   type: PRODUCT_ADVERTISING_SPACE_INITIAL_LOAD_INIT,
 });
 
-export const filterProductAdvertisingSpace = payload => ({
+export const filterProductAdvertisingSpace = (payload) => ({
   type: FILTER_PRODUCT_ADVERTISING_SPACES_INIT,
   payload,
 });

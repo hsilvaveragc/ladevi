@@ -1,12 +1,12 @@
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import styled from "styled-components";
-import { Formik, Form } from "formik";
-import InputTextField from "shared/components/InputTextField";
-import InputSelectField from "shared/components/InputSelectField";
-import { SaveButton, DangerButton } from "shared/components/Buttons";
-import { editionsFilterBy, getAllEditions } from "../actionCreators";
-import { getProducts } from "../reducer";
+import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
+import { Formik, Form } from 'formik';
+import InputTextField from 'shared/components/InputTextField';
+import InputSelectField from 'shared/components/InputSelectField';
+import { SaveButton, DangerButton } from 'shared/components/Buttons';
+
+import { editionsFilterBy, getAllEditions } from '../actionCreators';
+import { getProducts } from '../reducer';
 
 const FiltersContainer = styled.div`
   width: 70vw;
@@ -30,7 +30,7 @@ const Filters = () => {
   const productsAvailable = useSelector(getProducts);
 
   // Handlers
-  const handleFilter = payload => {
+  const handleFilter = (payload) => {
     dispatch(editionsFilterBy(payload));
   };
 
@@ -40,12 +40,12 @@ const Filters = () => {
 
   const defaultOption = {
     id: -1,
-    name: "Todos",
+    name: 'Todos',
   };
 
   const initialValues = {
-    code: "",
-    name: "",
+    code: '',
+    name: '',
     productId: -1,
   };
 
@@ -55,25 +55,25 @@ const Filters = () => {
       enableReinitialize={true}
       onSubmit={handleFilter}
     >
-      {formikProps => (
+      {(formikProps) => (
         <FiltersContainer>
           <Form>
-            <div className="form-row">
-              <div className="col-3">
-                <InputTextField labelText="Título" name="name" />
+            <div className='form-row'>
+              <div className='col-3'>
+                <InputTextField labelText='Título' name='name' />
               </div>
-              <div className="col-3">
+              <div className='col-3'>
                 <InputSelectField
-                  labelText="Producto"
-                  name="productId"
+                  labelText='Producto'
+                  name='productId'
                   options={[defaultOption, ...productsAvailable]}
                 />
               </div>
-              <div className="col-3">
-                <InputTextField labelText="Código" name="code" />
+              <div className='col-3'>
+                <InputTextField labelText='Código' name='code' />
               </div>
-              <div className="col-3">
-                <div className="buttons-container">
+              <div className='col-3'>
+                <div className='buttons-container'>
                   <DangerButton
                     onClickHandler={() => {
                       formikProps.resetForm();
@@ -82,7 +82,7 @@ const Filters = () => {
                   >
                     Limpiar
                   </DangerButton>
-                  <SaveButton type="submit">Buscar</SaveButton>
+                  <SaveButton type='submit'>Buscar</SaveButton>
                 </div>
               </div>
             </div>

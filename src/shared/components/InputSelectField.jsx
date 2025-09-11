@@ -1,9 +1,8 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { Field } from "formik";
-import styled from "styled-components";
-import { isNil, head } from "ramda";
-import Select from "react-select";
+import PropTypes from 'prop-types';
+import { Field } from 'formik';
+import styled from 'styled-components';
+import { isNil, head } from 'ramda';
+import Select from 'react-select';
 
 const InputSelectContainer = styled.div`
   label {
@@ -27,13 +26,13 @@ function InputSelect({
   name,
   labelText,
   options = [],
-  placeholderText = "",
+  placeholderText = '',
   disabled = false,
   displayErrorMsg = true,
   customStyles = {},
   onChangeHandler = () => {},
-  getOptionLabel = option => option.name,
-  getOptionValue = option => option.id,
+  getOptionLabel = (option) => option.name,
+  getOptionValue = (option) => option.id,
   isLoading,
   showLabel = true,
 }) {
@@ -45,10 +44,10 @@ function InputSelect({
       }) => {
         const optionsLocal = options || [];
         const selectValue = optionsLocal.filter(
-          option => (option.id ?? option.code) === field.value
+          (option) => (option.id ?? option.code) === field.value
         )[0];
         return (
-          <InputSelectContainer className="form-group">
+          <InputSelectContainer className='form-group'>
             {showLabel && <label htmlFor={field.name}>{labelText}</label>}
 
             <Select
@@ -56,11 +55,11 @@ function InputSelect({
               styles={customStyles}
               className={
                 (touched[field.name] && formikError[field.name]) || error
-                  ? "is-invalid"
-                  : ""
+                  ? 'is-invalid'
+                  : ''
               }
               isDisabled={disabled}
-              onChange={option => {
+              onChange={(option) => {
                 setFieldValue(field.name, option.id ?? option.code);
                 onChangeHandler(option);
               }}
@@ -68,15 +67,15 @@ function InputSelect({
               options={optionsLocal}
               getOptionLabel={getOptionLabel}
               getOptionValue={getOptionValue}
-              onBlur={e => {
+              onBlur={(e) => {
                 setFieldTouched(field.name, true);
               }}
               placeholder={
                 isLoading
-                  ? "Cargando"
-                  : placeholderText == ""
-                  ? "Seleccionar"
-                  : placeholderText
+                  ? 'Cargando'
+                  : placeholderText == ''
+                    ? 'Seleccionar'
+                    : placeholderText
               }
               isLoading={isLoading}
             ></Select>
@@ -85,18 +84,18 @@ function InputSelect({
                 id={`${field.name}-error`}
                 className={
                   isNil(formikError[field.name]) && isNil(error)
-                    ? "inactive"
-                    : "form-text"
+                    ? 'inactive'
+                    : 'form-text'
                 }
                 style={{
-                  display: formikError[field.name] || error ? "inline" : "none",
+                  display: formikError[field.name] || error ? 'inline' : 'none',
                 }}
               >
                 {isNil(error)
                   ? formikError[field.name]
                   : Array.isArray(error)
-                  ? error[0]
-                  : error}
+                    ? error[0]
+                    : error}
               </small>
             ) : null}
           </InputSelectContainer>

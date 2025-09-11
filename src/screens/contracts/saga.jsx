@@ -1,7 +1,13 @@
-import { put, all, takeLatest, call } from "redux-saga/effects";
-import { toast } from "react-toastify";
-import { getErrorMessage } from "../../shared/utils/index.jsx";
+import { put, all, takeLatest, call } from 'redux-saga/effects';
+import { toast } from 'react-toastify';
 
+import { getErrorMessage } from '../../shared/utils/index.jsx';
+import usersService from '../users/service.js';
+import productsService from '../products/service.js';
+import clientsService from '../clients/service.js';
+import adSpacesService from '../ad-spaces/service.js';
+
+import contractsService from './service.js';
 import {
   INITIAL_LOAD_INIT,
   INITIAL_LOAD_SUCCESS,
@@ -29,13 +35,7 @@ import {
   GET_EUROPARITY_INIT,
   GET_EUROPARITY_SUCCESS,
   GET_EUROPARITY_FAILURE,
-} from "./actionTypes.js";
-
-import contractsService from "./service.js";
-import usersService from "../users/service.js";
-import productsService from "../products/service.js";
-import clientsService from "../clients/service.js";
-import adSpacesService from "../ad-spaces/service.js";
+} from './actionTypes.js';
 
 export function* initialLoad() {
   try {
@@ -73,13 +73,12 @@ export function* initialLoad() {
       },
     });
   } catch (error) {
-    console.log(error);
     yield all([
       put({
         type: INITIAL_LOAD_FAILURE,
         errors: { ...error.response.data.errors },
       }),
-      call(toast.error, "Hubo un error :("),
+      call(toast.error, 'Hubo un error :('),
     ]);
   }
 }
@@ -87,7 +86,6 @@ export function* initialLoad() {
 export function* filterContracts({ payload }) {
   try {
     const filterPayload = yield call(contractsService.filterContracts, payload);
-    console.log(filterPayload);
     yield put({
       type: FILTER_CONTRACTS_SUCCESS,
       payload: {
@@ -95,7 +93,6 @@ export function* filterContracts({ payload }) {
       },
     });
   } catch (err) {
-    console.log(err);
     yield put({
       type: FILTER_CONTRACTS_FAILURE,
       errors: { ...err.response.data.errors },
@@ -117,7 +114,7 @@ export function* addContract({ payload }) {
 
     yield call(
       toast.success,
-      "Contrato Nro " + addContractPayload.data.number + " agregado con exito!",
+      'Contrato Nro ' + addContractPayload.data.number + ' agregado con exito!',
       { autoClose: 10000 }
     );
     yield put({
@@ -129,7 +126,6 @@ export function* addContract({ payload }) {
       payload: {},
     });*/
   } catch (err) {
-    console.log(err);
     yield all([
       put({
         type: ADD_CONTRACT_FAILURE,
@@ -160,7 +156,7 @@ export function* editContract({ payload }) {
     } else {
       yield all([
         put({ type: EDIT_CONTRACT_SUCCESS, payload: editContractPayload }),
-        call(toast.success, "Contrato editado con éxito!"),
+        call(toast.success, 'Contrato editado con éxito!'),
         put({
           type: FILTER_CONTRACTS_INIT,
           payload: payload.searchFilters,
@@ -168,7 +164,6 @@ export function* editContract({ payload }) {
       ]);
     }
   } catch (err) {
-    console.log(err);
     yield put({
       type: EDIT_CONTRACT_FAILURE,
       errors: { ...err.response.data.errors },
@@ -186,15 +181,14 @@ export function* deleteContract({ payload }) {
     );
     yield all([
       put({ type: DELETE_CONTRACT_SUCCESS, payload: deleteContractPayload }),
-      call(toast.success, "Contrato eliminado con éxito!"),
+      call(toast.success, 'Contrato eliminado con éxito!'),
     ]);
   } catch (err) {
-    console.log(err);
     yield put({
       type: DELETE_CONTRACT_FAILURE,
       errors: { ...err.response.data.errors },
     });
-    yield call(toast.error, "Hubo un error");
+    yield call(toast.error, 'Hubo un error');
   }
 }
 

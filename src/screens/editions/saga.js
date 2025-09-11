@@ -1,6 +1,8 @@
-import { put, all, takeLatest, call } from "redux-saga/effects";
-import { toast } from "react-toastify";
-import Moment from "moment";
+import { put, all, takeLatest, call } from 'redux-saga/effects';
+import { toast } from 'react-toastify';
+import { format } from 'date-fns';
+
+import productService from '../products/service';
 
 import {
   EDITIONS_INITIAL_LOAD_INIT,
@@ -24,10 +26,8 @@ import {
   IMPORT_EDITIONS_INIT,
   IMPORT_EDITIONS_SUCCESS,
   IMPORT_EDITIONS_FAILURE,
-} from "./actionTypes.js";
-
-import editionsService from "./service";
-import productService from "../products/service";
+} from './actionTypes.js';
+import editionsService from './service';
 
 export function* initialLoad() {
   try {
@@ -56,7 +56,6 @@ export function* getAllEditions({ payload }) {
       editionsService.getAllEditions,
       payload
     );
-    console.log(allProductAdvertisingSpacesPayload);
     yield put({
       type: GET_ALL_EDITIONS_SUCCESS,
       payload: allProductAdvertisingSpacesPayload,
@@ -72,9 +71,8 @@ export function* getAllEditions({ payload }) {
 export function* addEdition({ payload }) {
   try {
     const servicePayload = yield call(editionsService.addEdition, payload);
-    console.log(servicePayload);
     yield all([
-      call(toast.success, "Edicion guardada con exito!"),
+      call(toast.success, 'Edicion guardada con exito!'),
       put({
         type: ADD_EDITION_SUCCESS,
       }),
@@ -94,9 +92,8 @@ export function* addEdition({ payload }) {
 export function* editEdition({ payload }) {
   try {
     const servicePayload = yield call(editionsService.editEdition, payload);
-    console.log(servicePayload);
     yield all([
-      call(toast.success, "Edicion editada con exito!"),
+      call(toast.success, 'Edicion editada con exito!'),
       put({
         type: EDIT_EDITION_SUCCESS,
       }),
@@ -116,9 +113,8 @@ export function* editEdition({ payload }) {
 export function* deleteEdition({ payload }) {
   try {
     const servicePayload = yield call(editionsService.deleteEdition, payload);
-    console.log(servicePayload);
     yield all([
-      call(toast.success, "Edicion borrada con exito!"),
+      call(toast.success, 'Edicion borrada con exito!'),
       put({
         type: DELETE_EDITION_SUCCESS,
       }),
@@ -155,14 +151,15 @@ export function* filterEditions({ payload }) {
   }
 }
 
-const downloadTxtFile = texto => {
-  const element = document.createElement("a");
+const downloadTxtFile = (texto) => {
+  const element = document.createElement('a');
   const file = new Blob([texto], {
-    type: "text/plain",
+    type: 'text/plain',
   });
   element.href = URL.createObjectURL(file);
-  element.download = `Error importacion edicion ${Moment(new Date()).format(
-    "DD-MM-YYYY HH:mm:ss"
+  element.download = `Error importacion edicion ${format(
+    new Date(),
+    'dd-MM-yyyy HH:mm:ss'
   )}.txt`;
   document.body.appendChild(element); // Required for this to work in FireFox
   element.click();
@@ -172,10 +169,9 @@ const downloadTxtFile = texto => {
 export function* importEditions({ payload }) {
   try {
     const servicePayload = yield call(editionsService.importEditions, payload);
-    console.log(servicePayload);
     if (servicePayload.importSuccess) {
       yield all([
-        call(toast.success, "Edicion importada con exito!"),
+        call(toast.success, 'Edicion importada con exito!'),
         put({
           type: IMPORT_EDITIONS_SUCCESS,
         }),
@@ -186,8 +182,8 @@ export function* importEditions({ payload }) {
       ]);
     } else {
       let errorMessagge =
-        "Se encontraron los siguientes errores al querer importar las ediciones\n";
-      servicePayload.errors.map(error => {
+        'Se encontraron los siguientes errores al querer importar las ediciones\n';
+      servicePayload.errors.map((error) => {
         errorMessagge += `Linea: ${error.line} Error: ${error.messageError}\n`;
         return null;
       });
@@ -195,7 +191,7 @@ export function* importEditions({ payload }) {
       yield all([
         call(
           toast.error,
-          "Error al importar el archivo, revise el documento descargado para mas detalle.",
+          'Error al importar el archivo, revise el documento descargado para mas detalle.',
           {
             closeButton: true,
           }

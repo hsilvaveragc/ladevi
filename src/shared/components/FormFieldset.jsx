@@ -1,6 +1,5 @@
-import React from "react";
-import PropTypes from "prop-types";
-import styled from "styled-components";
+import PropTypes from 'prop-types';
+import styled from 'styled-components';
 
 const StyledFieldset = styled.fieldset`
   width: 100%;
@@ -18,7 +17,7 @@ const StyledFieldset = styled.fieldset`
   }
 `;
 
-const FormFieldset = ({ title, children, className = "", style = {} }) => {
+const FormFieldset = ({ title, children, className = '', style = {} }) => {
   return (
     <StyledFieldset className={className} style={style}>
       <legend>{title}</legend>

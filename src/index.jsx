@@ -1,18 +1,15 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import configureStore from "./shared/redux/store";
-import Root from "shell/Root";
+import { createRoot } from 'react-dom/client'; // ← Cambio: nuevo import para React 18
+import Root from 'shell/Root';
 
-import "bootstrap/dist/css/bootstrap.css";
-import "react-toastify/dist/ReactToastify.css";
-import "react-table/react-table.css";
-import "react-datepicker/dist/react-datepicker.css";
-import "./globalStyles.css";
+import store from './shared/redux/store';
 
-const startApp = () => {
-  const store = configureStore();
-  const rootEl = document.getElementById("root");
-  ReactDOM.render(<Root store={store} />, rootEl);
-};
+import 'bootstrap/dist/css/bootstrap.css';
+import 'react-toastify/dist/ReactToastify.css';
+import 'react-table/react-table.css';
+import 'react-datepicker/dist/react-datepicker.css';
+import './globalStyles.css';
 
-startApp();
+// ← Cambio: createRoot en lugar de ReactDOM.render
+const rootEl = document.getElementById('root');
+const root = createRoot(rootEl);
+root.render(<Root store={store} />);

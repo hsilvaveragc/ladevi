@@ -1,14 +1,15 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useEffect, useState, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPlus,
   faTrash,
   faGripVertical,
   faSave,
   faTimes,
-} from "@fortawesome/free-solid-svg-icons";
+} from '@fortawesome/free-solid-svg-icons';
+
 import {
   fetchProductionItems,
   moveItem,
@@ -17,13 +18,13 @@ import {
   updateObservation,
   markAsEditorial,
   markAsCA,
-} from "../actionCreators";
+} from '../actionCreators';
 import {
   getProductionItems,
   getLoading,
   getErrors,
   getTotalPages,
-} from "../reducer";
+} from '../reducer';
 
 const ProductionGridContainer = styled.div`
   padding: 20px 0;
@@ -309,7 +310,7 @@ const ProductionGrid = () => {
   const totalPages = useSelector(getTotalPages);
 
   // Para demo, usar un ID fijo si no está disponible en la URL
-  const currentEditionId = editionId || "edition-1";
+  const currentEditionId = editionId || 'edition-1';
 
   // Cargar elementos al montar el componente
   useEffect(() => {
@@ -321,16 +322,16 @@ const ProductionGrid = () => {
   // Handlers para drag & drop
   const handleDragStart = (e, item) => {
     setDraggedItem(item);
-    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.effectAllowed = 'move';
   };
 
   const handleDragOver = (e, pageNumber) => {
     e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
+    e.dataTransfer.dropEffect = 'move';
     setDragOverPage(pageNumber);
   };
 
-  const handleDragLeave = e => {
+  const handleDragLeave = (e) => {
     if (!e.currentTarget.contains(e.relatedTarget)) {
       setDragOverPage(null);
     }
@@ -348,7 +349,7 @@ const ProductionGrid = () => {
 
   // Handlers para observaciones
   const handleObservationClick = (itemId, currentObservation) => {
-    setEditingObservation({ itemId, value: currentObservation || "" });
+    setEditingObservation({ itemId, value: currentObservation || '' });
     setTimeout(() => {
       if (observationInputRef.current) {
         observationInputRef.current.focus();
@@ -370,19 +371,19 @@ const ProductionGrid = () => {
     setEditingObservation(null);
   };
 
-  const handleObservationKeyPress = e => {
-    if (e.key === "Enter") {
+  const handleObservationKeyPress = (e) => {
+    if (e.key === 'Enter') {
       handleObservationSave();
-    } else if (e.key === "Escape") {
+    } else if (e.key === 'Escape') {
       handleObservationCancel();
     }
   };
 
   // Handler para cambio de tipo
   const handleTypeChange = (itemId, newType) => {
-    if (newType === "editorial") {
+    if (newType === 'editorial') {
       dispatch(markAsEditorial(itemId, true));
-    } else if (newType === "ca") {
+    } else if (newType === 'ca') {
       dispatch(markAsCA(itemId, true));
     } else {
       dispatch(markAsEditorial(itemId, false));
@@ -391,75 +392,75 @@ const ProductionGrid = () => {
   };
 
   // Handlers para slots
-  const handleAddSlot = pageNumber => {
+  const handleAddSlot = (pageNumber) => {
     dispatch(addSlot(currentEditionId, pageNumber));
   };
 
-  const handleRemoveSlot = itemId => {
+  const handleRemoveSlot = (itemId) => {
     dispatch(removeSlot(itemId));
   };
 
   // Renderizar elementos de una página
-  const renderPageItems = pageNumber => {
+  const renderPageItems = (pageNumber) => {
     const pageItems = productionItems.filter(
-      item => item.pageNumber === pageNumber
+      (item) => item.pageNumber === pageNumber
     );
 
     return (
       <div
         className={`page-items-container ${
-          dragOverPage === pageNumber ? "drag-over" : ""
+          dragOverPage === pageNumber ? 'drag-over' : ''
         }`}
-        onDragOver={e => handleDragOver(e, pageNumber)}
+        onDragOver={(e) => handleDragOver(e, pageNumber)}
         onDragLeave={handleDragLeave}
-        onDrop={e => handleDrop(e, pageNumber)}
+        onDrop={(e) => handleDrop(e, pageNumber)}
       >
         {pageItems.length === 0 ? (
-          <div className="empty-page-message">Arrastrar elementos aquí</div>
+          <div className='empty-page-message'>Arrastrar elementos aquí</div>
         ) : (
-          pageItems.map(item => {
+          pageItems.map((item) => {
             const isDragging = draggedItem?.id === item.id;
             const itemType = item.isEditorial
-              ? "editorial"
+              ? 'editorial'
               : item.isCA
-              ? "ca"
-              : "publicidad";
+                ? 'ca'
+                : 'publicidad';
 
             return (
               <div
                 key={item.id}
-                className={`production-item ${isDragging ? "dragging" : ""}`}
+                className={`production-item ${isDragging ? 'dragging' : ''}`}
                 draggable
-                onDragStart={e => handleDragStart(e, item)}
+                onDragStart={(e) => handleDragStart(e, item)}
               >
-                <div className="item-content">
-                  <div className="drag-handle">
+                <div className='item-content'>
+                  <div className='drag-handle'>
                     <FontAwesomeIcon icon={faGripVertical} />
                   </div>
 
-                  <div className="anunciante">{item.anunciante || "-"}</div>
+                  <div className='anunciante'>{item.anunciante || '-'}</div>
 
-                  <div className="vendedor">{item.vendedor || "-"}</div>
+                  <div className='vendedor'>{item.vendedor || '-'}</div>
 
                   <div className={`medida ${itemType}`}>
                     {item.isEditorial
-                      ? "EDITORIAL"
+                      ? 'EDITORIAL'
                       : item.isCA
-                      ? "CA"
-                      : item.medida || "-"}
+                        ? 'CA'
+                        : item.medida || '-'}
                   </div>
 
-                  <div className="ubicacion">{item.ubicacion || "-"}</div>
+                  <div className='ubicacion'>{item.ubicacion || '-'}</div>
 
-                  <div className="observacion">
+                  <div className='observacion'>
                     {editingObservation?.itemId === item.id ? (
-                      <div style={{ display: "flex", gap: "2px" }}>
+                      <div style={{ display: 'flex', gap: '2px' }}>
                         <input
                           ref={observationInputRef}
-                          type="text"
-                          className="observacion-input"
+                          type='text'
+                          className='observacion-input'
                           value={editingObservation.value}
-                          onChange={e =>
+                          onChange={(e) =>
                             setEditingObservation({
                               ...editingObservation,
                               value: e.target.value,
@@ -467,18 +468,18 @@ const ProductionGrid = () => {
                           }
                           onKeyDown={handleObservationKeyPress}
                           onBlur={handleObservationSave}
-                          placeholder="Observación..."
+                          placeholder='Observación...'
                         />
                         <button
-                          type="button"
-                          className="btn-sm btn-success"
+                          type='button'
+                          className='btn-sm btn-success'
                           onClick={handleObservationSave}
                         >
                           <FontAwesomeIcon icon={faSave} />
                         </button>
                         <button
-                          type="button"
-                          className="btn-sm btn-danger"
+                          type='button'
+                          className='btn-sm btn-danger'
                           onClick={handleObservationCancel}
                         >
                           <FontAwesomeIcon icon={faTimes} />
@@ -487,34 +488,36 @@ const ProductionGrid = () => {
                     ) : (
                       <div
                         className={`observacion-display ${
-                          !item.observacion ? "empty" : ""
+                          !item.observacion ? 'empty' : ''
                         }`}
                         onClick={() =>
                           handleObservationClick(item.id, item.observacion)
                         }
                       >
-                        {item.observacion || "Agregar observación..."}
+                        {item.observacion || 'Agregar observación...'}
                       </div>
                     )}
                   </div>
 
-                  <div className="actions">
+                  <div className='actions'>
                     <select
-                      className="type-select"
+                      className='type-select'
                       value={itemType}
-                      onChange={e => handleTypeChange(item.id, e.target.value)}
+                      onChange={(e) =>
+                        handleTypeChange(item.id, e.target.value)
+                      }
                     >
-                      <option value="publicidad">Publicidad</option>
-                      <option value="editorial">Editorial</option>
-                      <option value="ca">CA</option>
+                      <option value='publicidad'>Publicidad</option>
+                      <option value='editorial'>Editorial</option>
+                      <option value='ca'>CA</option>
                     </select>
 
                     {!item.isOriginalSlot && (
                       <button
-                        type="button"
-                        className="btn-sm btn-danger"
+                        type='button'
+                        className='btn-sm btn-danger'
                         onClick={() => {
-                          if (window.confirm("¿Eliminar este slot?")) {
+                          if (window.confirm('¿Eliminar este slot?')) {
                             handleRemoveSlot(item.id);
                           }
                         }}
@@ -531,8 +534,8 @@ const ProductionGrid = () => {
 
         {pageNumber > 1 && (
           <button
-            type="button"
-            className="add-slot-btn"
+            type='button'
+            className='add-slot-btn'
             onClick={() => handleAddSlot(pageNumber)}
           >
             <FontAwesomeIcon icon={faPlus} /> Agregar slot
@@ -550,22 +553,22 @@ const ProductionGrid = () => {
 
   return (
     <ProductionGridContainer>
-      <div className="page-header">
+      <div className='page-header'>
         <h2> Organización de Páginas</h2>
       </div>
 
-      <div className="production-table">
-        <div className="table-header">
-          <div className="header-row">
-            <div className="page-col">Página</div>
-            <div className="content-col">Contenido</div>
+      <div className='production-table'>
+        <div className='table-header'>
+          <div className='header-row'>
+            <div className='page-col'>Página</div>
+            <div className='content-col'>Contenido</div>
           </div>
         </div>
 
-        {pageRows.map(pageNumber => (
-          <div key={pageNumber} className="page-row">
-            <div className="page-number">{pageNumber}</div>
-            <div className="page-content">{renderPageItems(pageNumber)}</div>
+        {pageRows.map((pageNumber) => (
+          <div key={pageNumber} className='page-row'>
+            <div className='page-number'>{pageNumber}</div>
+            <div className='page-content'>{renderPageItems(pageNumber)}</div>
           </div>
         ))}
       </div>

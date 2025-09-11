@@ -1,5 +1,5 @@
-import { put, all, takeLatest, call } from "redux-saga/effects";
-import { toast } from "react-toastify";
+import { put, all, takeLatest, call } from 'redux-saga/effects';
+import { toast } from 'react-toastify';
 
 import {
   INITIAL_LOAD_INIT,
@@ -14,9 +14,8 @@ import {
   DELETEEUROPARITY_INIT,
   DELETEEUROPARITY_SUCCESS,
   DELETEEUROPARITY_FAILURE,
-} from "./actionTypes";
-
-import euroParityService from "./service";
+} from './actionTypes';
+import euroParityService from './service';
 
 export function* initialLoad() {
   try {
@@ -30,7 +29,6 @@ export function* initialLoad() {
       },
     });
   } catch (err) {
-    console.log(err);
     yield put({
       type: INITIAL_LOAD_FAILURE,
       errors: { ...err.response.data.errors },
@@ -47,7 +45,6 @@ export function* getEuroParities() {
       payload: euroParitiesPayload,
     });
   } catch (err) {
-    console.log(err);
     yield put({
       type: GETEUROPARITIES_FAILURE,
       errors: { ...err.response.data.errors },
@@ -66,7 +63,7 @@ export function* addEuroParity({ payload }) {
     // Espera a que todas estas acciones se completen antes de continuar
     yield all([
       put({ type: ADDEUROPARITY_SUCCESS, payload: addEuroParityPayload }),
-      call(toast.success, "Paridad Euro creada con éxito!"),
+      call(toast.success, 'Paridad Euro creada con éxito!'),
     ]);
 
     // Después de que se complete el success, iniciamos la nueva obtención de datos
@@ -76,7 +73,7 @@ export function* addEuroParity({ payload }) {
       type: ADDEUROPARITY_FAILURE,
       errors: { ...err.response.data.errors },
     });
-    yield call(toast.error, "Hubo un error");
+    yield call(toast.error, 'Hubo un error');
   }
 }
 
@@ -88,7 +85,7 @@ export function* deleteEuroParity({ payload }) {
     );
     yield all([
       put({ type: DELETEEUROPARITY_SUCCESS, payload: deletePayload }),
-      call(toast.success, "Paridad Euro borrada con éxito!"),
+      call(toast.success, 'Paridad Euro borrada con éxito!'),
       put({ type: GETEUROPARITIES_INIT, payload: {} }),
     ]);
   } catch (err) {
@@ -96,7 +93,7 @@ export function* deleteEuroParity({ payload }) {
       type: DELETEEUROPARITY_FAILURE,
       error: err.response.data.message,
     });
-    yield call(toast.error, "Hubo un error");
+    yield call(toast.error, 'Hubo un error');
   }
 }
 

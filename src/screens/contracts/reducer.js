@@ -1,4 +1,5 @@
-import { createSelector } from "reselect";
+import { createSelector } from 'reselect';
+
 import {
   SEARCH_CONTRACTS_INIT,
   SEARCH_CONTRACTS_SUCCESS,
@@ -28,7 +29,7 @@ import {
   GET_EUROPARITY_FAILURE,
   UPDATE_CONTRACT_HISTORIAL,
   UPDATE_ORDERS_CONTRACT,
-} from "./actionTypes.js";
+} from './actionTypes.js';
 
 const initialState = {
   contracts: [],
@@ -49,7 +50,7 @@ const initialState = {
   checkingordersEditions: false,
 };
 
-export default function(state = initialState, action) {
+export default function (state = initialState, action) {
   switch (action.type) {
     case INITIAL_LOAD_INIT:
     case SEARCH_CONTRACTS_INIT:
@@ -103,7 +104,6 @@ export default function(state = initialState, action) {
         showAddModal: !state.showAddModal,
         contracts: [],
       };
-      break;
     case SHOW_ADD_MODAL:
       return {
         ...state,
@@ -117,7 +117,6 @@ export default function(state = initialState, action) {
         contracts: [],
         loading: false,
       };
-      break;
     case SHOW_EDIT_MODAL:
       return {
         ...state,
@@ -131,7 +130,6 @@ export default function(state = initialState, action) {
         contracts: [],
         loading: false,
       };
-      break;
     case SHOW_DELETE_MODAL:
       return {
         ...state,
@@ -154,7 +152,7 @@ export default function(state = initialState, action) {
       return { ...state, loading: false, errors: { ...action.errors } };
     case UPDATE_CONTRACT_HISTORIAL:
       const indexContract = state.contracts.findIndex(
-        c => c.id === action.payload[0].contractId
+        (c) => c.id === action.payload[0].contractId
       );
 
       const newContracts = [
@@ -171,13 +169,12 @@ export default function(state = initialState, action) {
         contracts: newContracts,
       };
     case UPDATE_ORDERS_CONTRACT:
-      console.log(action.payload);
       const indexContractSelected = state.contracts.findIndex(
-        c => c.id === action.payload.contractId
+        (c) => c.id === action.payload.contractId
       );
       const indexSoldSpace = state.contracts[
         indexContractSelected
-      ].soldSpaces.findIndex(sp => sp.id === action.payload.soldSpaceId);
+      ].soldSpaces.findIndex((sp) => sp.id === action.payload.soldSpaceId);
       return {
         ...state,
         contracts:
@@ -212,10 +209,11 @@ export default function(state = initialState, action) {
                     {
                       ...action.payload,
                       productAdvertisingSpace: state.spaceTypes.filter(
-                        st => st.id === action.payload.productAdvertisingSpaceId
+                        (st) =>
+                          st.id === action.payload.productAdvertisingSpaceId
                       )[0],
                       advertisingSpaceLocationType: state.spaceLocations.filter(
-                        sl =>
+                        (sl) =>
                           sl.id ===
                           action.payload.advertisingSpaceLocationTypeId
                       )[0],
@@ -230,81 +228,81 @@ export default function(state = initialState, action) {
   }
 }
 
-const getContractsReducer = state => state.contracts;
+const getContractsReducer = (state) => state.contracts;
 
 export const getContracts = createSelector(
   getContractsReducer,
-  contractsReducer => contractsReducer.contracts
+  (contractsReducer) => contractsReducer.contracts
 );
 
 export const getSalesmens = createSelector(
   getContractsReducer,
-  contractsReducer => contractsReducer.salesmens
+  (contractsReducer) => contractsReducer.salesmens
 );
 
 export const getProducts = createSelector(
   getContractsReducer,
-  contractsReducer => contractsReducer.products
+  (contractsReducer) => contractsReducer.products
 );
 
 export const getSpaceTypes = createSelector(
   getContractsReducer,
-  contractsReducer => contractsReducer.spaceTypes
+  (contractsReducer) => contractsReducer.spaceTypes
 );
 
 export const getSpaceLocations = createSelector(
   getContractsReducer,
-  contractsReducer => contractsReducer.spaceLocations
+  (contractsReducer) => contractsReducer.spaceLocations
 );
 
 export const getCurrencies = createSelector(
   getContractsReducer,
-  contractsReducer => contractsReducer.currencies
+  (contractsReducer) => contractsReducer.currencies
 );
 
 export const getEuroParities = createSelector(
   getContractsReducer,
-  contractsReducer => contractsReducer.euroParities
+  (contractsReducer) => contractsReducer.euroParities
 );
 
 export const getClients = createSelector(
   getContractsReducer,
-  contractsReducer => contractsReducer.clients
+  (contractsReducer) => contractsReducer.clients
 );
 
 export const getCountries = createSelector(
   getContractsReducer,
-  contractsReducer => contractsReducer.countries
+  (contractsReducer) => contractsReducer.countries
 );
 
 export const getErrors = createSelector(
   getContractsReducer,
-  contractsReducer => contractsReducer.errors
+  (contractsReducer) => contractsReducer.errors
 );
 
 export const getSearchContractsLoading = createSelector(
   getContractsReducer,
-  contractsReducer => contractsReducer.searchContractsLoading
+  (contractsReducer) => contractsReducer.searchContractsLoading
 );
 
 export const getShowAddModal = createSelector(
   getContractsReducer,
-  contractsReducer => contractsReducer.showAddModal
+  (contractsReducer) => contractsReducer.showAddModal
 );
 
 export const getShowEditModal = createSelector(
   getContractsReducer,
-  contractsReducer => contractsReducer.showEditModal
+  (contractsReducer) => contractsReducer.showEditModal
 );
 
 export const getShowDeleteModal = createSelector(
   getContractsReducer,
-  contractsReducer => contractsReducer.showDeleteModal
+  (contractsReducer) => contractsReducer.showDeleteModal
 );
 
 export const getLoading = createSelector(
   getContractsReducer,
-  contractsReducer => contractsReducer.loading
+  (contractsReducer) => contractsReducer.loading
 );
 
 export const gethasOrdersEditions = (state, contractId) =>

@@ -1,4 +1,5 @@
-import { createSelector } from "reselect";
+import { createSelector } from 'reselect';
+
 import {
   SET_CLIENT_TYPE,
   SET_SELECTED_CURRENCY,
@@ -40,7 +41,7 @@ import {
   VALIDATE_INVENTORY_REDUCTION_INIT,
   VALIDATE_INVENTORY_REDUCTION_SUCCESS,
   VALIDATE_INVENTORY_REDUCTION_FAILURE,
-} from "./actionTypes";
+} from './actionTypes';
 
 const initialState = {
   // Datos generales
@@ -49,7 +50,7 @@ const initialState = {
 
   // Filtros
   clientType: null,
-  selectedCurrency: "",
+  selectedCurrency: '',
   products: [],
   selectedProduct: null,
   editions: [],
@@ -67,7 +68,7 @@ const initialState = {
   },
 };
 
-export default function(state = initialState, action) {
+export default function (state = initialState, action) {
   switch (action.type) {
     // Loading states
     case FETCH_PRODUCTS_INIT:
@@ -94,7 +95,7 @@ export default function(state = initialState, action) {
         // Reset completo de todas las selecciones
         selectedProduct: null,
         selectedEdition: null,
-        selectedCurrency: "",
+        selectedCurrency: '',
         // Reset de datos cargados
         products: [],
         editions: [],
@@ -113,7 +114,7 @@ export default function(state = initialState, action) {
         // Reset data dependiente del producto
         selectedEdition: null,
         editions: [],
-        selectedCurrency: "",
+        selectedCurrency: '',
       };
 
     case FETCH_EDITIONS_SUCCESS:
@@ -128,7 +129,7 @@ export default function(state = initialState, action) {
         ...state,
         selectedEdition: action.payload,
         // Reset data dependiente de la edición
-        selectedCurrency: "",
+        selectedCurrency: '',
       };
     case SET_SELECTED_CURRENCY:
       return {
@@ -149,7 +150,7 @@ export default function(state = initialState, action) {
       return {
         ...state,
         loading: false,
-        productionItems: state.productionItems.map(item =>
+        productionItems: state.productionItems.map((item) =>
           item.id === action.payload.itemId
             ? { ...item, pageNumber: action.payload.newPageNumber }
             : item
@@ -172,7 +173,7 @@ export default function(state = initialState, action) {
         ...state,
         loading: false,
         productionItems: state.productionItems.filter(
-          item => item.id !== action.payload.itemId
+          (item) => item.id !== action.payload.itemId
         ),
         errors: {},
       };
@@ -181,7 +182,7 @@ export default function(state = initialState, action) {
     case UPDATE_OBSERVATION_SUCCESS:
       return {
         ...state,
-        productionItems: state.productionItems.map(item =>
+        productionItems: state.productionItems.map((item) =>
           item.id === action.payload.itemId
             ? { ...item, observacion: action.payload.observacion }
             : item
@@ -193,7 +194,7 @@ export default function(state = initialState, action) {
     case MARK_AS_EDITORIAL_SUCCESS:
       return {
         ...state,
-        productionItems: state.productionItems.map(item =>
+        productionItems: state.productionItems.map((item) =>
           item.id === action.payload.itemId
             ? { ...item, isEditorial: action.payload.isEditorial, isCA: false }
             : item
@@ -205,7 +206,7 @@ export default function(state = initialState, action) {
     case MARK_AS_CA_SUCCESS:
       return {
         ...state,
-        productionItems: state.productionItems.map(item =>
+        productionItems: state.productionItems.map((item) =>
           item.id === action.payload.itemId
             ? { ...item, isCA: action.payload.isCA, isEditorial: false }
             : item
@@ -272,52 +273,53 @@ export default function(state = initialState, action) {
 }
 
 // Selectores
-const getProductionReducer = state => state.production;
+const getProductionReducer = (state) => state.production;
 
 // Selectores básicos
 export const getLoading = createSelector(
   getProductionReducer,
-  productionReducer => productionReducer.loading
+  (productionReducer) => productionReducer.loading
 );
 
 export const getErrors = createSelector(
   getProductionReducer,
-  productionReducer => productionReducer.errors
+  (productionReducer) => productionReducer.errors
 );
 
 // Selectores de selección
 export const getClientType = createSelector(
   getProductionReducer,
-  productionReducer => productionReducer.clientType
+  (productionReducer) => productionReducer.clientType
 );
 
 export const getSelectedProduct = createSelector(
   getProductionReducer,
-  productionReducer => productionReducer.selectedProduct
+  (productionReducer) => productionReducer.selectedProduct
 );
 
 export const getSelectedEdition = createSelector(
   getProductionReducer,
-  productionReducer => productionReducer.selectedEdition
+  (productionReducer) => productionReducer.selectedEdition
 );
 
 export const getSelectedCurrency = createSelector(
   getProductionReducer,
-  productionReducer => productionReducer.selectedCurrency
+  (productionReducer) => productionReducer.selectedCurrency
 );
 
 export const getProducts = createSelector(
   getProductionReducer,
-  productionReducer => productionReducer.products
+  (productionReducer) => productionReducer.products
 );
 
 export const getEditions = createSelector(
   getProductionReducer,
-  productionReducer => productionReducer.editions
+  (productionReducer) => productionReducer.editions
 );
 
 // Selectors
-export const getProductionItems = state => state.production.productionItems;
-export const getCurrentEditionId = state => state.production.currentEditionId;
-export const getTotalPages = state => state.production.totalPages;
-export const getValidationResults = state => state.production.validationResults;
+export const getProductionItems = (state) => state.production.productionItems;
+export const getCurrentEditionId = (state) => state.production.currentEditionId;
+export const getTotalPages = (state) => state.production.totalPages;
+export const getValidationResults = (state) =>
+  state.production.validationResults;

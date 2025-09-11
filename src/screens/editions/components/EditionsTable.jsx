@@ -1,15 +1,15 @@
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { format } from "date-fns";
+import { useDispatch, useSelector } from 'react-redux';
+import { format } from 'date-fns';
+import { getHeaderStyleTable, createDeleteColumn } from 'shared/utils';
+import Table from 'shared/components/Table';
+
 import {
   showEditionsAddModal,
   showEditionsEditModal,
   showEditionsDeleteModal,
   setSelectedEdition,
-} from "../actionCreators";
-import { getEditions, getLoading } from "../reducer";
-import { getHeaderStyleTable, createDeleteColumn } from "shared/utils";
-import Table from "shared/components/Table";
+} from '../actionCreators';
+import { getEditions, getLoading } from '../reducer';
 
 const EditionsTable = ({ element }) => {
   const dispatch = useDispatch();
@@ -23,12 +23,12 @@ const EditionsTable = ({ element }) => {
     dispatch(showEditionsAddModal());
   };
 
-  const handleEdit = item => {
+  const handleEdit = (item) => {
     dispatch(setSelectedEdition(item));
     dispatch(showEditionsEditModal());
   };
 
-  const handleDelete = item => {
+  const handleDelete = (item) => {
     dispatch(setSelectedEdition(item));
     dispatch(showEditionsDeleteModal());
   };
@@ -36,43 +36,43 @@ const EditionsTable = ({ element }) => {
   // Definición de columnas
   const columns = [
     {
-      Header: "Producto",
-      accessor: "productName",
-      width: "20%",
+      Header: 'Producto',
+      accessor: 'productName',
+      width: '20%',
       headerStyle: getHeaderStyleTable(),
     },
     {
-      Header: "Titulo",
-      accessor: "name",
-      width: "20%",
+      Header: 'Titulo',
+      accessor: 'name',
+      width: '20%',
       headerStyle: getHeaderStyleTable(),
     },
     {
-      Header: "Código",
-      accessor: "code",
-      width: "20%",
+      Header: 'Código',
+      accessor: 'code',
+      width: '20%',
       headerStyle: getHeaderStyleTable(),
     },
     {
-      Header: "Edición Cerrada",
-      accessor: "closed",
-      width: "20%",
+      Header: 'Edición Cerrada',
+      accessor: 'closed',
+      width: '20%',
       headerStyle: getHeaderStyleTable(),
-      Cell: row => {
+      Cell: (row) => {
         if (row.original.closed) {
-          return "Si";
+          return 'Si';
         } else {
-          return "No";
+          return 'No';
         }
       },
     },
     {
-      Header: "Fecha Salida",
-      accessor: "end",
-      width: "20%",
+      Header: 'Fecha Salida',
+      accessor: 'end',
+      width: '20%',
       headerStyle: getHeaderStyleTable(),
-      Cell: row => {
-        return format(row.value, "DD-MM-YYYY");
+      Cell: (row) => {
+        return format(row.value, 'DD-MM-YYYY');
       },
     },
     createDeleteColumn(handleDelete),
@@ -81,7 +81,7 @@ const EditionsTable = ({ element }) => {
   // Eventos de fila de la grilla
   const rowEvents = {
     onClick: (e, selectedItem) => {
-      if (e.target.type !== "button") {
+      if (e.target.type !== 'button') {
         handleEdit(selectedItem);
       }
     },
@@ -92,7 +92,7 @@ const EditionsTable = ({ element }) => {
       data={editions}
       columns={columns}
       buttonHandler={handleShowAddModal}
-      buttonText="Agregar Edición"
+      buttonText='Agregar Edición'
       showButton
       loading={isLoading}
       rowClickHandler={rowEvents.onClick}

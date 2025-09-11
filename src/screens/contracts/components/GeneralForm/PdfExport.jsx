@@ -1,9 +1,10 @@
-import React from "react";
-import Moment from "moment";
-import jsPDF from "jspdf";
-import "jspdf-autotable";
-import { enhanceWordBreak } from "../../../../shared/utils/index.jsx";
-import pdfIcon from "shared/images/iconPdf.png";
+import { format } from 'date-fns';
+import jsPDF from 'jspdf';
+
+import 'jspdf-autotable';
+import pdfIcon from 'shared/images/iconPdf.png';
+
+import { enhanceWordBreak } from '../../../../shared/utils/index.jsx';
 
 const exportPDF = (
   data,
@@ -14,9 +15,9 @@ const exportPDF = (
   contractName,
   availableSalesmens
 ) => {
-  const unit = "pt";
-  const size = "A4"; // Use A1, A2, A3 or A4
-  const orientation = "portrait"; // portrait or landscape
+  const unit = 'pt';
+  const size = 'A4'; // Use A1, A2, A3 or A4
+  const orientation = 'portrait'; // portrait or landscape
 
   const marginLeft = 40;
   const doc = new jsPDF(orientation, unit, size);
@@ -24,46 +25,47 @@ const exportPDF = (
   doc.setFontSize(12);
 
   const fecha = new Date();
-  const fechaFormatted = `${fecha.getFullYear()}/${fecha.getMonth() +
-    1}/${fecha.getDate()} ${fecha.getHours()}:${fecha.getMinutes()}:${fecha.getSeconds()}`;
+  const fechaFormatted = `${fecha.getFullYear()}/${
+    fecha.getMonth() + 1
+  }/${fecha.getDate()} ${fecha.getHours()}:${fecha.getMinutes()}:${fecha.getSeconds()}`;
 
-  const producto = availableProducts.find(x => x.id === productId).name;
-  const cliente = availableClients.find(x => x.id === clientId).brandName;
-  const title = "Órdenes de publicación";
+  const producto = availableProducts.find((x) => x.id === productId).name;
+  const cliente = availableClients.find((x) => x.id === clientId).brandName;
+  const title = 'Órdenes de publicación';
   const subTitulo1 = `Contrato: ${contractName}`;
   const subTitulo2 = `Producto: ${producto}, Cliente: ${cliente}, Fecha Emisión: ${fechaFormatted}`;
 
   const headers = [
     [
-      "Edición",
-      "Espacio",
-      "Ubicación",
-      "Cant.",
-      "Observaciones",
-      "Vend.",
-      "Factura",
-      "Pág.",
+      'Edición',
+      'Espacio',
+      'Ubicación',
+      'Cant.',
+      'Observaciones',
+      'Vend.',
+      'Factura',
+      'Pág.',
     ],
   ];
 
-  const pdfData = data.map(d => [
+  const pdfData = data.map((d) => [
     d.productEdition.name,
     d.productAdvertisingSpace.name,
     d.advertisingSpaceLocationType.name,
     d.quantity,
     d.observations,
-    availableSalesmens.find(x => x.id === d.sellerId).fullName,
+    availableSalesmens.find((x) => x.id === d.sellerId).fullName,
     d.invoiceNumber,
     d.pageNumber,
   ]);
 
-  let content = {
+  const content = {
     startY: 90,
     head: headers,
     body: pdfData,
     headStyles: {
-      valign: "middle",
-      cellWidth: "wrap",
+      valign: 'middle',
+      cellWidth: 'wrap',
     },
     didParseCell: enhanceWordBreak,
   };
@@ -75,8 +77,7 @@ const exportPDF = (
   doc.text(subTitulo2, marginLeft, 70);
   doc.autoTable(content);
   doc.save(
-    `Órdenes de publicación ${Moment(new Date()).format(
-      "DD-MM-YYYY HH:mm:ss"
+    `Órdenes de publicación ${format(new Date(), 'dd-MM-yyyy HH:mm:ss')}
     )}.pdf`
   );
 };
@@ -92,8 +93,8 @@ export default function PdfExport({
 }) {
   return (
     <button
-      type="button"
-      className="btn"
+      type='button'
+      className='btn'
       style={{ paddingRight: 0 }}
       onClick={() =>
         exportPDF(
@@ -107,7 +108,7 @@ export default function PdfExport({
         )
       }
     >
-      <img src={pdfIcon} width="26" height="32" />
+      <img src={pdfIcon} width='26' height='32' />
     </button>
   );
 }

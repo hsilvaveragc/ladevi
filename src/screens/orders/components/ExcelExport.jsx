@@ -1,7 +1,8 @@
-import React from "react";
-import * as XLSX from "xlsx";
-import Moment from "moment";
-import excelIcon from "shared/images/iconExcel.png";
+import React from 'react';
+import * as XLSX from 'xlsx';
+import { format } from 'date-fns';
+
+import excelIcon from 'shared/images/iconExcel.png';
 
 export default function ExcelExport({ tableRef }) {
   const [excelD, setExcelD] = React.useState([]);
@@ -12,22 +13,22 @@ export default function ExcelExport({ tableRef }) {
     }
   }, [excelD]);
 
-  const downloadExcel = data => {
+  const downloadExcel = (data) => {
     // Preparar datos para Excel
-    const excelData = data.map(d => ({
+    const excelData = data.map((d) => ({
       CLIENTE: d.brandName,
       CONTRATO: d.contractName,
       ESPACIO: d.productAdvertisingSpace,
-      "CANT.": d.quantity,
+      'CANT.': d.quantity,
       MONEDA: d.currency,
       IMPORTE: d.total,
       VENDEDOR: d.seller,
       FACTURA: d.invoiceNumber,
-      "PÁG.": !d.pageNumber
-        ? ""
+      'PÁG.': !d.pageNumber
+        ? ''
         : isNaN(d.pageNumber)
-        ? d.pageNumber
-        : Number(d.pageNumber),
+          ? d.pageNumber
+          : Number(d.pageNumber),
     }));
 
     // Crear workbook
@@ -46,13 +47,15 @@ export default function ExcelExport({ tableRef }) {
       { wch: 15 }, // Factura
       { wch: 12 }, // Pág.
     ];
-    ws["!cols"] = colWidths;
+    ws['!cols'] = colWidths;
 
-    XLSX.utils.book_append_sheet(wb, ws, "Reporte");
+    XLSX.utils.book_append_sheet(wb, ws, 'Reporte');
 
     // Descargar archivo
-    const filename = `Órdenes de publicación ${Moment(new Date()).format(
-      "DD-MM-YYYY HH:mm:ss"
+    const filename = `Órdenes de publicación ${format(
+      new Date(),
+      'dd-MM-yyyy HH:mm:ss'
+    )}
     )}.xlsx`;
     XLSX.writeFile(wb, filename);
   };
@@ -62,9 +65,9 @@ export default function ExcelExport({ tableRef }) {
       tableRef?.current?.paginationContext?.props?.data ||
       tableRef?.current ||
       []
-    ).map(d => ({
+    ).map((d) => ({
       brandName: d.client.brandName,
-      contractName: d.contract ? d.contract.name : "",
+      contractName: d.contract ? d.contract.name : '',
       productAdvertisingSpace: d.productAdvertisingSpace.name,
       quantity: d.quantity,
       currency: d.moneda,
@@ -81,8 +84,8 @@ export default function ExcelExport({ tableRef }) {
   };
 
   return (
-    <button type="button" className="btn" onClick={handleClickExcel}>
-      <img src={excelIcon} width="26" height="32" />
+    <button type='button' className='btn' onClick={handleClickExcel}>
+      <img src={excelIcon} width='26' height='32' />
     </button>
   );
 }

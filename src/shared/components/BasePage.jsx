@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { PageContainer } from "shared/utils";
+import { useState, useEffect } from 'react';
+import { PageContainer } from 'shared/utils';
 
 const BasePage = ({
   // Componentes
@@ -32,7 +32,7 @@ const BasePage = ({
     }
   }, [initialLoad]);
 
-  const handleEdit = item => {
+  const handleEdit = (item) => {
     setSelectedItem(item);
 
     if (beforeEdit) {
@@ -44,7 +44,7 @@ const BasePage = ({
     }
   };
 
-  const handleDelete = item => {
+  const handleDelete = (item) => {
     setSelectedItem(item);
 
     if (beforeDelete) {
@@ -56,7 +56,7 @@ const BasePage = ({
     }
   };
 
-  const handleChangeParams = newParams => {
+  const handleChangeParams = (newParams) => {
     setParams(newParams);
   };
 

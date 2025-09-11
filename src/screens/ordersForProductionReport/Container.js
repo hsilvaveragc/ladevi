@@ -1,15 +1,14 @@
-import { bindActionCreators, compose } from "redux";
-import { connect } from "react-redux";
-import Page from "./Page";
+import { bindActionCreators, compose } from 'redux';
+import { connect } from 'react-redux';
 
+import Page from './Page';
 import {
   filterReport,
   initialLoad,
   getProductEditions,
   addReporteGeneration,
   clearFilters,
-} from "./actionCreators";
-
+} from './actionCreators';
 import {
   getOrdersFPR,
   getErrors,
@@ -18,9 +17,9 @@ import {
   getEditions,
   getLoadingProducts,
   getLoadingProductEditions,
-} from "./reducer";
+} from './reducer';
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   data: getOrdersFPR(state),
   errors: getErrors(state),
   isLoading: getLoading(state),
@@ -30,7 +29,7 @@ const mapStateToProps = state => ({
   isLoadingProductEditions: getLoadingProductEditions(state),
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators(
     {
       initialLoad,

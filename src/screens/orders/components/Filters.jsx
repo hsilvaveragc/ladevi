@@ -1,12 +1,14 @@
-import React, { useEffect } from "react";
-import styled from "styled-components";
-import { Formik, Form } from "formik";
-import { isEmpty } from "ramda";
-import useUser from "shared/security/useUser";
-import InputSelectField from "shared/components/InputSelectField";
-import { SaveButton, DangerButton } from "shared/components/Buttons";
-import ExcelExport from "./ExcelExport";
-import PdfExport from "./PdfExport";
+import React, { useEffect } from 'react';
+import styled from 'styled-components';
+import { Formik, Form } from 'formik';
+import { isEmpty } from 'ramda';
+import InputSelectField from 'shared/components/InputSelectField';
+import { SaveButton, DangerButton } from 'shared/components/Buttons';
+
+import useUser from 'shared/security/useUser';
+
+import ExcelExport from './ExcelExport';
+import PdfExport from './PdfExport';
 
 const FiltersContainer = styled.div`
   width: 80vw;
@@ -42,25 +44,25 @@ const Filters = ({
   const { userRol, userId } = useUser();
 
   const [filtersUsed, setFiltersUsed] = React.useState({
-    producto: "",
-    edicion: "",
-    vendedor: "",
-    cliente: "",
+    producto: '',
+    edicion: '',
+    vendedor: '',
+    cliente: '',
   });
 
   const defaultOption = {
     id: -1,
-    name: "Todos",
+    name: 'Todos',
   };
 
   const allSellers = {
     id: -1,
-    fullName: "Todos",
+    fullName: 'Todos',
   };
 
   const allClients = {
     id: -1,
-    brandName: "Todos",
+    brandName: 'Todos',
   };
 
   return (
@@ -72,7 +74,7 @@ const Filters = ({
         clientId: -1,
       }}
       enableReinitialize={true}
-      onSubmit={values => {
+      onSubmit={(values) => {
         handleFilter(values);
         handleChangeParams(values);
 
@@ -81,14 +83,14 @@ const Filters = ({
         const sellers = [allSellers, ...availableSalesmens];
         const clients = [allClients, ...availableClients];
 
-        const productSel = products.filter(x => x.id === values.productId)[0]
+        const productSel = products.filter((x) => x.id === values.productId)[0]
           ?.name;
         const editionSel =
-          editions.filter(x => x.id === values.productEditionId)[0]?.name ||
-          "Todos";
-        const sellerSel = sellers.filter(x => x.id === values.salesmenId)[0]
+          editions.filter((x) => x.id === values.productEditionId)[0]?.name ||
+          'Todos';
+        const sellerSel = sellers.filter((x) => x.id === values.salesmenId)[0]
           ?.fullName;
-        const clientSel = clients.filter(x => x.id === values.clientId)[0]
+        const clientSel = clients.filter((x) => x.id === values.clientId)[0]
           ?.brandName;
 
         setFiltersUsed({
@@ -99,15 +101,15 @@ const Filters = ({
         });
       }}
     >
-      {formikProps => {
+      {(formikProps) => {
         return (
           <FiltersContainer>
             <Form>
-              <div className="form-row">
-                <div className="col-2">
+              <div className='form-row'>
+                <div className='col-2'>
                   <InputSelectField
-                    labelText="Producto"
-                    name="productId"
+                    labelText='Producto'
+                    name='productId'
                     options={
                       isLoadingProducts
                         ? availableProducts
@@ -115,25 +117,25 @@ const Filters = ({
                     }
                     isLoading={isLoadingProducts}
                     disabled={isLoadingProducts}
-                    onChangeHandler={option => {
+                    onChangeHandler={(option) => {
                       getProductEditionsHandler(option.id);
-                      formikProps.setFieldValue("productEditionId", "");
+                      formikProps.setFieldValue('productEditionId', '');
                     }}
                   />
                 </div>
-                <div className="col-2">
+                <div className='col-2'>
                   <InputSelectField
-                    labelText="Edición"
-                    name="productEditionId"
+                    labelText='Edición'
+                    name='productEditionId'
                     options={[defaultOption, ...availableEditions]}
                     disabled={isEmpty(availableEditions)}
                     isLoading={isLoadingEditionsFilter}
                   />
                 </div>
-                <div className="col-2">
+                <div className='col-2'>
                   <InputSelectField
-                    labelText="Vendedor"
-                    name="salesmenId"
+                    labelText='Vendedor'
+                    name='salesmenId'
                     options={
                       isLoadingSalesmens
                         ? availableSalesmens
@@ -141,13 +143,13 @@ const Filters = ({
                     }
                     isLoading={isLoadingSalesmens}
                     disabled={isLoadingSalesmens || userRol.isSeller}
-                    getOptionLabel={option => option.fullName}
+                    getOptionLabel={(option) => option.fullName}
                   />
                 </div>
-                <div className=" col-2">
+                <div className=' col-2'>
                   <InputSelectField
-                    labelText="Cliente"
-                    name="clientId"
+                    labelText='Cliente'
+                    name='clientId'
                     options={
                       isLoadingAllClients
                         ? availableClients
@@ -155,11 +157,11 @@ const Filters = ({
                     }
                     isLoading={isLoadingAllClients}
                     disabled={isLoadingAllClients}
-                    getOptionLabel={option => option.brandName}
+                    getOptionLabel={(option) => option.brandName}
                   />
                 </div>
-                <div className="col-3">
-                  <div className="buttons-container">
+                <div className='col-3'>
+                  <div className='buttons-container'>
                     <DangerButton
                       onClickHandler={() => {
                         formikProps.resetForm();
@@ -174,7 +176,7 @@ const Filters = ({
                       Limpiar
                     </DangerButton>
                     <SaveButton
-                      type="submit"
+                      type='submit'
                       disabled={
                         isLoadingAllClients ||
                         isLoadingProducts ||

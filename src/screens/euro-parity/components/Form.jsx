@@ -1,12 +1,14 @@
-import React from "react";
-import styled from "styled-components";
-import { Formik, Form } from "formik";
-import useUser from "shared/security/useUser";
-import "shared/utils/extensionsMethods.js";
-import InputDatePickerField from "shared/components/InputDatePickerField";
-import InputTextField from "shared/components/InputTextField";
-import { SaveButton, DangerButton } from "shared/components/Buttons";
-import { getValidationSchema } from "../validationSchemas";
+import styled from 'styled-components';
+import { Formik, Form } from 'formik';
+
+import useUser from 'shared/security/useUser';
+
+import 'shared/utils/extensionsMethods.js';
+import InputDatePickerField from 'shared/components/InputDatePickerField';
+import InputTextField from 'shared/components/InputTextField';
+import { SaveButton, DangerButton } from 'shared/components/Buttons';
+
+import { getValidationSchema } from '../validationSchemas';
 
 const EuroFormContainer = styled.div`
   width: 30vw;
@@ -27,29 +29,29 @@ const FormContent = ({
   saveHandler,
 }) => {
   return (
-    <Form autoComplete="off">
-      <div className="form-group">
+    <Form autoComplete='off'>
+      <div className='form-group'>
         <InputTextField
-          labelText="Paridad Euro y U$S"
-          name="euroToDollarExchangeRate"
+          labelText='Paridad Euro y U$S'
+          name='euroToDollarExchangeRate'
           disabled={deleteMode}
           error={errors.euroToDollarExchangeRate}
         />
       </div>
-      <div className="form-group">
+      <div className='form-group'>
         <InputDatePickerField
-          labelText="Paridad Fecha Inicio"
-          name="start"
+          labelText='Paridad Fecha Inicio'
+          name='start'
           disabled={deleteMode || isSupervisor}
           error={errors.Start}
         ></InputDatePickerField>
       </div>
-      <div className="button-container">
+      <div className='button-container'>
         {deleteMode ? (
           <>
             <SaveButton onClickHandler={closeHandler}>Cancelar</SaveButton>
             <DangerButton
-              type="button"
+              type='button'
               onClickHandler={() => saveHandler({ ...formikProps.values })}
             >
               Eliminar
@@ -58,7 +60,7 @@ const FormContent = ({
         ) : (
           <>
             <DangerButton onClickHandler={closeHandler}>Cancelar</DangerButton>
-            <SaveButton type="submit">Agregar</SaveButton>
+            <SaveButton type='submit'>Agregar</SaveButton>
           </>
         )}
       </div>
@@ -78,30 +80,30 @@ const EuroForm = ({
   const { userRol } = useUser();
 
   const getInitialValues = () => ({
-    id: addMode ? "" : selectedItem.id,
+    id: addMode ? '' : selectedItem.id,
     euroToDollarExchangeRate: addMode
-      ? ""
+      ? ''
       : selectedItem.euroToDollarExchangeRate.toLocaleCurrency(),
-    start: addMode ? "" : selectedItem.euroToDollarExchangeRate,
-    end: addMode ? "" : selectedItem.euroToDollarExchangeRate,
+    start: addMode ? '' : selectedItem.euroToDollarExchangeRate,
+    end: addMode ? '' : selectedItem.euroToDollarExchangeRate,
   });
 
   return (
     <EuroFormContainer>
       <h3>
-        {addMode ? "Agregar Paridad Euro Dolar" : null}
-        {deleteMode ? "Eliminar Parirdad Euro Dolar" : null}
+        {addMode ? 'Agregar Paridad Euro Dolar' : null}
+        {deleteMode ? 'Eliminar Parirdad Euro Dolar' : null}
       </h3>
       <Formik
         validateOnChange={false}
         validateOnBlur={false}
         initialValues={getInitialValues}
-        onSubmit={values => {
+        onSubmit={(values) => {
           saveHandler({ ...values, params: params });
         }}
         validationSchema={getValidationSchema(data)}
       >
-        {formikProps => (
+        {(formikProps) => (
           <FormContent
             formikProps={formikProps}
             errors={errors}

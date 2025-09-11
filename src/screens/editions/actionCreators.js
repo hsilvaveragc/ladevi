@@ -14,7 +14,7 @@ import {
   IMPORT_EDITIONS_INIT,
   IMPORT_EDITIONS_FAILURE,
   SET_SELECTED_EDITION,
-} from "./actionTypes";
+} from './actionTypes';
 
 export const initialLoad = () => ({
   type: EDITIONS_INITIAL_LOAD_INIT,
@@ -24,17 +24,17 @@ export const getAllEditions = () => ({
   type: GET_ALL_EDITIONS_INIT,
 });
 
-export const addEdition = payload => ({
+export const addEdition = (payload) => ({
   type: ADD_EDITION_INIT,
   payload,
 });
 
-export const editEdition = payload => ({
+export const editEdition = (payload) => ({
   type: EDIT_EDITION_INIT,
   payload,
 });
 
-export const deleteEdition = payload => ({
+export const deleteEdition = (payload) => ({
   type: DELETE_EDITION_INIT,
   payload,
 });
@@ -63,22 +63,22 @@ export const hideEditionsDeleteModal = () => ({
   type: EDITIONS_HIDE_DELETE_MODAL,
 });
 
-export const setSelectedEdition = item => ({
+export const setSelectedEdition = (item) => ({
   type: SET_SELECTED_EDITION,
   payload: item,
 });
 
-export const editionsFilterBy = payload => ({
+export const editionsFilterBy = (payload) => ({
   type: EDITIONS_FILTER_INIT,
   payload,
 });
 
-export const importEditions = payload => ({
+export const importEditions = (payload) => ({
   type: IMPORT_EDITIONS_INIT,
   payload,
 });
 
-export const importEditionsFailure = payload => ({
+export const importEditionsFailure = (payload) => ({
   type: IMPORT_EDITIONS_FAILURE,
   payload,
 });

@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
-import { find, propEq } from "ramda";
-import Modal from "shared/components/Modal";
-import Table from "shared/components/Table";
-import { EditButton, RemoveButton } from "shared/components/Buttons";
-import ProductAdvertisingSpaceForm from "./components/ProductAdvertisingSpaceForm";
-import Filters from "./components/Filters";
+import { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import { find, propEq } from 'ramda';
+import Modal from 'shared/components/Modal';
+import Table from 'shared/components/Table';
+import { EditButton, RemoveButton } from 'shared/components/Buttons';
+
+import ProductAdvertisingSpaceForm from './components/ProductAdvertisingSpaceForm';
+import Filters from './components/Filters';
 
 const PageContainer = styled.div`
   display: flex;
@@ -18,7 +19,7 @@ const PageContainer = styled.div`
   box-sizing: border-box;
 `;
 
-const ProductAdvertisingSpacePage = props => {
+const ProductAdvertisingSpacePage = (props) => {
   const [selectedItem, setSelectedItem] = useState({});
   const [params, setParams] = useState();
 
@@ -26,8 +27,8 @@ const ProductAdvertisingSpacePage = props => {
     props.actions.initialLoad();
   }, [props.actions]);
 
-  const ProductCell = cellProps => {
-    const productObj = find(propEq("id", cellProps.value))(
+  const ProductCell = (cellProps) => {
+    const productObj = find(propEq('id', cellProps.value))(
       props.productsAvailable
     );
     return productObj.name;
@@ -40,46 +41,46 @@ const ProductAdvertisingSpacePage = props => {
 
   const columns = [
     {
-      Header: "Nombre",
-      accessor: "name",
+      Header: 'Nombre',
+      accessor: 'name',
     },
     {
-      Header: "Pertenece a:",
-      accessor: "product.name",
+      Header: 'Pertenece a:',
+      accessor: 'product.name',
     },
     {
-      Header: "Precio (U$S)",
-      accessor: "dollarPrice",
-      Cell: row =>
-        row.original.dollarPrice.toLocaleString("pt-BR", {
+      Header: 'Precio (U$S)',
+      accessor: 'dollarPrice',
+      Cell: (row) =>
+        row.original.dollarPrice.toLocaleString('pt-BR', {
           maximumFractionDigits: 2,
         }),
     },
     {
-      Header: "Alto (cm)",
-      accessor: "height",
-      Cell: row =>
-        row.original.height.toLocaleString("pt-BR", {
+      Header: 'Alto (cm)',
+      accessor: 'height',
+      Cell: (row) =>
+        row.original.height.toLocaleString('pt-BR', {
           maximumFractionDigits: 2,
         }),
     },
     {
-      Header: "Ancho (cm)",
-      accessor: "width",
-      Cell: row =>
-        row.original.width.toLocaleString("pt-BR", {
+      Header: 'Ancho (cm)',
+      accessor: 'width',
+      Cell: (row) =>
+        row.original.width.toLocaleString('pt-BR', {
           maximumFractionDigits: 2,
         }),
     },
     {
-      Header: "Mostrar en nuevos contratos",
-      accessor: "show",
-      Cell: row => (row.original.show == true ? "SI" : "NO"),
+      Header: 'Mostrar en nuevos contratos',
+      accessor: 'show',
+      Cell: (row) => (row.original.show == true ? 'SI' : 'NO'),
     },
     {
-      Header: "Borrar",
+      Header: 'Borrar',
       filterable: false,
-      Cell: row => {
+      Cell: (row) => {
         return row.original.canDelete ? (
           <RemoveButton
             onClickHandler={() => {
@@ -149,12 +150,12 @@ const ProductAdvertisingSpacePage = props => {
         handleResetFilters={props.actions.getAllProductAdvertisingSpaces}
         handleChangeParams={setParams}
       />
-      <div style={{ width: "100%" }}>
+      <div style={{ width: '100%' }}>
         <Table
           data={props.productAdvertisingSpacesAvailable}
           columns={columns}
           buttonHandler={props.actions.showAddModal}
-          buttonText="Agregar"
+          buttonText='Agregar'
           loading={props.isLoading}
           showButton
           rowClickHandler={rowClickHandler}

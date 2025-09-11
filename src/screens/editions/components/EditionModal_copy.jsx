@@ -1,18 +1,17 @@
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import styled from "styled-components";
-import { Formik, Form, FieldArray } from "formik";
-import * as Yup from "yup";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import {
-  addEdition,
-  editEdition,
-  deleteEdition,
-  hideEditionsAddModal,
-  hideEditionsEditModal,
-  hideEditionsDeleteModal,
-} from "../actionCreators";
+import React, { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
+import { Formik, Form, FieldArray } from 'formik';
+import * as Yup from 'yup';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import Modal from 'shared/components/Modal';
+import InputTextField from 'shared/components/InputTextField';
+import InputDatePickerField from 'shared/components/InputDatePickerField';
+import InputSelectField from 'shared/components/InputSelectField';
+import InputCheckboxField from 'shared/components/InputCheckboxField';
+import FormFieldset from 'shared/components/FormFieldset';
+import { SaveButton, DangerButton } from 'shared/components/Buttons';
+
 import {
   getProducts,
   getErrors,
@@ -21,14 +20,15 @@ import {
   getShowDeleteModal,
   getSelectedItem,
   getLoading,
-} from "../reducer";
-import Modal from "shared/components/Modal";
-import InputTextField from "shared/components/InputTextField";
-import InputDatePickerField from "shared/components/InputDatePickerField";
-import InputSelectField from "shared/components/InputSelectField";
-import InputCheckboxField from "shared/components/InputCheckboxField";
-import FormFieldset from "shared/components/FormFieldset";
-import { SaveButton, DangerButton } from "shared/components/Buttons";
+} from '../reducer';
+import {
+  addEdition,
+  editEdition,
+  deleteEdition,
+  hideEditionsAddModal,
+  hideEditionsEditModal,
+  hideEditionsDeleteModal,
+} from '../actionCreators';
 
 const EditionsFormContainer = styled.div`
   .button-container {
@@ -89,7 +89,7 @@ const EditionModal = () => {
   const deleteMode = showDeleteModal;
 
   // Handler para guardar
-  const handleSubmit = values => {
+  const handleSubmit = (values) => {
     const payload = {
       ...values,
       params: {}, // para filtros posteriores si es necesario
@@ -117,10 +117,12 @@ const EditionModal = () => {
 
   // Función para obtener productAdvertisingSpaces según el modo y producto seleccionado
   const getProductAdvertisingSpaces = React.useCallback(
-    productId => {
+    (productId) => {
       if (addMode) {
         // En modo alta, buscar en productsAvailable por el productId
-        const selectedProduct = productsAvailable.find(p => p.id === productId);
+        const selectedProduct = productsAvailable.find(
+          (p) => p.id === productId
+        );
         return selectedProduct?.productAdvertisingSpaces || [];
       } else {
         // En modo edición/eliminación, usar los del selectedItem
@@ -132,12 +134,12 @@ const EditionModal = () => {
 
   // Crear inventoryProductAdvertisingSpaces inicial basado en productAdvertisingSpaces
   const createInitialInventory = React.useCallback(
-    productId => {
+    (productId) => {
       const productAdvertisingSpaces = getProductAdvertisingSpaces(productId);
 
       if (addMode) {
         // En modo alta, crear con cantidades en 0
-        return productAdvertisingSpaces.map(space => ({
+        return productAdvertisingSpaces.map((space) => ({
           id: 0,
           productAdvertisingSpaceId: space.id,
           productEditionId: 0,
@@ -148,9 +150,9 @@ const EditionModal = () => {
         const existingInventory =
           selectedItem.inventoryProductAdvertisingSpaces || [];
 
-        return productAdvertisingSpaces.map(space => {
+        return productAdvertisingSpaces.map((space) => {
           const existingItem = existingInventory.find(
-            item => item.productAdvertisingSpaceId === space.id
+            (item) => item.productAdvertisingSpaceId === space.id
           );
 
           return {
@@ -169,12 +171,12 @@ const EditionModal = () => {
   const initialValues = React.useMemo(
     () => ({
       id: selectedItem.id || 0,
-      code: selectedItem.code || "",
-      name: selectedItem.name || "",
+      code: selectedItem.code || '',
+      name: selectedItem.name || '',
       productId: selectedItem.productId || -1,
       closed: selectedItem.closed || false,
-      end: selectedItem.end || "",
-      pageCount: selectedItem.pageCount || "",
+      end: selectedItem.end || '',
+      pageCount: selectedItem.pageCount || '',
       inventoryProductAdvertisingSpaces: createInitialInventory(
         selectedItem.productId || -1
       ),
@@ -184,16 +186,16 @@ const EditionModal = () => {
 
   // Esquema de validación
   const validationSchema = Yup.object().shape({
-    name: Yup.string().required("El nombre es requerido"),
-    code: Yup.string().required("El código es requerido"),
+    name: Yup.string().required('El nombre es requerido'),
+    code: Yup.string().required('El código es requerido'),
     productId: Yup.number()
-      .required("El producto es requerido")
-      .min(1, "Debe seleccionar un producto"),
-    end: Yup.string().required("La fecha de cierre es requerida"),
+      .required('El producto es requerido')
+      .min(1, 'Debe seleccionar un producto'),
+    end: Yup.string().required('La fecha de cierre es requerida'),
     pageCount: Yup.number(),
     inventoryProductAdvertisingSpaces: Yup.array().of(
       Yup.object().shape({
-        quantity: Yup.number().min(0, "La cantidad debe ser mayor o igual a 0"),
+        quantity: Yup.number().min(0, 'La cantidad debe ser mayor o igual a 0'),
       })
     ),
   });
@@ -203,13 +205,13 @@ const EditionModal = () => {
       shouldClose={true}
       closeHandler={handleClose}
       isOpen={isModalOpen}
-      size="sm"
+      size='sm'
     >
-      <EditionsFormContainer className="container">
+      <EditionsFormContainer className='container'>
         <h3>
-          {addMode ? "Agregar Edición" : null}
-          {editMode ? "Editar Edición" : null}
-          {deleteMode ? "Eliminar Edición" : null}
+          {addMode ? 'Agregar Edición' : null}
+          {editMode ? 'Editar Edición' : null}
+          {deleteMode ? 'Eliminar Edición' : null}
         </h3>
         <Formik
           validateOnChange={false}
@@ -219,40 +221,40 @@ const EditionModal = () => {
           validationSchema={validationSchema}
           enableReinitialize={true}
         >
-          {formikProps => (
-            <Form autoComplete="off">
-              <div className="form-row">
-                <div className="col-md-12">
+          {(formikProps) => (
+            <Form autoComplete='off'>
+              <div className='form-row'>
+                <div className='col-md-12'>
                   <InputTextField
-                    labelText="Título:"
-                    name="name"
+                    labelText='Título:'
+                    name='name'
                     disabled={deleteMode}
                     error={errors.name}
                   />
                 </div>
               </div>
-              <div className="form-row">
-                <div className="col-md-12">
+              <div className='form-row'>
+                <div className='col-md-12'>
                   <InputTextField
-                    labelText="Código:"
-                    name="code"
+                    labelText='Código:'
+                    name='code'
                     disabled={deleteMode}
                     error={errors.code}
                   />
                 </div>
               </div>
-              <div className="form-row">
-                <div className="col-md-12">
+              <div className='form-row'>
+                <div className='col-md-12'>
                   <InputSelectField
-                    labelText="Pertenece a:"
-                    name="productId"
+                    labelText='Pertenece a:'
+                    name='productId'
                     options={productsAvailable}
                     disabled={deleteMode || editMode}
                     error={errors.productId}
-                    onChangeHandler={selectedProduct => {
+                    onChangeHandler={(selectedProduct) => {
                       if (addMode && selectedProduct) {
                         formikProps.setFieldValue(
-                          "productId",
+                          'productId',
                           selectedProduct.id
                         );
                         // Actualizar inventoryProductAdvertisingSpaces cuando cambie el producto
@@ -260,7 +262,7 @@ const EditionModal = () => {
                           selectedProduct.id
                         );
                         formikProps.setFieldValue(
-                          "inventoryProductAdvertisingSpaces",
+                          'inventoryProductAdvertisingSpaces',
                           newInventory
                         );
                       }
@@ -268,28 +270,28 @@ const EditionModal = () => {
                   />
                 </div>
               </div>
-              <div className="form-group form-row">
-                <div className="col-md-4">
+              <div className='form-group form-row'>
+                <div className='col-md-4'>
                   <InputDatePickerField
-                    labelText="Fecha Salida:"
+                    labelText='Fecha Salida:'
                     error={errors.end}
-                    name="end"
+                    name='end'
                     disabled={deleteMode}
                   />
                 </div>
-                <div className="col-md-4">
+                <div className='col-md-4'>
                   <InputTextField
-                    labelText="Cantidad de páginas:"
-                    name="pageCount"
+                    labelText='Cantidad de páginas:'
+                    name='pageCount'
                     disabled={deleteMode}
                     error={errors.code}
                   />
                 </div>
-                <IsClosedCheckBoxContainer className="col-md-4">
-                  <div className="form-group">
+                <IsClosedCheckBoxContainer className='col-md-4'>
+                  <div className='form-group'>
                     <InputCheckboxField
-                      name="closed"
-                      labelText="Edición cerrada"
+                      name='closed'
+                      labelText='Edición cerrada'
                       inline={true}
                       error={errors.closed}
                       disabled={deleteMode}
@@ -297,47 +299,49 @@ const EditionModal = () => {
                   </div>
                 </IsClosedCheckBoxContainer>
               </div>
-              <div className="inventory-container">
-                <FormFieldset title="Configuración de inventario">
+              <div className='inventory-container'>
+                <FormFieldset title='Configuración de inventario'>
                   <FieldArray
-                    name="inventoryProductAdvertisingSpaces"
+                    name='inventoryProductAdvertisingSpaces'
                     render={() => {
-                      const currentProductAdvertisingSpaces = getProductAdvertisingSpaces(
-                        formikProps.values.productId
-                      );
+                      const currentProductAdvertisingSpaces =
+                        getProductAdvertisingSpaces(
+                          formikProps.values.productId
+                        );
 
                       return (
                         <>
                           {currentProductAdvertisingSpaces.length === 0 && (
-                            <div className="alert alert-info">
+                            <div className='alert alert-info'>
                               <FontAwesomeIcon
                                 icon={faInfoCircle}
-                                className="text-info"
-                                style={{ fontSize: "1.25rem" }}
-                              />{" "}
+                                className='text-info'
+                                style={{ fontSize: '1.25rem' }}
+                              />{' '}
                               Seleccione un producto para configurar el
                               inventario de sus tipos de espacios
                             </div>
                           )}
                           {currentProductAdvertisingSpaces.map(
                             (space, index) => {
-                              const inventoryIndex = formikProps.values.inventoryProductAdvertisingSpaces.findIndex(
-                                item =>
-                                  item.productAdvertisingSpaceId === space.id
-                              );
+                              const inventoryIndex =
+                                formikProps.values.inventoryProductAdvertisingSpaces.findIndex(
+                                  (item) =>
+                                    item.productAdvertisingSpaceId === space.id
+                                );
 
                               if (inventoryIndex === -1) return null;
 
                               return (
-                                <div key={space.id} className="inventory-item">
-                                  <div className="space-name">{space.name}</div>
-                                  <div className="quantity-input">
+                                <div key={space.id} className='inventory-item'>
+                                  <div className='space-name'>{space.name}</div>
+                                  <div className='quantity-input'>
                                     <InputTextField
                                       name={`inventoryProductAdvertisingSpaces[${inventoryIndex}].quantity`}
                                       showLabel={false}
                                       disabled={deleteMode}
-                                      type="number"
-                                      min="0"
+                                      type='number'
+                                      min='0'
                                     />
                                   </div>
                                 </div>
@@ -350,13 +354,13 @@ const EditionModal = () => {
                   />
                 </FormFieldset>
               </div>
-              <div className="button-container">
+              <div className='button-container'>
                 {deleteMode ? (
                   <>
                     <SaveButton onClickHandler={handleClose}>
                       Cancelar
                     </SaveButton>
-                    <DangerButton type="submit" loading={isLoading}>
+                    <DangerButton type='submit' loading={isLoading}>
                       Eliminar
                     </DangerButton>
                   </>
@@ -365,9 +369,9 @@ const EditionModal = () => {
                     <DangerButton onClickHandler={handleClose}>
                       Cancelar
                     </DangerButton>
-                    <SaveButton type="submit" loading={isLoading}>
-                      {addMode ? "Agregar" : null}
-                      {editMode ? "Guardar" : null}
+                    <SaveButton type='submit' loading={isLoading}>
+                      {addMode ? 'Agregar' : null}
+                      {editMode ? 'Guardar' : null}
                     </SaveButton>
                   </>
                 )}
