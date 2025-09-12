@@ -1,8 +1,8 @@
-import { format, isValid, parseISO } from 'date-fns'; // ← Cambio: date-fns en lugar de Moment
+import Moment from "moment";
 
-Number.prototype.toLocaleCurrency = function (options = {}) {
+Number.prototype.toLocaleCurrency = function(options = {}) {
   const defaultOptions = {
-    locale: 'es-ES',
+    locale: "es-ES",
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   };
@@ -15,27 +15,13 @@ Number.prototype.toLocaleCurrency = function (options = {}) {
   });
 };
 
-String.prototype.toLocaleDate = function () {
-  try {
-    // Intentar parsear la fecha string
-    const date = parseISO(this.toString());
-
-    // Verificar si es una fecha válida
-    if (isValid(date)) {
-      return format(date, 'dd/MM/yyyy');
-    }
-
-    // Si no es válida, intentar crear nueva fecha
-    const fallbackDate = new Date(this.toString());
-    if (isValid(fallbackDate)) {
-      return format(fallbackDate, 'dd/MM/yyyy');
-    }
-
-    // Si nada funciona, devolver string original
-    return this.toString();
-  } catch (error) {
-    return this.toString();
+String.prototype.toLocaleDate = function() {
+  // Verifica si es un objeto Moment
+  if (Moment.isMoment(this)) {
+    return this.format("DD/MM/YYYY");
   }
+
+  return Moment(this).format("DD/MM/YYYY");
 };
 
 export {};

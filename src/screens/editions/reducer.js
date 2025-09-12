@@ -1,5 +1,4 @@
-import { createSelector } from 'reselect';
-
+import { createSelector } from "reselect";
 import {
   EDITIONS_INITIAL_LOAD_INIT,
   EDITIONS_INITIAL_LOAD_SUCCESS,
@@ -14,16 +13,12 @@ import {
   DELETE_EDITION_SUCCESS,
   DELETE_EDITION_FAILURE,
   EDITIONS_SHOW_ADD_MODAL,
-  EDITIONS_HIDE_ADD_MODAL,
   EDITIONS_SHOW_EDIT_MODAL,
-  EDITIONS_HIDE_EDIT_MODAL,
   EDITIONS_SHOW_DELETE_MODAL,
-  EDITIONS_HIDE_DELETE_MODAL,
   EDITIONS_FILTER_INIT,
   EDITIONS_FILTER_SUCCESS,
   EDITIONS_FILTER_FAILURE,
-  SET_SELECTED_EDITION,
-} from './actionTypes.js';
+} from "./actionTypes.js";
 
 const initialState = {
   editions: [],
@@ -33,10 +28,9 @@ const initialState = {
   showAddModal: false,
   showEditModal: false,
   showDeleteModal: false,
-  selectedItem: {},
 };
 
-export default function (state = initialState, action) {
+export default function(state = initialState, action) {
   switch (action.type) {
     case EDITIONS_INITIAL_LOAD_SUCCESS:
       return {
@@ -64,50 +58,26 @@ export default function (state = initialState, action) {
         loading: false,
         editions: [...action.payload],
       };
+    case ADD_EDITION_SUCCESS:
     case EDITIONS_SHOW_ADD_MODAL:
       return {
         ...state,
-        showAddModal: true,
-        selectedItem: {},
-        errors: {},
-      };
-    case ADD_EDITION_SUCCESS:
-    case EDITIONS_HIDE_ADD_MODAL:
-      return {
-        ...state,
-        showAddModal: false,
-        errors: {},
-      };
-    case EDITIONS_SHOW_EDIT_MODAL:
-      return {
-        ...state,
-        showEditModal: true,
+        showAddModal: !state.showAddModal,
         errors: {},
       };
     case EDIT_EDITION_SUCCESS:
-    case EDITIONS_HIDE_EDIT_MODAL:
+    case EDITIONS_SHOW_EDIT_MODAL:
       return {
         ...state,
-        showEditModal: false,
+        showEditModal: !state.showEditModal,
         errors: {},
       };
     case DELETE_EDITION_SUCCESS:
     case EDITIONS_SHOW_DELETE_MODAL:
       return {
         ...state,
-        showDeleteModal: true,
+        showDeleteModal: !state.showDeleteModal,
         errors: {},
-      };
-    case EDITIONS_HIDE_DELETE_MODAL:
-      return {
-        ...state,
-        showDeleteModal: false,
-        errors: {},
-      };
-    case SET_SELECTED_EDITION:
-      return {
-        ...state,
-        selectedItem: action.payload,
       };
     case EDITIONS_INITIAL_LOAD_FAILURE:
     case GET_ALL_EDITIONS_FAILURE:
@@ -121,43 +91,38 @@ export default function (state = initialState, action) {
   }
 }
 
-const getEditionsReducer = (state) => state.editions;
+const getEditionsReducer = state => state.editions;
 
 export const getEditions = createSelector(
   getEditionsReducer,
-  (editionReducer) => editionReducer.editions
+  editionReducer => editionReducer.editions
 );
 export const getProducts = createSelector(
   getEditionsReducer,
-  (editionReducer) => editionReducer.products
+  editionReducer => editionReducer.products
 );
 
 export const getLoading = createSelector(
   getEditionsReducer,
-  (editionReducer) => editionReducer.loading
+  editionReducer => editionReducer.loading
 );
 
 export const getErrors = createSelector(
   getEditionsReducer,
-  (editionReducer) => editionReducer.errors
+  editionReducer => editionReducer.errors
 );
 
 export const getShowAddModal = createSelector(
   getEditionsReducer,
-  (editionReducer) => editionReducer.showAddModal
+  editionReducer => editionReducer.showAddModal
 );
 
 export const getShowEditModal = createSelector(
   getEditionsReducer,
-  (editionReducer) => editionReducer.showEditModal
+  editionReducer => editionReducer.showEditModal
 );
 
 export const getShowDeleteModal = createSelector(
   getEditionsReducer,
-  (editionReducer) => editionReducer.showDeleteModal
-);
-
-export const getSelectedItem = createSelector(
-  getEditionsReducer,
-  (editionReducer) => editionReducer.selectedItem
+  editionReducer => editionReducer.showDeleteModal
 );

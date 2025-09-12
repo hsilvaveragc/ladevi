@@ -1,6 +1,5 @@
-import { bindActionCreators, compose } from 'redux';
-import { connect } from 'react-redux';
-
+import { bindActionCreators, compose } from "redux";
+import { connect } from "react-redux";
 import {
   initialLoad,
   addAccountingField,
@@ -11,7 +10,7 @@ import {
   showAccountingFieldsDeleteModal,
   getAllAccountingFields,
   filterAccountingFields,
-} from './actionCreators.js';
+} from "./actionCreators.js";
 import {
   getAccountingFields,
   getCountries,
@@ -20,10 +19,10 @@ import {
   getShowAddModal,
   getShowEditModal,
   getShowDeleteModal,
-} from './reducer.js';
-import Page from './Page.jsx';
+} from "./reducer.js";
+import Page from "./Page.jsx";
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   accountingFields: getAccountingFields(state),
   errors: getErrors(state),
   isLoading: getLoading(state),
@@ -33,7 +32,7 @@ const mapStateToProps = (state) => ({
   countries: getCountries(state),
 });
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators(
     {
       initialLoad,
@@ -50,4 +49,9 @@ const mapDispatchToProps = (dispatch) => ({
   ),
 });
 
-export default compose(connect(mapStateToProps, mapDispatchToProps))(Page);
+export default compose(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
+)(Page);

@@ -1,7 +1,5 @@
-import { put, all, takeLatest, call } from 'redux-saga/effects';
-import { toast } from 'react-toastify';
-
-import contractsService from '../contracts/service';
+import { put, all, takeLatest, call } from "redux-saga/effects";
+import { toast } from "react-toastify";
 
 import {
   GETCURRENCIES_INIT,
@@ -19,8 +17,10 @@ import {
   INITIAL_LOAD_INIT,
   INITIAL_LOAD_SUCCESS,
   INITIAL_LOAD_FAILURE,
-} from './actionTypes';
-import currencyService from './service';
+} from "./actionTypes";
+
+import currencyService from "./service";
+import contractsService from "../contracts/service";
 
 export function* initialLoad() {
   try {
@@ -36,6 +36,7 @@ export function* initialLoad() {
       },
     });
   } catch (err) {
+    console.log(err);
     yield put({
       type: INITIAL_LOAD_FAILURE,
       errors: { ...err.response.data.errors },
@@ -51,6 +52,7 @@ export function* getCurrencies() {
       payload: currenciesPayload,
     });
   } catch (err) {
+    console.log(err);
     yield put({
       type: GETCURRENCIES_FAILURE,
       errors: { ...err.response.data.errors },
@@ -63,7 +65,7 @@ export function* addCurrency({ payload }) {
     const addCurrencyPayload = yield call(currencyService.addCurrency, payload);
     yield all([
       put({ type: ADDCURRENCY_SUCCESS, payload: addCurrencyPayload }),
-      call(toast.success, 'Moneda creada con éxito!'),
+      call(toast.success, "Moneda creada con éxito!"),
       put({ type: GETCURRENCIES_INIT, payload: {} }),
     ]);
   } catch (err) {
@@ -71,7 +73,7 @@ export function* addCurrency({ payload }) {
       type: ADDCURRENCY_FAILURE,
       errors: { ...err.response.data.errors },
     });
-    yield call(toast.error, 'Hubo un error');
+    yield call(toast.error, "Hubo un error");
   }
 }
 
@@ -83,15 +85,16 @@ export function* editCurrency({ payload }) {
     );
     yield all([
       put({ type: EDITCURRENCY_SUCCESS, payload: editCurrencyPayload }),
-      call(toast.success, 'Moneda editada con éxito!'),
+      call(toast.success, "Moneda editada con éxito!"),
       put({ type: GETCURRENCIES_INIT, payload: {} }),
     ]);
   } catch (err) {
+    console.log(err);
     yield put({
       type: EDITCURRENCY_FAILURE,
       errors: { ...err.response.data.errors },
     });
-    yield call(toast.error, 'Hubo un error');
+    yield call(toast.error, "Hubo un error");
   }
 }
 
@@ -100,7 +103,7 @@ export function* deleteCurrency({ payload }) {
     const deletePayload = yield call(currencyService.deleteCurrency, payload);
     yield all([
       put({ type: DELETECURRENCY_SUCCESS, payload: deletePayload }),
-      call(toast.success, 'Moneda borrada con éxito!'),
+      call(toast.success, "Moneda borrada con éxito!"),
       put({ type: GETCURRENCIES_INIT, payload: {} }),
     ]);
   } catch (err) {
@@ -108,7 +111,7 @@ export function* deleteCurrency({ payload }) {
       type: DELETECURRENCY_FAILURE,
       error: err.response.data.message,
     });
-    yield call(toast.error, 'Hubo un error');
+    yield call(toast.error, "Hubo un error");
   }
 }
 

@@ -4,23 +4,23 @@ import {
   GET_ALL_PRODUCTEDITIONS_INIT,
   ADD_ORDERSFPR_INIT,
   CLEARFILTERS,
-} from './actionTypes';
+} from "./actionTypes";
 
 export const initialLoad = () => ({
   type: INITIAL_LOAD_INIT,
 });
 
-export const getProductEditions = (payload) => ({
+export const getProductEditions = payload => ({
   type: GET_ALL_PRODUCTEDITIONS_INIT,
   payload,
 });
 
-export const filterReport = (payload) => ({
+export const filterReport = payload => ({
   type: FILTER_ORDERSFPR_INIT,
   payload,
 });
 
-export const addReporteGeneration = (payload) => ({
+export const addReporteGeneration = payload => ({
   type: ADD_ORDERSFPR_INIT,
   payload,
 });

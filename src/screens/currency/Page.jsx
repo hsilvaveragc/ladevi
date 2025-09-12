@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { PageContainer } from 'shared/utils';
-
-import EuroPage from '../euro-parity/components/Page';
-
-import Modals from './components/Modals';
-import CurrencyTable from './components/CurrencyTable';
+import React, { useEffect, useState } from "react";
+import { PageContainer } from "shared/utils";
+import EuroPage from "../euro-parity/components/Page";
+import Modals from "./components/Modals";
+import CurrencyTable from "./components/CurrencyTable";
 
 export default function Page(props) {
   const [selectedItem, setSelectedItem] = useState({});
@@ -13,12 +11,12 @@ export default function Page(props) {
     props.actions.initialLoad();
   }, [props.actions]);
 
-  const handleEdit = (item) => {
+  const handleEdit = item => {
     setSelectedItem(item);
     props.actions.showEditModal();
   };
 
-  const handleDelete = (item) => {
+  const handleDelete = item => {
     setSelectedItem(item);
     props.actions.showDeleteModal();
   };

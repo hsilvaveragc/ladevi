@@ -1,17 +1,15 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { Formik, Form } from 'formik';
-import { isEmpty } from 'ramda';
-import * as Yup from 'yup';
-import InputSelectField from 'shared/components/InputSelectField';
-import InputDatePickerField from 'shared/components/InputDatePickerField';
-import InputCheckboxField from 'shared/components/InputCheckboxField';
-import { SaveButton, DangerButton } from 'shared/components/Buttons';
-
-import useUser from 'shared/security/useUser';
-
-import ExcelExport from './ExcelExport';
-import PdfExport from './PdfExport';
+import React, { useState } from "react";
+import styled from "styled-components";
+import { Formik, Form } from "formik";
+import { isEmpty } from "ramda";
+import * as Yup from "yup";
+import useUser from "shared/security/useUser";
+import InputSelectField from "shared/components/InputSelectField";
+import InputDatePickerField from "shared/components/InputDatePickerField";
+import InputCheckboxField from "shared/components/InputCheckboxField";
+import { SaveButton, DangerButton } from "shared/components/Buttons";
+import ExcelExport from "./ExcelExport";
+import PdfExport from "./PdfExport";
 
 const FiltersContainer = styled.div`
   width: 80vw;
@@ -54,12 +52,12 @@ const Filters = ({
 
   const defaultOption = {
     id: -1,
-    name: 'Todos',
+    name: "Todos",
   };
 
   const defaultSeller = {
     id: -1,
-    fullName: 'Todos',
+    fullName: "Todos",
   };
 
   return (
@@ -75,33 +73,33 @@ const Filters = ({
       }}
       enableReinitialize={true}
       validationSchema={Yup.object().shape({})}
-      onSubmit={(values) => {
+      onSubmit={values => {
         handleFilter(values);
       }}
     >
-      {(formikProps) => {
+      {formikProps => {
         return (
           <FiltersContainer>
             <Form>
-              <div className='form-row'>
-                <div className='col-3'>
+              <div className="form-row">
+                <div className="col-3">
                   <InputDatePickerField
-                    labelText='Salida edición desde'
-                    name='fromDate'
-                    onChangeHandler={(val) => setOneMonthAgo(val)}
+                    labelText="Salida edición desde"
+                    name="fromDate"
+                    onChangeHandler={val => setOneMonthAgo(val)}
                   />
                 </div>
-                <div className='col-3'>
+                <div className="col-3">
                   <InputDatePickerField
-                    labelText='Salida edición hasta'
-                    name='toDate'
-                    onChangeHandler={(val) => setActualDate(val)}
+                    labelText="Salida edición hasta"
+                    name="toDate"
+                    onChangeHandler={val => setActualDate(val)}
                   />
                 </div>
-                <div className='col-3'>
+                <div className="col-3">
                   <InputSelectField
-                    labelText='Vendedor'
-                    name='selledId'
+                    labelText="Vendedor"
+                    name="selledId"
                     options={
                       isLoadingSellers
                         ? availableSellers
@@ -109,22 +107,22 @@ const Filters = ({
                     }
                     isLoading={isLoadingSellers}
                     disabled={isLoadingSellers || userRol.isSeller}
-                    getOptionLabel={(option) => option.fullName}
+                    getOptionLabel={option => option.fullName}
                   />
                 </div>
-                <div className='col-2' style={{ lineHeight: '6em' }}>
+                <div className="col-2" style={{ lineHeight: "6em" }}>
                   <InputCheckboxField
-                    labelText='No comisionar impagas'
-                    name='noComisionarImpagas'
+                    labelText="No comisionar impagas"
+                    name="noComisionarImpagas"
                     inline
                   />
                 </div>
               </div>
-              <div className='form-row'>
-                <div className='col-3'>
+              <div className="form-row">
+                <div className="col-3">
                   <InputSelectField
-                    labelText='Tipo de Producto'
-                    name='productType'
+                    labelText="Tipo de Producto"
+                    name="productType"
                     options={
                       isLoadingProductTypes
                         ? availableProductTypes
@@ -132,18 +130,18 @@ const Filters = ({
                     }
                     isLoading={isLoadingProductTypes}
                     disabled={isLoadingProductTypes}
-                    onChangeHandler={(option) => {
+                    onChangeHandler={option => {
                       getProductHandler(option.id);
-                      formikProps.setFieldValue('product', -1);
+                      formikProps.setFieldValue("product", -1);
                       getProductEditionsHandler(-1);
-                      formikProps.setFieldValue('productEdition', -1);
+                      formikProps.setFieldValue("productEdition", -1);
                     }}
                   />
                 </div>
-                <div className='col-3'>
+                <div className="col-3">
                   <InputSelectField
-                    labelText='Producto'
-                    name='product'
+                    labelText="Producto"
+                    name="product"
                     options={
                       isLoadingProducts
                         ? availableProducts
@@ -151,16 +149,16 @@ const Filters = ({
                     }
                     isLoading={isLoadingProducts}
                     disabled={isLoadingProducts || isEmpty(availableProducts)}
-                    onChangeHandler={(option) => {
+                    onChangeHandler={option => {
                       getProductEditionsHandler(option.id);
-                      formikProps.setFieldValue('productEdition', -1);
+                      formikProps.setFieldValue("productEdition", -1);
                     }}
                   />
                 </div>
-                <div className='col-3'>
+                <div className="col-3">
                   <InputSelectField
-                    labelText='Edición'
-                    name='productEdition'
+                    labelText="Edición"
+                    name="productEdition"
                     options={
                       isLoadingProductEditions
                         ? availableEditions
@@ -174,8 +172,8 @@ const Filters = ({
                     }
                   />
                 </div>
-                <div className='col-3'>
-                  <div className='buttons-container'>
+                <div className="col-3">
+                  <div className="buttons-container">
                     <DangerButton
                       disabled={isLoadingProductTypes || isLoadingSellers}
                       onClickHandler={() => {
@@ -186,7 +184,7 @@ const Filters = ({
                       Limpiar
                     </DangerButton>
                     <SaveButton
-                      type='submit'
+                      type="submit"
                       disabled={isLoadingProductTypes || isLoadingSellers}
                     >
                       Buscar

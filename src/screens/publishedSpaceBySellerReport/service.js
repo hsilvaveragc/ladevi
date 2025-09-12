@@ -1,34 +1,33 @@
-import axios from 'axios';
-import { sortAlphabetically } from 'shared/utils';
-import { format } from 'date-fns';
+import axios from "axios";
+import { getHeaders } from "shared/services/utils";
+import { sortAlphabetically } from "shared/utils";
+import Moment from "moment";
 
-import { getHeaders } from 'shared/services/utils';
-
-const getFiltersProductsByType = (payload) => {
+const getFiltersProductsByType = payload => {
   const filter = [];
   let result = null;
 
   const isNationalSeller =
-    localStorage.getItem('loggedUser') == 'Vendedor Nacional';
+    localStorage.getItem("loggedUser") == "Vendedor Nacional";
 
   if (isNationalSeller) {
-    const countryId = localStorage.getItem('userCountryId');
+    const countryId = localStorage.getItem("userCountryId");
     filter.push({
-      field: 'countryId',
-      operator: 'eq',
+      field: "countryId",
+      operator: "eq",
       value: countryId,
     });
   }
 
   filter.push({
-    field: 'productTypeId',
-    operator: 'eq',
+    field: "productTypeId",
+    operator: "eq",
     value: payload,
   });
 
   if (filter.length > 0) {
     result = {
-      logic: 'and',
+      logic: "and",
       filters: filter,
     };
   }
@@ -37,13 +36,13 @@ const getFiltersProductsByType = (payload) => {
 };
 
 export default {
-  filterOrdersBySeller: (payload) =>
+  filterOrdersBySeller: payload =>
     axios
       .post(`Report/GetOPBySeller`, payload, {
         headers: getHeaders(),
       })
-      .then((response) => response.data),
-  getProductsByType: (payload) =>
+      .then(response => response.data),
+  getProductsByType: payload =>
     axios
       .post(
         `Products/Search`,
@@ -55,5 +54,5 @@ export default {
           headers: getHeaders(),
         }
       )
-      .then((response) => sortAlphabetically(response.data.data, 'name')),
+      .then(response => sortAlphabetically(response.data.data, "name")),
 };

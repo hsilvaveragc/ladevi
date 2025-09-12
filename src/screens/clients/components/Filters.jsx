@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import { Formik, Form } from 'formik';
-import { isEmpty } from 'ramda';
-import InputTextField from 'shared/components/InputTextField';
-import InputSelectField from 'shared/components/InputSelectField';
-import { SaveButton, DangerButton } from 'shared/components/Buttons';
-
-import useAppData from 'shared/appData/useAppData';
-import useUser from 'shared/security/useUser';
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import { Formik, Form } from "formik";
+import { isEmpty } from "ramda";
+import useUser from "shared/security/useUser";
+import useAppData from "shared/appData/useAppData";
+import InputTextField from "shared/components/InputTextField";
+import InputSelectField from "shared/components/InputSelectField";
+import { SaveButton, DangerButton } from "shared/components/Buttons";
 
 const FiltersContainer = styled.div`
   width: 70vw;
@@ -33,20 +32,23 @@ export default function Filters({
   handleChangeParams,
 }) {
   const { userRol, userCountryId, userId } = useUser();
-  const { countries, statesGroupedByCountry, districtsGroupedByState } =
-    useAppData();
+  const {
+    countries,
+    statesGroupedByCountry,
+    districtsGroupedByState,
+  } = useAppData();
 
   const [availableStates, setAvailableStates] = useState([]);
   const [availableDistricts, setAvailableDistricts] = useState([]);
 
   const defaultOption = {
     id: -1,
-    name: 'Todos',
+    name: "Todos",
   };
 
   const allSellers = {
     id: -1,
-    fullName: 'Todos',
+    fullName: "Todos",
   };
 
   // Actualizar estados cuando cambian los datos en Redux o cuando se monta el componente
@@ -58,20 +60,20 @@ export default function Filters({
   }, [countries, statesGroupedByCountry, userCountryId]);
 
   // Función para filtrar estados por país
-  const filterStatesForCountry = (countryId) => {
+  const filterStatesForCountry = countryId => {
     if (countryId === -1 || isEmpty(statesGroupedByCountry)) {
       setAvailableStates([]);
       return;
     }
 
     const filteredStates =
-      statesGroupedByCountry.find((state) => state.countryId === countryId)
+      statesGroupedByCountry.find(state => state.countryId === countryId)
         ?.states ?? [];
     setAvailableStates(filteredStates);
   };
 
   // Función para filtrar distritos por estado
-  const filterDistrictsForState = (stateId) => {
+  const filterDistrictsForState = stateId => {
     if (stateId === -1 || isEmpty(districtsGroupedByState)) {
       setAvailableDistricts([]);
       return;
@@ -79,7 +81,7 @@ export default function Filters({
 
     // Filtrar los distritos por el estado seleccionado
     const filteredDistricts =
-      districtsGroupedByState.find((district) => district.stateId === stateId)
+      districtsGroupedByState.find(district => district.stateId === stateId)
         ?.districts ?? [];
     setAvailableDistricts(filteredDistricts);
 
@@ -93,9 +95,9 @@ export default function Filters({
     filterStatesForCountry(option.id);
 
     // Resetear valores relacionados
-    formikProps.setFieldValue('stateId', -1);
-    formikProps.setFieldValue('districtId', -1);
-    formikProps.setFieldValue('cityId', -1);
+    formikProps.setFieldValue("stateId", -1);
+    formikProps.setFieldValue("districtId", -1);
+    formikProps.setFieldValue("cityId", -1);
 
     // Limpiar listas filtradas
     setAvailableDistricts([]);
@@ -108,8 +110,8 @@ export default function Filters({
     filterDistrictsForState(option.id);
 
     // Resetear valores relacionados
-    formikProps.setFieldValue('districtId', -1);
-    formikProps.setFieldValue('cityId', -1);
+    formikProps.setFieldValue("districtId", -1);
+    formikProps.setFieldValue("cityId", -1);
 
     // Limpiar listas filtradas
     getCitiesHandler(-1);
@@ -121,7 +123,7 @@ export default function Filters({
     getCitiesHandler(option.id);
 
     // Resetear valor de ciudad
-    formikProps.setFieldValue('cityId', -1);
+    formikProps.setFieldValue("cityId", -1);
   };
 
   return (
@@ -129,97 +131,97 @@ export default function Filters({
       validateOnChange={false}
       validateOnBlur={false}
       initialValues={{
-        fullName: '',
-        status: 'onlyEnabled',
+        fullName: "",
+        status: "onlyEnabled",
         applicationUserSellerId: userRol.isSeller ? userId : -1,
         countryId: userRol.isSupervisor ? userCountryId : -1,
         stateId: -1,
         districtId: -1,
         cityId: -1,
       }}
-      onSubmit={(values) => {
+      onSubmit={values => {
         handleFilter(values);
         handleChangeParams(values);
       }}
       enableReinitialize={true}
     >
-      {(formikProps) => {
+      {formikProps => {
         return (
           <FiltersContainer>
             <Form>
-              <div className='form-row'>
-                <div className=' col-3'>
+              <div className="form-row">
+                <div className=" col-3">
                   <InputTextField
-                    labelText='Marca o Razón Social'
-                    name='fullName'
+                    labelText="Marca o Razón Social"
+                    name="fullName"
                   />
                 </div>
-                <div className='col-3'>
+                <div className="col-3">
                   <InputSelectField
-                    labelText='Estado'
-                    name='status'
+                    labelText="Estado"
+                    name="status"
                     options={[
                       {
-                        id: 'onlyEnabled',
-                        name: 'Solo Habilitados',
+                        id: "onlyEnabled",
+                        name: "Solo Habilitados",
                       },
-                      { id: 'all', name: 'Todos' },
+                      { id: "all", name: "Todos" },
                     ]}
                   />
                 </div>
-                <div className='col-3'>
+                <div className="col-3">
                   <InputSelectField
-                    labelText='Vendedor'
-                    name='applicationUserSellerId'
+                    labelText="Vendedor"
+                    name="applicationUserSellerId"
                     options={[allSellers, ...availableUsers]}
-                    getOptionLabel={(option) => option.fullName}
+                    getOptionLabel={option => option.fullName}
                     disabled={userRol.isSeller}
                   />
                 </div>
-                <div className='col-3'>
+                <div className="col-3">
                   <InputSelectField
-                    labelText='Pais'
-                    name='countryId'
+                    labelText="Pais"
+                    name="countryId"
                     options={[defaultOption, ...countries]}
-                    onChangeHandler={(option) =>
+                    onChangeHandler={option =>
                       handleCountryChange(option, formikProps)
                     }
                   />
                 </div>
               </div>
-              <div className='form-row'>
-                <div className=' col-3'>
+              <div className="form-row">
+                <div className=" col-3">
                   <InputSelectField
-                    labelText='Provincia'
-                    name='stateId'
+                    labelText="Provincia"
+                    name="stateId"
                     options={[defaultOption, ...availableStates]}
-                    onChangeHandler={(option) =>
+                    onChangeHandler={option =>
                       handleStateChange(option, formikProps)
                     }
                     disabled={isEmpty(availableStates)}
                   />
                 </div>
-                <div className='col-3'>
+                <div className="col-3">
                   <InputSelectField
-                    labelText='Municipio'
-                    name='districtId'
+                    labelText="Municipio"
+                    name="districtId"
                     options={[defaultOption, ...availableDistricts]}
-                    onChangeHandler={(option) =>
+                    onChangeHandler={option =>
                       handleDistrictChange(option, formikProps)
                     }
                     disabled={isEmpty(availableDistricts)}
                   />
                 </div>
-                <div className='col-3'>
+                <div className="col-3">
                   <InputSelectField
-                    labelText='Localidad'
-                    name='cityId'
+                    labelText="Localidad"
+                    name="cityId"
                     options={[defaultOption, ...availableCities]}
                     disabled={isEmpty(availableCities)}
                   />
                 </div>
-                <div className='col-3'>
-                  <div className='buttons-container'>
+                <div className="col-3">
+                  <div className="buttons-container">
                     <DangerButton
                       onClickHandler={() => {
                         formikProps.resetForm();
@@ -228,7 +230,7 @@ export default function Filters({
                     >
                       Limpiar
                     </DangerButton>
-                    <SaveButton type='submit'>Buscar</SaveButton>
+                    <SaveButton type="submit">Buscar</SaveButton>
                   </div>
                 </div>
               </div>

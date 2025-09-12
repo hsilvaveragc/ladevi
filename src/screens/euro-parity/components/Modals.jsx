@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import Modal from "../../../shared/components/Modal";
+import EuroForm from "./Form";
 
-import Modal from '../../../shared/components/Modal';
-
-import EuroForm from './Form';
-
-const EuroParityModals = (props) => (
+export default props => (
   <>
     <Modal
       shouldClose={true}
@@ -35,5 +33,3 @@ const EuroParityModals = (props) => (
     </Modal>
   </>
 );
-
-export default EuroParityModals;

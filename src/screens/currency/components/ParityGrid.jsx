@@ -1,15 +1,15 @@
-import { FieldArray } from 'formik';
-
-import { ParityGridRow } from './ParityGridRow';
+import React from "react";
+import { FieldArray } from "formik";
+import { ParityGridRow } from "./ParityGridRow";
 
 const ParityGrid = ({ editMode, deleteMode, selectedItem, formikProps }) => {
-  const handleAdd = (push) => {
+  const handleAdd = push => {
     const actualDate = new Date();
     push({
       id: 0,
       currencyId: editMode ? selectedItem.id : 0,
-      localCurrencyToDollarExchangeRate: '',
-      start: '',
+      localCurrencyToDollarExchangeRate: "",
+      start: "",
       end: new Date(
         actualDate.getFullYear() + 100,
         actualDate.getMonth(),
@@ -20,10 +20,10 @@ const ParityGrid = ({ editMode, deleteMode, selectedItem, formikProps }) => {
   };
 
   return (
-    <fieldset className='parity-grid-fieldset'>
+    <fieldset className="parity-grid-fieldset">
       <legend>Cotizaciones U$S</legend>
       <FieldArray
-        name='currencyParities'
+        name="currencyParities"
         validateOnChange={false}
         render={({ push, remove }) => (
           <>
@@ -34,23 +34,22 @@ const ParityGrid = ({ editMode, deleteMode, selectedItem, formikProps }) => {
                 item={item}
                 formikProps={formikProps}
                 deleteMode={deleteMode}
-                onRemove={(e) => {
+                onRemove={e => {
                   e.preventDefault();
                   if (
                     !deleteMode &&
                     (
                       formikProps.values.currencyParities.filter(
-                        (cp) => !cp.shouldDelete
+                        cp => !cp.shouldDelete
                       ) ?? []
                     ).length !== 1
                   ) {
                     if (formikProps.values.currencyParities[index].id === 0) {
-                      const itemsNotDeleted =
-                        formikProps.values.currencyParities.filter(
-                          (_, itemIndex) => itemIndex !== index
-                        );
+                      let itemsNotDeleted = formikProps.values.currencyParities.filter(
+                        (_, itemIndex) => itemIndex !== index
+                      );
                       formikProps.setFieldValue(
-                        'currencyParities',
+                        "currencyParities",
                         itemsNotDeleted
                       );
                     } else {
@@ -61,7 +60,7 @@ const ParityGrid = ({ editMode, deleteMode, selectedItem, formikProps }) => {
                     }
                   }
                 }}
-                onAdd={(e) => {
+                onAdd={e => {
                   e.preventDefault();
                   if (!deleteMode) {
                     handleAdd(push);

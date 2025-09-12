@@ -1,8 +1,10 @@
-import { bindActionCreators, compose } from 'redux';
-import { connect } from 'react-redux';
+import { bindActionCreators, compose } from "redux";
+import { connect } from "react-redux";
 
-import Page from './Page';
-import { filterReport, initialLoad, clearFilters } from './actionCreators';
+import Page from "./Page";
+
+import { filterReport, initialLoad, clearFilters } from "./actionCreators";
+
 import {
   getPendientContracts,
   getErrors,
@@ -11,9 +13,9 @@ import {
   getClients,
   getLoadingAllClients,
   getLoadingSellers,
-} from './reducer';
+} from "./reducer";
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   data: getPendientContracts(state),
   errors: getErrors(state),
   isLoading: getLoading(state),
@@ -23,7 +25,7 @@ const mapStateToProps = (state) => ({
   isLoadingSellers: getLoadingSellers(state),
 });
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators(
     {
       initialLoad,

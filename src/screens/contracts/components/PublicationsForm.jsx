@@ -1,15 +1,13 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import Table from 'shared/components/Table';
-import { SaveButton, RemoveButton } from 'shared/components/Buttons';
-import Modal from 'shared/components/Modal';
-
-import useUser from 'shared/security/useUser';
-
-import Order from '../../orders/components/Form';
-
-import ExcelExport from './GeneralForm/ExcelExport';
-import PdfExport from './GeneralForm/PdfExport';
+import React, { useState } from "react";
+import styled from "styled-components";
+import useUser from "shared/security/useUser";
+import Table from "shared/components/Table";
+import { SaveButton } from "shared/components/Buttons";
+import Modal from "shared/components/Modal";
+import { RemoveButton } from "shared/components/Buttons";
+import Order from "../../orders/components/Form";
+import ExcelExport from "./GeneralForm/ExcelExport";
+import PdfExport from "./GeneralForm/PdfExport";
 
 const PublicationsOrderContainer = styled.div`
   width: 60vw;
@@ -42,15 +40,15 @@ export default function PublicationsForm(props) {
   const closeModalEdit = () => setShowEditModal(false);
   const closeModalDelete = () => setShowDeleteModal(false);
 
-  const getProductAdvertisingSpaceIdsPublished = (orders) => {
-    return Array.from(new Set(orders?.map((x) => x.productAdvertisingSpaceId)));
+  const getProductAdvertisingSpaceIdsPublished = orders => {
+    return Array.from(new Set(orders?.map(x => x.productAdvertisingSpaceId)));
   };
 
-  const updateOrdenes = (values) => {
+  const updateOrdenes = values => {
     setOrdenes([...ordenes, values]);
 
     const soldSpaceindex = props.formikProps.values.soldSpaces.findIndex(
-      (x) => x.id === values.soldSpaceId
+      x => x.id === values.soldSpaceId
     );
     const soldSpace = props.formikProps.values.soldSpaces[soldSpaceindex];
 
@@ -66,25 +64,25 @@ export default function PublicationsForm(props) {
       parseInt(props.formikProps.values.quantityOP) + 1
     );
     props.formikProps.setFieldValue(
-      'publishingOrdersCounter',
+      "publishingOrdersCounter",
       props.formikProps.values.publishingOrdersCounter + 1
     );
 
     props.formikProps.setFieldValue(
-      'productAdvertisingSpaceIdsPublished',
+      "productAdvertisingSpaceIdsPublished",
       getProductAdvertisingSpaceIdsPublished([...ordenes, values])
     );
   };
 
-  const updateOrdenesEdit = (values) => {
-    const orderIndex = ordenes.findIndex((x) => x.id === values.id);
+  const updateOrdenesEdit = values => {
+    const orderIndex = ordenes.findIndex(x => x.id === values.id);
     const oldQuantity = ordenes[orderIndex].quantity;
     values.canDelete =
       !values.productEdition != null &&
       !values.productEdition.closed &&
-      values.pageNumber == '';
+      values.pageNumber == "";
 
-    const orders = [
+    let orders = [
       ...ordenes.slice(0, orderIndex),
       {
         ...values,
@@ -93,7 +91,7 @@ export default function PublicationsForm(props) {
     ];
 
     const soldSpaceIndex = props.formikProps.values.soldSpaces.findIndex(
-      (x) => x.id === values.soldSpaceId
+      x => x.id === values.soldSpaceId
     );
     props.formikProps.setFieldValue(
       `soldSpaces[${soldSpaceIndex}].balance`,
@@ -104,17 +102,17 @@ export default function PublicationsForm(props) {
     setOrdenes(orders);
 
     props.formikProps.setFieldValue(
-      'productAdvertisingSpaceIdsPublished',
+      "productAdvertisingSpaceIdsPublished",
       getProductAdvertisingSpaceIdsPublished(orders)
     );
   };
 
-  const updateOrdenesDelete = (values) => {
-    const orders = ordenes.filter((order) => order.id !== values.id);
+  const updateOrdenesDelete = values => {
+    var orders = ordenes.filter(order => order.id !== values.id);
     const soldSpaceIndex = props.formikProps.values.soldSpaces.findIndex(
-      (x) => x.id === values.soldSpaceId
+      x => x.id === values.soldSpaceId
     );
-    props.formikProps.setFieldValue('publishingOrdersCounter', orders.length);
+    props.formikProps.setFieldValue("publishingOrdersCounter", orders.length);
     props.formikProps.setFieldValue(
       `soldSpaces[${soldSpaceIndex}].balance`,
       props.formikProps.values.soldSpaces[soldSpaceIndex].balance +
@@ -123,40 +121,40 @@ export default function PublicationsForm(props) {
     setOrdenes(orders);
 
     props.formikProps.setFieldValue(
-      'productAdvertisingSpaceIdsPublished',
+      "productAdvertisingSpaceIdsPublished",
       getProductAdvertisingSpaceIdsPublished(orders)
     );
   };
 
   const columns = [
     {
-      Header: 'Edición',
-      accessor: 'productEdition.name',
+      Header: "Edición",
+      accessor: "productEdition.name",
     },
     {
-      Header: 'Espacio',
-      accessor: 'productAdvertisingSpace.name',
+      Header: "Espacio",
+      accessor: "productAdvertisingSpace.name",
     },
     {
-      Header: 'Ubicación',
-      accessor: 'advertisingSpaceLocationType.name',
+      Header: "Ubicación",
+      accessor: "advertisingSpaceLocationType.name",
     },
     {
-      Header: 'Cantidad',
-      accessor: 'quantity',
+      Header: "Cantidad",
+      accessor: "quantity",
     },
     {
-      Header: 'Obs',
-      accessor: 'observations',
+      Header: "Obs",
+      accessor: "observations",
     },
     {
-      Header: 'Factura',
-      accessor: 'invoiceNumber',
+      Header: "Factura",
+      accessor: "invoiceNumber",
     },
     {
-      Header: 'Borrar',
-      accessor: 'delete',
-      Cell: (row) => {
+      Header: "Borrar",
+      accessor: "delete",
+      Cell: row => {
         if (row.original.canDelete) {
           return (
             <RemoveButton
@@ -264,11 +262,11 @@ export default function PublicationsForm(props) {
       </Modal>
       {ordenes.length > 0 && (
         <>
-          <div className='form-row'>
-            <div className='col-10'></div>
+          <div className="form-row">
+            <div className="col-10"></div>
             <div
-              className='col-2'
-              style={{ textAlign: 'end', paddingRight: 0 }}
+              className="col-2"
+              style={{ textAlign: "end", paddingRight: 0 }}
             >
               <ExcelExport
                 data={ordenes}
@@ -291,7 +289,7 @@ export default function PublicationsForm(props) {
           <br />
         </>
       )}
-      <div style={{ width: '100%' }}>
+      <div style={{ width: "100%" }}>
         <Table
           data={ordenes}
           columns={columns}
@@ -307,7 +305,7 @@ export default function PublicationsForm(props) {
         props.formikProps.values.productId &&
         props.formikProps.values.clientId &&
         props.formikProps.values.id &&
-        props.formikProps.values.soldSpaces.findIndex((x) => x.balance > 0) !==
+        props.formikProps.values.soldSpaces.findIndex(x => x.balance > 0) !==
           -1 && (
           <SaveButton onClickHandler={() => setShowModal(!showModal)}>
             Crear Publicación

@@ -1,31 +1,29 @@
-import axios from 'axios';
-import { dissoc } from 'ramda';
-import { sortAlphabetically } from 'shared/utils';
-
-import { getHeaders } from 'shared/services/utils';
-
+import axios from "axios";
+import { dissoc } from "ramda";
 import {
   transformIntoClientTaxes,
   buildAddPayload,
   buildEditPayload,
-} from './utils';
+} from "./utils";
+import { getHeaders } from "shared/services/utils";
+import { sortAlphabetically } from "shared/utils";
 
-const getFilterForSearch = (payload) => {
+const getFilterForSearch = payload => {
   const filter = [];
   let result = null;
 
   if (payload.fullName) {
     filter.push({
-      logic: 'or',
+      logic: "or",
       filters: [
         {
-          field: 'brandName',
-          operator: 'contains',
+          field: "brandName",
+          operator: "contains",
           value: payload.fullName,
         },
         {
-          field: 'legalName',
-          operator: 'contains',
+          field: "legalName",
+          operator: "contains",
           value: payload.fullName,
         },
       ],
@@ -34,40 +32,40 @@ const getFilterForSearch = (payload) => {
 
   if (payload.stateId && payload.stateId !== -1) {
     filter.push({
-      field: 'stateId',
-      operator: 'eq',
+      field: "stateId",
+      operator: "eq",
       value: payload.stateId,
     });
   }
 
   if (payload.countryId && payload.countryId !== -1) {
     filter.push({
-      field: 'countryId',
-      operator: 'eq',
+      field: "countryId",
+      operator: "eq",
       value: payload.countryId,
     });
   }
 
   if (payload.districtId && payload.districtId !== -1) {
     filter.push({
-      field: 'districtId',
-      operator: 'eq',
+      field: "districtId",
+      operator: "eq",
       value: payload.districtId,
     });
   }
 
   if (payload.cityId && payload.cityId !== -1) {
     filter.push({
-      field: 'cityId',
-      operator: 'eq',
+      field: "cityId",
+      operator: "eq",
       value: payload.cityId,
     });
   }
 
-  if (payload.status && payload.status !== 'all') {
+  if (payload.status && payload.status !== "all") {
     filter.push({
-      field: 'isEnabled',
-      operator: 'eq',
+      field: "isEnabled",
+      operator: "eq",
       value: true,
     });
   }
@@ -77,15 +75,15 @@ const getFilterForSearch = (payload) => {
     payload.applicationUserSellerId !== -1
   ) {
     filter.push({
-      field: 'applicationUserSellerId',
-      operator: 'eq',
+      field: "applicationUserSellerId",
+      operator: "eq",
       value: payload.applicationUserSellerId,
     });
   }
 
   if (filter.length > 0) {
     result = {
-      logic: 'and',
+      logic: "and",
       filters: filter,
     };
   }
@@ -103,7 +101,7 @@ export default {
           headers: getHeaders(),
         }
       )
-      .then((response) => sortAlphabetically(response.data, 'brandName')),
+      .then(response => sortAlphabetically(response.data, "brandName")),
   getEnabledClients: () =>
     axios
       .post(
@@ -111,11 +109,11 @@ export default {
         {
           take: 10000,
           filter: {
-            logic: 'and',
+            logic: "and",
             filters: [
               {
-                field: 'isEnabled',
-                operator: 'eq',
+                field: "isEnabled",
+                operator: "eq",
                 value: true,
               },
             ],
@@ -125,7 +123,7 @@ export default {
           headers: getHeaders(),
         }
       )
-      .then((response) => sortAlphabetically(response.data.data, 'brandName')),
+      .then(response => sortAlphabetically(response.data.data, "brandName")),
   getAllTaxes: () =>
     axios
       .post(
@@ -134,30 +132,30 @@ export default {
         {
           headers: getHeaders(),
           filter: {
-            logic: 'and',
+            logic: "and",
             filters: [
               {
-                field: 'isIdentificationField',
-                operator: 'eq',
+                field: "isIdentificationField",
+                operator: "eq",
                 value: true,
               },
             ],
           },
         }
       )
-      .then((response) => response.data.data),
-  getTaxes: (countryId) =>
+      .then(response => response.data.data),
+  getTaxes: countryId =>
     axios
       .post(
         `TaxType/Search`,
         {
           take: 1000,
           filter: {
-            logic: 'and',
+            logic: "and",
             filters: [
               {
-                field: 'countryId',
-                operator: 'eq',
+                field: "countryId",
+                operator: "eq",
                 value: countryId,
               },
             ],
@@ -167,8 +165,8 @@ export default {
           headers: getHeaders(),
         }
       )
-      .then((response) => transformIntoClientTaxes(response.data.data)),
-  filterClients: (payload) =>
+      .then(response => transformIntoClientTaxes(response.data.data)),
+  filterClients: payload =>
     axios
       .post(
         `Clients/Search`,
@@ -180,8 +178,8 @@ export default {
           headers: getHeaders(),
         }
       )
-      .then((response) => response.data.data),
-  addClient: (payload) =>
+      .then(response => response.data.data),
+  addClient: payload =>
     axios
       .post(
         `Clients/Post`,
@@ -192,8 +190,8 @@ export default {
           headers: getHeaders(),
         }
       )
-      .then((response) => response.data.data),
-  editClient: (payload) =>
+      .then(response => response.data.data),
+  editClient: payload =>
     axios
       .put(
         `Clients/Put/${payload.id}`,
@@ -204,23 +202,23 @@ export default {
           headers: getHeaders(),
         }
       )
-      .then((response) => response.data.data),
-  deleteClient: (payload) =>
+      .then(response => response.data.data),
+  deleteClient: payload =>
     axios
       .delete(`Clients/Delete/${payload.id}`, {
         headers: getHeaders(),
       })
-      .then((response) => response.data.data),
-  fetchStates: (countryId) =>
+      .then(response => response.data.data),
+  fetchStates: countryId =>
     axios
       .post(
         `State/search`,
         {
           take: 1000,
           filter: {
-            logic: 'and',
-            field: 'countryId',
-            operator: 'eq',
+            logic: "and",
+            field: "countryId",
+            operator: "eq",
             value: countryId,
           },
         },
@@ -228,21 +226,21 @@ export default {
           headers: getHeaders(),
         }
       )
-      .then((response) => {
-        return sortAlphabetically(response.data.data, 'name');
+      .then(response => {
+        return sortAlphabetically(response.data.data, "name");
       }),
-  fetchDistricts: (stateId) =>
+  fetchDistricts: stateId =>
     axios
       .post(
         `District/search`,
         {
           take: 1000,
           filter: {
-            logic: 'and',
+            logic: "and",
             filters: [
               {
-                field: 'stateId',
-                operator: 'eq',
+                field: "stateId",
+                operator: "eq",
                 value: stateId,
               },
             ],
@@ -252,21 +250,21 @@ export default {
           headers: getHeaders(),
         }
       )
-      .then((response) => {
-        return sortAlphabetically(response.data.data, 'name');
+      .then(response => {
+        return sortAlphabetically(response.data.data, "name");
       }),
-  getAllCities: (districtId) =>
+  getAllCities: districtId =>
     axios
       .post(
         `City/search`,
         {
           take: 1000,
           filter: {
-            logic: 'and',
+            logic: "and",
             filters: [
               {
-                field: 'districtId',
-                operator: 'eq',
+                field: "districtId",
+                operator: "eq",
                 value: districtId,
               },
             ],
@@ -276,28 +274,26 @@ export default {
           headers: getHeaders(),
         }
       )
-      .then((response) => {
-        return sortAlphabetically(response.data.data, 'name');
+      .then(response => {
+        return sortAlphabetically(response.data.data, "name");
       }),
   getAllClientsOptions: () =>
     axios
       .get(`Clients/Options`, {
         headers: getHeaders(),
       })
-      .then((response) => sortAlphabetically(response.data, 'brandName')),
-  getAllClientsOptionsFull: (payload) =>
+      .then(response => sortAlphabetically(response.data, "brandName")),
+  getAllClientsOptionsFull: payload =>
     axios
       .get(
-        `Clients/OptionsFull?onlyArgentina=${
-          payload?.onlyArgentina ?? false
-        }&onlyComtur=${
-          payload?.onlyComtur ?? false
-        }&onlyEnabled=${payload?.onlyEnabled ?? false}`,
+        `Clients/OptionsFull?onlyArgentina=${payload?.onlyArgentina ??
+          false}&onlyComtur=${payload?.onlyComtur ??
+          false}&onlyEnabled=${payload?.onlyEnabled ?? false}`,
         {
           headers: getHeaders(),
         }
       )
-      .then((response) => sortAlphabetically(response.data, 'brandName')),
+      .then(response => sortAlphabetically(response.data, "brandName")),
   getAllTaxCtegories: () =>
     axios
       .post(
@@ -307,21 +303,21 @@ export default {
           headers: getHeaders(),
         }
       )
-      .then((response) => sortAlphabetically(response.data.data, 'name')),
+      .then(response => sortAlphabetically(response.data.data, "name")),
 
   createAndAssociate: (clientData, xubioId) =>
     axios
       .post(
-        '/clients/CreateAndAssociate',
+        "/clients/CreateAndAssociate",
         {
-          ClientData: dissoc('id', buildAddPayload(clientData)),
+          ClientData: dissoc("id", buildAddPayload(clientData)),
           XubioId: xubioId,
         },
         {
           headers: getHeaders(),
         }
       )
-      .then((x) => x.data),
+      .then(x => x.data),
 
   editAndAssociate: (clientData, xubioId) =>
     axios
@@ -335,5 +331,5 @@ export default {
           headers: getHeaders(),
         }
       )
-      .then((x) => x.data),
+      .then(x => x.data),
 };

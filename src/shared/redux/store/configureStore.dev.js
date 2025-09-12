@@ -1,12 +1,12 @@
-import { createStore, applyMiddleware, compose } from 'redux';
-import createSagaMiddleware from 'redux-saga';
-import { routerMiddleware } from 'connected-react-router';
-import logger from 'redux-logger';
+import { createStore, applyMiddleware, compose } from "redux";
+import createSagaMiddleware from "redux-saga";
+import { routerMiddleware } from "connected-react-router";
 
-import createRootReducer from '../rootReducer';
-import rootSaga from '../rootSaga';
+import logger from "redux-logger";
 
-import { history } from './history';
+import createRootReducer from "../rootReducer";
+import rootSaga from "../rootSaga";
+import { history } from "./history";
 
 export default (initialState = {}) => {
   const sagaMiddleware = createSagaMiddleware();

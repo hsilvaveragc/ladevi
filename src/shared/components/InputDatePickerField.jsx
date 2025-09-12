@@ -1,8 +1,9 @@
-import PropTypes from 'prop-types';
-import styled from 'styled-components';
-import DatePicker from 'react-datepicker';
-import { Field } from 'formik';
-import { isNil, head, length } from 'ramda';
+import React from "react";
+import PropTypes from "prop-types";
+import styled from "styled-components";
+import DatePicker from "react-datepicker";
+import { Field } from "formik";
+import { isNil, head, length } from "ramda";
 
 const InputDatePickerContainer = styled.div`
   .react-datepicker-wrapper {
@@ -40,30 +41,30 @@ export default function InputDatePicker({
             <label htmlFor={field.name}>{labelText}</label>
             <DatePicker
               popperPlacement={
-                popperPlacement ? popperPlacement : 'bottom-start'
+                popperPlacement ? popperPlacement : "bottom-start"
               }
-              dateFormat='dd/MM/yyyy'
+              dateFormat="dd/MM/yyyy"
               selected={(field.value && new Date(field.value)) || null}
               minDate={minDate}
               maxDate={maxDate}
-              onChange={(value) => {
+              onChange={value => {
                 form.setFieldValue(field.name, value);
                 onChangeHandler(value);
               }}
               className={
                 (form.touched[field.name] && form.errors[field.name]) || error
-                  ? 'form-control is-invalid'
-                  : 'form-control '
+                  ? "form-control is-invalid"
+                  : "form-control "
               }
               id={field.name}
               readOnly={disabled}
               autocomplete={false}
-              popperClassName='custom-popper-class'
+              popperClassName="custom-popper-class"
               popperModifiers={{
                 preventOverflow: {
                   enabled: true,
                   escapeWithReference: false, // force popper to stay in viewport (even when input is scrolled out of view)
-                  boundariesElement: 'viewport',
+                  boundariesElement: "viewport",
                 },
               }}
             />
@@ -73,14 +74,14 @@ export default function InputDatePicker({
             <small
               id={`${field.name}-error`}
               className={
-                isNil(form.errors[field.name]) ? 'inactive' : 'form-text'
+                isNil(form.errors[field.name]) ? "inactive" : "form-text"
               }
             >
               {isNil(error)
                 ? form.errors[field.name]
                 : length(error) > 1
-                  ? error
-                  : head(error)}
+                ? error
+                : head(error)}
             </small>
           </InputDatePickerContainer>
         );

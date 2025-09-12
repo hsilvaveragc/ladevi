@@ -1,5 +1,4 @@
-import { createSelector } from 'reselect';
-
+import { createSelector } from "reselect";
 import {
   LOGIN_INIT,
   LOGIN_SUCCESS,
@@ -13,16 +12,16 @@ import {
   CONFIRM_USER_INIT,
   CONFIRM_USER_SUCCESS,
   CONFIRM_USER_FAILURE,
-} from './actionTypes';
+} from "./actionTypes";
 
 const initialState = {
   form: {
-    username: '',
-    password: '',
+    username: "",
+    password: "",
   },
-  loginError: '',
+  loginError: "",
   loginLoading: false,
-  forgotPasswordError: '',
+  forgotPasswordError: "",
   forgotPasswordLoading: false,
   isResetSuccessful: false,
   isUserConfirmedLoading: true,
@@ -30,14 +29,14 @@ const initialState = {
   userLogueado: {},
 };
 
-export default function (state = initialState, action) {
+export default function(state = initialState, action) {
   switch (action.type) {
     case LOGIN_INIT:
       return {
         ...state,
         form: { ...action.payload },
         loginLoading: true,
-        loginError: '',
+        loginError: "",
       };
     case LOGIN_SUCCESS:
       return {
@@ -51,7 +50,7 @@ export default function (state = initialState, action) {
       return {
         ...state,
         forgotPasswordLoading: true,
-        forgotPasswordError: '',
+        forgotPasswordError: "",
       };
     case FORGOT_PASSWORD_SUCCESS:
       return {
@@ -94,44 +93,44 @@ export default function (state = initialState, action) {
   }
 }
 
-const getLogin = (state) => state.login;
+const getLogin = state => state.login;
 
 export const getLoginLoading = createSelector(
   getLogin,
-  (login) => login.loginLoading
+  login => login.loginLoading
 );
 
 export const getLoginError = createSelector(
   getLogin,
-  (login) => login.loginError
+  login => login.loginError
 );
 
 export const getForgotPasswordLoading = createSelector(
   getLogin,
-  (login) => login.forgotPasswordLoading
+  login => login.forgotPasswordLoading
 );
 
 export const getForgotPasswordError = createSelector(
   getLogin,
-  (login) => login.forgotPasswordError
+  login => login.forgotPasswordError
 );
 
 export const getIsResetSuccessful = createSelector(
   getLogin,
-  (login) => login.isResetSuccessful
+  login => login.isResetSuccessful
 );
 
 export const getIsUserConfirmed = createSelector(
   getLogin,
-  (login) => login.isUserConfirmed
+  login => login.isUserConfirmed
 );
 
 export const getIsUserConfirmedLoading = createSelector(
   getLogin,
-  (login) => login.isUserConfirmedLoading
+  login => login.isUserConfirmedLoading
 );
 
 export const getUserFullName = createSelector(
   getLogin,
-  (login) => login.userLogueado.fullName
+  login => login.userLogueado.fullName
 );

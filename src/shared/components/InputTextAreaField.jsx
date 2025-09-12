@@ -1,7 +1,8 @@
-import PropTypes from 'prop-types';
-import { Field } from 'formik';
-import styled from 'styled-components';
-import { isNil, head, length } from 'ramda';
+import React from "react";
+import PropTypes from "prop-types";
+import { Field } from "formik";
+import styled from "styled-components";
+import { isNil, head, length } from "ramda";
 
 const InputTextContainer = styled.div`
   label {
@@ -27,14 +28,14 @@ function InputTextField({
     <Field name={name}>
       {({ field, form: { touched, errors: formikError } }) => {
         return (
-          <InputTextContainer className='form-group'>
+          <InputTextContainer className="form-group">
             {showLabel ? <label htmlFor={field.name}>{labelText}</label> : null}
             <textarea
               name={field.name}
               className={
                 (touched[field.name] && formikError[field.name]) || error
-                  ? 'form-control is-invalid'
-                  : 'form-control'
+                  ? "form-control is-invalid"
+                  : "form-control"
               }
               rows={rows}
               cols={cols}
@@ -47,14 +48,14 @@ function InputTextField({
               <small
                 id={`${field.name}-error`}
                 className={
-                  isNil(formikError[field.name]) ? 'inactive' : 'form-text'
+                  isNil(formikError[field.name]) ? "inactive" : "form-text"
                 }
               >
                 {isNil(error)
                   ? formikError[field.name]
                   : length(error) > 1
-                    ? error
-                    : head(error)}
+                  ? error
+                  : head(error)}
               </small>
             ) : null}
           </InputTextContainer>

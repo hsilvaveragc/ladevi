@@ -1,8 +1,8 @@
-import Modal from 'shared/components/Modal';
+import React from "react";
+import Modal from "shared/components/Modal";
+import ContractForm from "./Contract";
 
-import ContractForm from './Contract';
-
-const ContractsModals = (props) => (
+export default props => (
   <>
     <Modal
       shouldClose={true}
@@ -98,5 +98,3 @@ const ContractsModals = (props) => (
     </Modal>
   </>
 );
-
-export default ContractsModals;

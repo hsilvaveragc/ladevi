@@ -1,11 +1,12 @@
-import PropTypes from 'prop-types';
-import { Field } from 'formik';
-import styled from 'styled-components';
-import { isNil, head } from 'ramda';
+import React from "react";
+import PropTypes from "prop-types";
+import { Field } from "formik";
+import styled from "styled-components";
+import { isNil, head } from "ramda";
 
 const InputRadioContainer = styled.div`
-  display: ${(props) => (props.inline ? 'inline-flex' : 'flex')};
-  height: ${(props) => (props.inline ? '' : '100%')};
+  display: ${props => (props.inline ? "inline-flex" : "flex")};
+  height: ${props => (props.inline ? "" : "100%")};
   margin-bottom: 0rem;
   .radio-container {
     display: flex;
@@ -31,7 +32,7 @@ export default function InputRadioField({
   error,
   name,
   value,
-  labelText = '',
+  labelText = "",
   showLabel = true,
   disabled = false,
   inline = false,
@@ -41,31 +42,31 @@ export default function InputRadioField({
   return (
     <Field name={name}>
       {({ field, form: { touched, errors: formikError, setFieldValue } }) => (
-        <div className='mb-3'>
-          {showLabel && <label className='form-label'>{labelText}</label>}
+        <div className="mb-3">
+          {showLabel && <label className="form-label">{labelText}</label>}
           <div>
-            {options.map((option) => (
+            {options.map(option => (
               <InputRadioContainer key={option.value} inline={inline}>
-                <div className='radio-container'>
+                <div className="radio-container">
                   <input
-                    type='radio'
+                    type="radio"
                     id={`${name}-${option.value}`}
                     name={name}
                     value={option.value}
                     checked={field.value === option.value}
-                    onChange={(e) => {
+                    onChange={e => {
                       setFieldValue(field.name, e.target.value);
                       onChangeHandler(e);
                     }}
                     disabled={disabled}
                     className={
                       (touched[field.name] && formikError[field.name]) || error
-                        ? 'is-invalid'
-                        : ''
+                        ? "is-invalid"
+                        : ""
                     }
                   />
                   <label
-                    className='form-check-label ms-2'
+                    className="form-check-label ms-2"
                     htmlFor={`${name}-${option.value}`}
                   >
                     {option.label}
@@ -75,7 +76,7 @@ export default function InputRadioField({
             ))}
           </div>
           {((touched[field.name] && formikError[field.name]) || error) && (
-            <small id={`${field.name}-error`} className='form-text'>
+            <small id={`${field.name}-error`} className="form-text">
               {isNil(error) ? formikError[field.name] : head(error)}
             </small>
           )}

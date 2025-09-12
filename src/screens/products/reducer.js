@@ -1,5 +1,4 @@
-import { createSelector } from 'reselect';
-
+import { createSelector } from "reselect";
 import {
   GET_ALL_PRODUCTS_INIT,
   GET_ALL_PRODUCTS_SUCCESS,
@@ -21,7 +20,7 @@ import {
   FILTER_PRODUCTS_INIT,
   FILTER_PRODUCTS_SUCCESS,
   FILTER_PRODUCTS_FAILURE,
-} from './actionTypes.js';
+} from "./actionTypes.js";
 
 const initialState = {
   items: [],
@@ -37,7 +36,7 @@ const initialState = {
   showDeleteModal: false,
 };
 
-export default function (state = initialState, action) {
+export default function(state = initialState, action) {
   switch (action.type) {
     case PRODUCTS_INITIAL_LOAD_SUCCESS:
       return {
@@ -109,58 +108,58 @@ export default function (state = initialState, action) {
   }
 }
 
-const getProductsReducer = (state) => state.products;
+const getProductsReducer = state => state.products;
 
 export const getProducts = createSelector(
   getProductsReducer,
-  (productsReducer) => productsReducer.items
+  productsReducer => productsReducer.items
 );
 export const getCountries = createSelector(
   getProductsReducer,
-  (productsReducer) => productsReducer.countries
+  productsReducer => productsReducer.countries
 );
 
 export const getIsLoading = createSelector(
   getProductsReducer,
-  (productsReducer) => productsReducer.loading
+  productsReducer => productsReducer.loading
 );
 
 export const getErrors = createSelector(
   getProductsReducer,
-  (productsReducer) => productsReducer.errors
+  productsReducer => productsReducer.errors
 );
 
 export const getProductTypes = createSelector(
   getProductsReducer,
-  (productsReducer) => productsReducer.productTypes
+  productsReducer => productsReducer.productTypes
 );
 
 export const getAdsSpaceLocationType = createSelector(
   getProductsReducer,
-  (productsReducer) => productsReducer.adsSpaceLocationType
+  productsReducer => productsReducer.adsSpaceLocationType
 );
 
 export const getShowAddModal = createSelector(
   getProductsReducer,
-  (productsReducer) => productsReducer.showAddModal
+  productsReducer => productsReducer.showAddModal
 );
 
 export const getShowEditModal = createSelector(
   getProductsReducer,
-  (productsReducer) => productsReducer.showEditModal
+  productsReducer => productsReducer.showEditModal
 );
 
 export const getShowDeleteModal = createSelector(
   getProductsReducer,
-  (productsReducer) => productsReducer.showDeleteModal
+  productsReducer => productsReducer.showDeleteModal
 );
 
 export const getXubioProducts = createSelector(
   getProductsReducer,
-  (productsReducer) => productsReducer.xubioProducts
+  productsReducer => productsReducer.xubioProducts
 );
 
 export const getXubioProductsComtur = createSelector(
   getProductsReducer,
-  (productsReducer) => productsReducer.xubioProductsComtur
+  productsReducer => productsReducer.xubioProductsComtur
 );

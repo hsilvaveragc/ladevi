@@ -1,4 +1,4 @@
-import { createSelector } from 'reselect';
+import { createSelector } from "reselect";
 
 import {
   GETCURRENCIES_INIT,
@@ -19,7 +19,7 @@ import {
   SHOW_ADD_MODAL,
   SHOW_EDIT_MODAL,
   SHOW_DELETE_MODAL,
-} from './actionTypes';
+} from "./actionTypes";
 
 const initialState = {
   currencies: [],
@@ -31,7 +31,7 @@ const initialState = {
   showDeleteModal: false,
 };
 
-export default function (state = initialState, action) {
+export default function(state = initialState, action) {
   switch (action.type) {
     case INITIAL_LOAD_INIT:
     case GETCURRENCIES_INIT:
@@ -48,6 +48,7 @@ export default function (state = initialState, action) {
         loading: false,
       };
     case GETCURRENCIES_SUCCESS:
+      console.log(action.payload);
       return {
         ...state,
         loading: false,
@@ -101,39 +102,39 @@ export default function (state = initialState, action) {
   }
 }
 
-const getCurrencyReducer = (state) => state.currency;
+const getCurrencyReducer = state => state.currency;
 
 export const getCountries = createSelector(
   getCurrencyReducer,
-  (state) => state.countries
+  state => state.countries
 );
 
 export const getCurrencies = createSelector(
   getCurrencyReducer,
-  (state) => state.currencies
+  state => state.currencies
 );
 
 export const getLoading = createSelector(
   getCurrencyReducer,
-  (state) => state.loading
+  state => state.loading
 );
 
 export const getErrors = createSelector(
   getCurrencyReducer,
-  (state) => state.errors
+  state => state.errors
 );
 
 export const getShowAddModal = createSelector(
   getCurrencyReducer,
-  (state) => state.showAddModal
+  state => state.showAddModal
 );
 
 export const getShowEditModal = createSelector(
   getCurrencyReducer,
-  (state) => state.showEditModal
+  state => state.showEditModal
 );
 
 export const getShowDeleteModal = createSelector(
   getCurrencyReducer,
-  (state) => state.showDeleteModal
+  state => state.showDeleteModal
 );

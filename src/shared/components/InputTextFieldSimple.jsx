@@ -1,5 +1,6 @@
-import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import React from "react";
+import PropTypes from "prop-types";
+import styled from "styled-components";
 
 const InputTextContainer = styled.div`
   label {
@@ -14,9 +15,9 @@ const InputTextContainer = styled.div`
 function InputTextFieldSimple({
   name,
   error,
-  type = 'text',
+  type = "text",
   labelText,
-  placeholder = '',
+  placeholder = "",
   disabled = false,
   displayErrorMsg = true,
   showLabel = true,
@@ -26,10 +27,10 @@ function InputTextFieldSimple({
   maxlength,
 }) {
   // Generar un ID único para evitar el autocompletado
-  const generateRandomId = (length) => {
-    let result = '';
+  const generateRandomId = length => {
+    let result = "";
     const characters =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     const charactersLength = characters.length;
     for (let i = 0; i < length; i++) {
       result += characters.charAt(Math.floor(Math.random() * charactersLength));
@@ -38,10 +39,10 @@ function InputTextFieldSimple({
   };
 
   return (
-    <InputTextContainer className='form-group'>
+    <InputTextContainer className="form-group">
       {showLabel ? <label htmlFor={name}>{labelText}</label> : null}
       <input
-        className={error ? 'form-control is-invalid' : 'form-control'}
+        className={error ? "form-control is-invalid" : "form-control"}
         autoComplete={generateRandomId(5)}
         placeholder={placeholder}
         disabled={disabled}
@@ -55,7 +56,7 @@ function InputTextFieldSimple({
       />
 
       {displayErrorMsg && error ? (
-        <small id={`${name}-error`} className='form-text'>
+        <small id={`${name}-error`} className="form-text">
           {error}
         </small>
       ) : null}

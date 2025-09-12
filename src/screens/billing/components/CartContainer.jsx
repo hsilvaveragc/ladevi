@@ -1,10 +1,9 @@
-import { useSelector } from 'react-redux';
-
-import { CONSTANTS } from '../constants';
-import { getEntityType } from '../reducer';
-
-import Cart from './Cart'; // Cart original para contratos
-import CartForEditions from './CartForEditions'; // Nuevo cart para ediciones
+import React from "react";
+import { useSelector } from "react-redux";
+import { CONSTANTS } from "../constants";
+import { getEntityType } from "../reducer";
+import Cart from "./Cart"; // Cart original para contratos
+import CartForEditions from "./CartForEditions"; // Nuevo cart para ediciones
 
 /**
  * Componente contenedor que renderiza el carrito apropiado

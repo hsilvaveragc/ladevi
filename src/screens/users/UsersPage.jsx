@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import Modal from 'shared/components/Modal';
-import Table from 'shared/components/Table';
-import { EditButton, RemoveButton } from 'shared/components/Buttons';
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
 
-import UserForm from './components/UserForm';
-import Filter from './components/Filter';
+import Modal from "shared/components/Modal";
+import Table from "shared/components/Table";
+import { EditButton, RemoveButton } from "shared/components/Buttons";
+
+import UserForm from "./components/UserForm";
+import Filter from "./components/Filter";
 
 const PageContainer = styled.div`
   display: flex;
@@ -36,49 +37,49 @@ export default function UsersPage(props) {
 
   const Cell = ({ original }) => {
     const rol = props.availableAppRoles.filter(
-      (x) => x.id === original.applicationRoleId
+      x => x.id === original.applicationRoleId
     )[0];
-    return rol.name === 'Vendedor Nacional' || rol.name === 'Vendedor COMTUR'
-      ? `${original.commisionCoeficient.toLocaleString('pt-BR', {
+    return rol.name === "Vendedor Nacional" || rol.name === "Vendedor COMTUR"
+      ? `${original.commisionCoeficient.toLocaleString("pt-BR", {
           maximumFractionDigits: 2,
         })} %`
-      : 'N/A';
+      : "N/A";
   };
 
   const columns = [
     {
-      Header: 'Nombre',
-      accessor: 'fullName',
+      Header: "Nombre",
+      accessor: "fullName",
     },
     {
-      Header: 'Iniciales',
-      accessor: 'initials',
+      Header: "Iniciales",
+      accessor: "initials",
     },
     {
-      Header: 'Rol',
-      accessor: 'applicationRole.name',
+      Header: "Rol",
+      accessor: "applicationRole.name",
     },
     {
-      Header: 'País',
-      accessor: 'country.name',
+      Header: "País",
+      accessor: "country.name",
     },
     {
-      Header: 'Email',
-      accessor: 'credentialsUser.email',
+      Header: "Email",
+      accessor: "credentialsUser.email",
     },
     {
-      Header: 'Multip. comisión',
-      accessor: 'commisionCoeficient',
+      Header: "Multip. comisión",
+      accessor: "commisionCoeficient",
       Cell,
     },
     {
-      Header: 'Borrar',
+      Header: "Borrar",
       filterable: false,
       style: {
-        display: 'flex',
-        justifyContent: 'center',
+        display: "flex",
+        justifyContent: "center",
       },
-      Cell: (row) =>
+      Cell: row =>
         row.original.canDelete ? (
           <RemoveButton
             onClickHandler={() => {
@@ -147,12 +148,12 @@ export default function UsersPage(props) {
         availableRoles={props.availableAppRoles}
         handleChangeParams={setParams}
       />
-      <div style={{ width: '100%' }}>
+      <div style={{ width: "100%" }}>
         <Table
           data={props.users}
           columns={columns}
           buttonHandler={props.actions.showAddModal}
-          buttonText='Agregar Usuario'
+          buttonText="Agregar Usuario"
           loading={props.isLoading}
           showButton
           rowClickHandler={rowClickHandler}

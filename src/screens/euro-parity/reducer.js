@@ -1,4 +1,4 @@
-import { createSelector } from 'reselect';
+import { createSelector } from "reselect";
 
 import {
   INITIAL_LOAD_INIT,
@@ -13,7 +13,7 @@ import {
   ADDEUROPARITY_FAILURE,
   DELETEEUROPARITY_SUCCESS,
   DELETEEUROPARITY_FAILURE,
-} from './actionTypes';
+} from "./actionTypes";
 
 const initialState = {
   euroParities: [],
@@ -23,7 +23,7 @@ const initialState = {
   showDeleteModal: false,
 };
 
-export default function (state = initialState, action) {
+export default function(state = initialState, action) {
   switch (action.type) {
     case INITIAL_LOAD_INIT:
     case GETEUROPARITIES_INIT:
@@ -38,6 +38,7 @@ export default function (state = initialState, action) {
         loading: false,
       };
     case GETEUROPARITIES_SUCCESS:
+      console.log(action.payload);
       return {
         ...state,
         loading: false,
@@ -78,29 +79,29 @@ export default function (state = initialState, action) {
   }
 }
 
-const getEuroParityReducer = (state) => state.euroParity;
+const getEuroParityReducer = state => state.euroParity;
 
 export const getEuroParities = createSelector(
   getEuroParityReducer,
-  (state) => state.euroParities
+  state => state.euroParities
 );
 
 export const getLoading = createSelector(
   getEuroParityReducer,
-  (state) => state.loading
+  state => state.loading
 );
 
 export const getErrors = createSelector(
   getEuroParityReducer,
-  (state) => state.errors
+  state => state.errors
 );
 
 export const getShowAddModal = createSelector(
   getEuroParityReducer,
-  (state) => state.showAddModal
+  state => state.showAddModal
 );
 
 export const getShowDeleteModal = createSelector(
   getEuroParityReducer,
-  (state) => state.showDeleteModal
+  state => state.showDeleteModal
 );

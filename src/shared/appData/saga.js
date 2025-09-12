@@ -1,7 +1,4 @@
-import { put, all, takeLatest, call } from 'redux-saga/effects';
-
-import { appDataService } from '../services';
-
+import { put, all, takeLatest, call } from "redux-saga/effects";
 import {
   FETCH_APP_ROLES_INIT,
   FETCH_APP_ROLES_SUCCESS,
@@ -15,7 +12,8 @@ import {
   FETCH_DISTRICTS_INIT,
   FETCH_DISTRICTS_SUCCESS,
   FETCH_DISTRICTS_FAILURE,
-} from './actionTypes';
+} from "./actionTypes";
+import { appDataService } from "../services";
 
 export function* fetchAppRoles() {
   try {

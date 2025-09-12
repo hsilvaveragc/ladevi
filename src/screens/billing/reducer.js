@@ -1,6 +1,5 @@
-import { createSelector } from 'reselect';
-
-import { CONSTANTS } from './constants';
+import { createSelector } from "reselect";
+import { CONSTANTS } from "./constants";
 import {
   INITIAL_LOAD_INIT,
   INITIAL_LOAD_SUCCESS,
@@ -37,7 +36,7 @@ import {
   SEND_MULTIPLE_TO_XUBIO_INIT,
   SEND_MULTIPLE_TO_XUBIO_SUCCESS,
   SEND_MULTIPLE_TO_XUBIO_FAILURE,
-} from './actionTypes.js';
+} from "./actionTypes.js";
 
 const initialState = {
   // Datos generales
@@ -53,7 +52,7 @@ const initialState = {
   entityType: null,
 
   // Filtros compartidos
-  selectedCurrency: '',
+  selectedCurrency: "",
 
   // Filtros de contrato
   clients: [],
@@ -81,7 +80,7 @@ const initialState = {
   multipleInvoiceResults: null, // NUEVO
 };
 
-export default function (state = initialState, action) {
+export default function(state = initialState, action) {
   switch (action.type) {
     // Loading states
     case INITIAL_LOAD_INIT:
@@ -118,7 +117,7 @@ export default function (state = initialState, action) {
         selectedClient: null,
         selectedProduct: null,
         selectedEdition: null,
-        selectedCurrency: '',
+        selectedCurrency: "",
         // Reset de datos cargados
         clients: [],
         contracts: [],
@@ -137,7 +136,7 @@ export default function (state = initialState, action) {
           action.payload === CONSTANTS.CONTRACTS_CODE ? state.contracts : [],
         orders: action.payload === CONSTANTS.ORDERS_CODE ? state.orders : [],
         cartItems: [],
-        selectedCurrency: '',
+        selectedCurrency: "",
         // Reset específico para cada tipo
         ...(action.payload === CONSTANTS.CONTRACTS_CODE
           ? {
@@ -148,12 +147,12 @@ export default function (state = initialState, action) {
               selectedEdition: null,
             }
           : action.payload === CONSTANTS.ORDERS_CODE
-            ? {
-                // Si cambia a ediciones, limpio datos de contratos
-                selectedClient: null,
-                contracts: [],
-              }
-            : {}),
+          ? {
+              // Si cambia a ediciones, limpio datos de contratos
+              selectedClient: null,
+              contracts: [],
+            }
+          : {}),
       };
 
     // Flujo de Contratos
@@ -171,7 +170,7 @@ export default function (state = initialState, action) {
         // Reset data dependientes del cliente
         contracts: [],
         cartItems: [],
-        selectedCurrency: '',
+        selectedCurrency: "",
       };
 
     case FETCH_CONTRACTS_SUCCESS:
@@ -198,7 +197,7 @@ export default function (state = initialState, action) {
         editions: [],
         orders: [],
         cartItems: [],
-        selectedCurrency: '',
+        selectedCurrency: "",
       };
 
     case FETCH_EDITIONS_SUCCESS:
@@ -215,7 +214,7 @@ export default function (state = initialState, action) {
         // Reset data dependiente de la edición
         orders: [],
         cartItems: [],
-        selectedCurrency: '',
+        selectedCurrency: "",
       };
 
     case FETCH_ORDERS_SUCCESS:
@@ -260,7 +259,7 @@ export default function (state = initialState, action) {
     case REMOVE_FROM_CART:
       return {
         ...state,
-        cartItems: state.cartItems.filter((item) => item.id !== action.payload),
+        cartItems: state.cartItems.filter(item => item.id !== action.payload),
       };
 
     case CLEAR_CART:
@@ -303,95 +302,95 @@ export default function (state = initialState, action) {
 }
 
 // Selectores
-const getBillingReducer = (state) => state.billing;
+const getBillingReducer = state => state.billing;
 
 // Selectores básicos
 export const getLoading = createSelector(
   getBillingReducer,
-  (billingReducer) => billingReducer.loading
+  billingReducer => billingReducer.loading
 );
 
 export const getErrors = createSelector(
   getBillingReducer,
-  (billingReducer) => billingReducer.errors
+  billingReducer => billingReducer.errors
 );
 
 // Selectores de selección
 export const getClientType = createSelector(
   getBillingReducer,
-  (billingReducer) => billingReducer.clientType
+  billingReducer => billingReducer.clientType
 );
 
 export const getEntityType = createSelector(
   getBillingReducer,
-  (billingReducer) => billingReducer.entityType
+  billingReducer => billingReducer.entityType
 );
 
 export const getSelectedClient = createSelector(
   getBillingReducer,
-  (billingReducer) => billingReducer.selectedClient
+  billingReducer => billingReducer.selectedClient
 );
 
 export const getSelectedProduct = createSelector(
   getBillingReducer,
-  (billingReducer) => billingReducer.selectedProduct
+  billingReducer => billingReducer.selectedProduct
 );
 
 export const getSelectedEdition = createSelector(
   getBillingReducer,
-  (billingReducer) => billingReducer.selectedEdition
+  billingReducer => billingReducer.selectedEdition
 );
 
 export const getSelectedCurrency = createSelector(
   getBillingReducer,
-  (billingReducer) => billingReducer.selectedCurrency
+  billingReducer => billingReducer.selectedCurrency
 );
 
 export const getSelectedContract = createSelector(
   getBillingReducer,
-  (billingReducer) => billingReducer.selectedContract
+  billingReducer => billingReducer.selectedContract
 );
 
 export const getSelectedOrder = createSelector(
   getBillingReducer,
-  (billingReducer) => billingReducer.selectedOrder
+  billingReducer => billingReducer.selectedOrder
 );
 
 // Selectores de datos
 export const getClients = createSelector(
   getBillingReducer,
-  (billingReducer) => billingReducer.clients
+  billingReducer => billingReducer.clients
 );
 
 export const getContracts = createSelector(
   getBillingReducer,
-  (billingReducer) => billingReducer.contracts
+  billingReducer => billingReducer.contracts
 );
 
 export const getProducts = createSelector(
   getBillingReducer,
-  (billingReducer) => billingReducer.products
+  billingReducer => billingReducer.products
 );
 
 export const getEditions = createSelector(
   getBillingReducer,
-  (billingReducer) => billingReducer.editions
+  billingReducer => billingReducer.editions
 );
 
 export const getOrders = createSelector(
   getBillingReducer,
-  (billingReducer) => billingReducer.orders
+  billingReducer => billingReducer.orders
 );
 
 // Selectores de productos Xubio
 export const getXubioProducts = createSelector(
   getBillingReducer,
-  (billingReducer) => billingReducer.xubioProducts
+  billingReducer => billingReducer.xubioProducts
 );
 
 export const getXubioComturProducts = createSelector(
   getBillingReducer,
-  (billingReducer) => billingReducer.xubioComturProducts
+  billingReducer => billingReducer.xubioComturProducts
 );
 
 // Selector para obtener los productos correctos según el tipo de cliente
@@ -408,12 +407,12 @@ export const getCurrentXubioProducts = createSelector(
 // Selectores del producto xubio generico
 export const getGenericXubioProduct = createSelector(
   getBillingReducer,
-  (billingReducer) => billingReducer.xubioGenericProduct
+  billingReducer => billingReducer.xubioGenericProduct
 );
 
 export const getXubioComturGenericProduct = createSelector(
   getBillingReducer,
-  (billingReducer) => billingReducer.xubioComturGenericProduct
+  billingReducer => billingReducer.xubioComturGenericProduct
 );
 
 // Selector para obtener el producto xubio generico según el tipo de cliente
@@ -430,15 +429,52 @@ export const getCurrentXubioGenericProduct = createSelector(
 // Selectores de carrito
 export const getCartItems = createSelector(
   getBillingReducer,
-  (billingReducer) => billingReducer.cartItems
+  billingReducer => billingReducer.cartItems
 );
 
-export const getCartTotal = createSelector(getCartItems, (cartItems) =>
-  cartItems.reduce((total, item) => total + item.amount, 0)
+export const getCartTotal = createSelector(
+  getCartItems,
+  cartItems => cartItems.reduce((total, item) => total + item.amount, 0)
 );
 
 // Selectores de modales
 export const getShowInvoiceDialog = createSelector(
   getBillingReducer,
-  (billingReducer) => billingReducer.showInvoiceDialog
+  billingReducer => billingReducer.showInvoiceDialog
 );
+
+// // Selector de resultado
+// export const getInvoiceResult = createSelector(
+//   getBillingReducer,
+//   billingReducer => billingReducer.invoiceResult
+// );
+
+// // Selector de resultado múltiple
+// export const getMultipleInvoiceResults = createSelector(
+//   getBillingReducer,
+//   billingReducer => billingReducer.multipleInvoiceResults
+// );
+
+// // Selector para obtener el ítem del carrito correspondiente a un contrato específico
+// export const getCartItemByContractId = createSelector(
+//   [getCartItems, (state, contractId) => contractId],
+//   (cartItems, contractId) => {
+//     return cartItems.find(
+//       item =>
+//         item.type === CONSTANTS.CONTRACTS_CODE && item.contractId === contractId
+//     );
+//   }
+// );
+
+// // Selector para verificar si un ítem específico está en el carrito
+// export const isItemInCart = createSelector(
+//   [getCartItems, (state, itemId, contractId) => ({ itemId, contractId })],
+//   (cartItems, { itemId, contractId }) => {
+//     return cartItems.some(
+//       item =>
+//         item.type === CONSTANTS.CONTRACTS_CODE &&
+//         item.contractId === contractId &&
+//         item.items.some(subItem => subItem.id === itemId)
+//     );
+//   }
+// );

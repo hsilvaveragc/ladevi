@@ -1,8 +1,9 @@
-import PropTypes from 'prop-types';
-import { Field } from 'formik';
-import styled from 'styled-components';
-import { isNil, head } from 'ramda';
-import Select from 'react-select';
+import React from "react";
+import PropTypes from "prop-types";
+import { Field } from "formik";
+import styled from "styled-components";
+import { isNil, head } from "ramda";
+import Select from "react-select";
 
 const InputSelectContainer = styled.div`
   label {
@@ -29,25 +30,25 @@ function InputSelect({
   disabled = false,
   displayErrorMsg = true,
   onChangeHandler = () => {},
-  getOptionLabel = (option) => option.name,
-  getOptionValue = (option) => option.id,
+  getOptionLabel = option => option.name,
+  getOptionValue = option => option.id,
 }) {
   return (
     <Field name={name}>
       {({ field, form }) => {
-        const selectValue = options.find((option) => option.id === field.value);
+        const selectValue = options.find(option => option.id === field.value);
         return (
-          <InputSelectContainer className='form-group'>
+          <InputSelectContainer className="form-group">
             <label htmlFor={field.name}>{labelText}</label>
             <Select
               {...field}
               className={
                 (form.touched[field.name] && form.errors[field.name]) || error
-                  ? 'is-invalid'
-                  : ''
+                  ? "is-invalid"
+                  : ""
               }
               isDisabled={disabled}
-              onChange={(e) => {
+              onChange={e => {
                 form.setFieldValue(field.name, e.id);
                 onChangeHandler(e.id);
               }}
@@ -55,16 +56,16 @@ function InputSelect({
               options={options}
               getOptionLabel={getOptionLabel}
               getOptionValue={getOptionValue}
-              onBlur={(e) => {
+              onBlur={e => {
                 form.setFieldTouched(field.name, true);
               }}
-              placeholder='Seleccionar'
+              placeholder="Seleccionar"
             ></Select>
             {displayErrorMsg ? (
               <small
                 id={`${field.name}-error`}
                 className={
-                  isNil(form.errors[field.name]) ? 'inactive' : 'form-text'
+                  isNil(form.errors[field.name]) ? "inactive" : "form-text"
                 }
               >
                 {isNil(error) ? form.errors[field.name] : head(error)}

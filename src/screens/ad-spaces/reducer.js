@@ -1,5 +1,4 @@
-import { createSelector } from 'reselect';
-
+import { createSelector } from "reselect";
 import {
   GET_ALL_PRODUCT_ADVERTISING_SPACES_INIT,
   GET_ALL_PRODUCT_ADVERTISING_SPACES_SUCCESS,
@@ -18,7 +17,7 @@ import {
   FILTER_PRODUCT_ADVERTISING_SPACES_INIT,
   FILTER_PRODUCT_ADVERTISING_SPACES_SUCCESS,
   FILTER_PRODUCT_ADVERTISING_SPACES_FAILURE,
-} from './actionTypes';
+} from "./actionTypes";
 
 const initialState = {
   adSpaces: [],
@@ -31,7 +30,7 @@ const initialState = {
   showDeleteModal: false,
 };
 
-export default function (state = initialState, action) {
+export default function(state = initialState, action) {
   switch (action.type) {
     case PRODUCT_ADVERTISING_SPACE_INITIAL_LOAD_INIT:
     case GET_ALL_PRODUCT_ADVERTISING_SPACES_INIT:
@@ -87,48 +86,46 @@ export default function (state = initialState, action) {
   }
 }
 
-const getAdvertisingSpacesReducer = (state) => state.advertisingSpaces;
+const getAdvertisingSpacesReducer = state => state.advertisingSpaces;
 
 export const getProductAdvertisingSpaces = createSelector(
   getAdvertisingSpacesReducer,
-  (productAdvertisingSpaceReducer) => productAdvertisingSpaceReducer.adSpaces
+  productAdvertisingSpaceReducer => productAdvertisingSpaceReducer.adSpaces
 );
 
 export const getProducts = createSelector(
   getAdvertisingSpacesReducer,
-  (productAdvertisingSpaceReducer) => productAdvertisingSpaceReducer.products
+  productAdvertisingSpaceReducer => productAdvertisingSpaceReducer.products
 );
 
 export const getLoading = createSelector(
   getAdvertisingSpacesReducer,
-  (productAdvertisingSpaceReducer) => productAdvertisingSpaceReducer.loading
+  productAdvertisingSpaceReducer => productAdvertisingSpaceReducer.loading
 );
 
 export const getErrors = createSelector(
   getAdvertisingSpacesReducer,
-  (productAdvertisingSpaceReducer) => productAdvertisingSpaceReducer.errors
+  productAdvertisingSpaceReducer => productAdvertisingSpaceReducer.errors
 );
 
 export const getShowAddModal = createSelector(
   getAdvertisingSpacesReducer,
-  (productAdvertisingSpaceReducer) =>
-    productAdvertisingSpaceReducer.showAddModal
+  productAdvertisingSpaceReducer => productAdvertisingSpaceReducer.showAddModal
 );
 
 export const getShowEditModal = createSelector(
   getAdvertisingSpacesReducer,
-  (productAdvertisingSpaceReducer) =>
-    productAdvertisingSpaceReducer.showEditModal
+  productAdvertisingSpaceReducer => productAdvertisingSpaceReducer.showEditModal
 );
 
 export const getShowDeleteModal = createSelector(
   getAdvertisingSpacesReducer,
-  (productAdvertisingSpaceReducer) =>
+  productAdvertisingSpaceReducer =>
     productAdvertisingSpaceReducer.showDeleteModal
 );
 
 export const getAdsSpaceLocationType = createSelector(
   getAdvertisingSpacesReducer,
-  (productAdvertisingSpaceReducer) =>
+  productAdvertisingSpaceReducer =>
     productAdvertisingSpaceReducer.adsSpaceLocationType
 );

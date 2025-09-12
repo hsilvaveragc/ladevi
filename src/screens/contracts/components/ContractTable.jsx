@@ -1,6 +1,7 @@
-import Table from 'shared/components/Table';
-import 'shared/utils/extensionsMethods.js';
-import { getHeaderStyleTable, createDeleteColumn } from 'shared/utils/index';
+import React from "react";
+import Table from "shared/components/Table";
+import "shared/utils/extensionsMethods.js";
+import { getHeaderStyleTable, createDeleteColumn } from "shared/utils/index";
 
 const ContractTable = ({
   data,
@@ -12,63 +13,62 @@ const ContractTable = ({
 }) => {
   const columns = [
     {
-      Header: 'Nro',
-      accessor: 'number',
-      width: '25%',
+      Header: "Nro",
+      accessor: "number",
+      width: "25%",
       headerStyle: getHeaderStyleTable(),
     },
     {
-      Header: 'Cliente',
-      accessor: 'client.legalName',
-      width: '25%',
+      Header: "Cliente",
+      accessor: "client.legalName",
+      width: "25%",
       headerStyle: getHeaderStyleTable(),
     },
     {
-      Header: 'Producto',
-      accessor: 'product.name',
-      width: '25%',
+      Header: "Producto",
+      accessor: "product.name",
+      width: "25%",
       headerStyle: getHeaderStyleTable(),
     },
     {
-      Header: 'Vendedor',
-      accessor: 'seller.fullName',
-      width: '25%',
+      Header: "Vendedor",
+      accessor: "seller.fullName",
+      width: "25%",
       headerStyle: getHeaderStyleTable(),
     },
     {
-      Header: 'Nombre',
-      accessor: 'name',
-      width: '25%',
+      Header: "Nombre",
+      accessor: "name",
+      width: "25%",
       headerStyle: getHeaderStyleTable(),
     },
     {
-      id: 'balance',
-      Header: 'Saldo',
-      accessor: (d) => {
-        const saldos = d.soldSpaces.map((s) => s.balance).join(', ');
+      id: "balance",
+      Header: "Saldo",
+      accessor: d => {
+        const saldos = d.soldSpaces.map(s => s.balance).join(", ");
         return saldos;
       },
-      width: '25%',
+      width: "25%",
       headerStyle: getHeaderStyleTable(),
     },
     {
-      id: 'end',
-      Header: 'F. vto',
-      accessor: (d) => {
+      id: "end",
+      Header: "F. vto",
+      accessor: d => {
         const fechaEnd = new Date(d.end);
-        return `${fechaEnd.getDate()}/${
-          fechaEnd.getMonth() + 1
-        }/${fechaEnd.getFullYear()}`;
+        return `${fechaEnd.getDate()}/${fechaEnd.getMonth() +
+          1}/${fechaEnd.getFullYear()}`;
       },
-      width: '25%',
+      width: "25%",
       headerStyle: getHeaderStyleTable(),
     },
-    createDeleteColumn(onDelete, 'canDelete', onDeleteViibility),
+    createDeleteColumn(onDelete, "canDelete", onDeleteViibility),
   ];
 
   const rowEvents = {
     onClick: (e, selectedItem) => {
-      if (e.target.type !== 'button') {
+      if (e.target.type !== "button") {
         onEdit(selectedItem);
       }
     },
@@ -79,7 +79,7 @@ const ContractTable = ({
       data={data}
       columns={columns}
       buttonHandler={showAddModal}
-      buttonText='Agregar Contrato'
+      buttonText="Agregar Contrato"
       loading={isLoading}
       showButton
       rowClickHandler={rowEvents.onClick}

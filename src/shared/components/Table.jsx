@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import styled from 'styled-components';
-import ReactTable from 'react-table';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
-import Skeleton from 'react-loading-skeleton';
-import 'react-loading-skeleton/dist/skeleton.css';
+import React, { useState } from "react";
+import PropTypes from "prop-types";
+import styled from "styled-components";
+import ReactTable from "react-table";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const TableSkeleton = ({ columnsCount }) => {
   return (
     <div>
       {/* Fila de encabezados */}
-      <div style={{ display: 'flex', marginBottom: '2px' }}>
+      <div style={{ display: "flex", marginBottom: "2px" }}>
         {[...Array(columnsCount)].map((_, index) => (
-          <div key={index} style={{ flex: 1, marginRight: '2px' }}>
+          <div key={index} style={{ flex: 1, marginRight: "2px" }}>
             <Skeleton height={30} />
           </div>
         ))}
@@ -21,9 +21,9 @@ const TableSkeleton = ({ columnsCount }) => {
 
       {/* Filas de contenido */}
       {[...Array(5)].map((_, rowIndex) => (
-        <div key={rowIndex} style={{ display: 'flex', marginBottom: '2px' }}>
+        <div key={rowIndex} style={{ display: "flex", marginBottom: "2px" }}>
           {[...Array(columnsCount)].map((_, colIndex) => (
-            <div key={colIndex} style={{ flex: 1, marginRight: '2px' }}>
+            <div key={colIndex} style={{ flex: 1, marginRight: "2px" }}>
               <Skeleton height={25} />
             </div>
           ))}
@@ -33,7 +33,7 @@ const TableSkeleton = ({ columnsCount }) => {
   );
 };
 
-const Table = (props) => {
+const Table = props => {
   const {
     data,
     columns,
@@ -86,12 +86,12 @@ const Table = (props) => {
       background-color: #ffffff !important;
     }
     .ReactTable .rt-td {
-      cursor: ${hideCursor ? 'auto' : 'pointer'};
+      cursor: ${hideCursor ? "auto" : "pointer"};
       padding-left: 15px;
       border-right: none !important;
     }
     .ReactTable .rt-tr:hover {
-      background-color: ${hideCursor ? 'initial' : 'inherit !important'};
+      background-color: ${hideCursor ? "initial" : "inherit !important"};
     }
 
     .button-container {
@@ -133,46 +133,46 @@ const Table = (props) => {
             <ReactTable
               onFetchData={(state, instance) => {
                 if (tableRef) {
-                  const sortedData =
+                  let sortedData =
                     instance.getResolvedState().sortedData.length > 0
                       ? instance
                           .getResolvedState()
-                          .sortedData.map((x) => x._original)
+                          .sortedData.map(x => x._original)
                       : [];
                   tableRef.current = sortedData;
                 }
               }}
-              style={{ width: '100%' }}
-              className='-striped'
+              style={{ width: "100%" }}
+              className="-striped"
               data={data}
               columns={columns}
               minRows={0}
               loading={loading}
               pageSizeOptions={props.pageSizeOptions ?? [10, 25, 50, 100]}
               pageDefault={pageSizeDefault ?? 10}
-              previousText='Atrás'
-              nextText='Siguiente'
-              loadingText=''
-              noDataText='No hay registros'
-              pageText='Página'
-              ofText='de'
-              rowsText='filas'
+              previousText="Atrás"
+              nextText="Siguiente"
+              loadingText=""
+              noDataText="No hay registros"
+              pageText="Página"
+              ofText="de"
+              rowsText="filas"
               page={pageDefault ? pageDefault : page}
               pageSize={pageSizeDefault ? pageSizeDefault : pageSize}
-              onPageChange={(newPage) => {
+              onPageChange={newPage => {
                 return setPageDefault
                   ? setPageDefault(newPage)
                   : setPage(newPage);
               }}
               expander
-              onPageSizeChange={(newSize) => {
+              onPageSizeChange={newSize => {
                 return setPageSizeDefault
                   ? setPageSizeDefault(newSize)
                   : setPageSize(newSize);
               }}
               getTdProps={(state, rowInfo, column, instance) => ({
                 onClick: (e, handleOriginal) => {
-                  if (rowClickHandler && column.Header !== 'Borrar') {
+                  if (rowClickHandler && column.Header !== "Borrar") {
                     rowClickHandler(
                       e,
                       rowInfo.original ? rowInfo.original : rowInfo
@@ -181,18 +181,16 @@ const Table = (props) => {
                 },
               })}
               sorted={sorted}
-              onSortedChange={(newSorted) => {
-                setSorted(newSorted);
-              }}
+              onSortedChange={newSorted => setSorted(newSorted)}
               defaultSortMethod={(a, b, desc) => {
-                const isEmpty = (value) =>
-                  value === null || value === undefined || value === '';
+                const isEmpty = value =>
+                  value === null || value === undefined || value === "";
 
                 if (isEmpty(a) && isEmpty(b)) return 0;
                 if (isEmpty(a)) return -1;
                 if (isEmpty(b)) return 1;
 
-                const isNumber = (value) =>
+                const isNumber = value =>
                   !isNaN(parseFloat(value)) && isFinite(value);
 
                 if (isNumber(a) && isNumber(b)) return a - b;
@@ -204,12 +202,12 @@ const Table = (props) => {
               {...props}
             />
             <div
-              className='pagination-info'
+              className="pagination-info"
               style={{
-                padding: '10px',
-                textAlign: 'right',
-                fontWeight: 'bold',
-                fontSize: '.9rem',
+                padding: "10px",
+                textAlign: "right",
+                fontWeight: "bold",
+                fontSize: ".9rem",
               }}
             >
               {(() => {
@@ -227,17 +225,17 @@ const Table = (props) => {
           </>
         )}
         {showButton || element ? (
-          <div className='button-container'>
+          <div className="button-container">
             {showButton ? (
               <button
-                type='button'
-                className='btn btn-success'
+                type="button"
+                className="btn btn-success"
                 onClick={buttonHandler}
                 disabled={loading}
               >
                 {loading ? (
                   <>
-                    <div className='spinner-small'></div>
+                    <div className="spinner-small"></div>
                     Cargando...
                   </>
                 ) : (

@@ -1,7 +1,8 @@
-import PropTypes from 'prop-types';
-import { Field } from 'formik';
-import styled from 'styled-components';
-import { isNil, head, length } from 'ramda';
+import React from "react";
+import PropTypes from "prop-types";
+import { Field } from "formik";
+import styled from "styled-components";
+import { isNil, head, length } from "ramda";
 
 const InputTextContainer = styled.div`
   label {
@@ -16,25 +17,23 @@ const InputTextContainer = styled.div`
 function InputTextField({
   name,
   error,
-  type = 'text',
+  type = "text",
   labelText,
-  placeholder = '',
+  placeholder = "",
   disabled = false,
   displayErrorMsg = true,
   showLabel = true,
-  customStyles = {}, // Nuevo prop para estilos personalizados
   onChangeHandler = () => {},
   onBlurHandler = () => {},
   maxlength,
-  'data-testid': dataTestId,
-  withoutFormGroup = false,
+  "data-testid": dataTestId,
 }) {
-  const makeid = (length) => {
-    let result = '';
-    const characters =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const charactersLength = characters.length;
-    for (let i = 0; i < length; i++) {
+  const makeid = length => {
+    var result = "";
+    var characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
       result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
     return result;
@@ -44,26 +43,25 @@ function InputTextField({
     <Field name={name}>
       {({ field, form: { touched, errors: formikError, setFieldValue } }) => {
         return (
-          <InputTextContainer className={withoutFormGroup ? '' : 'form-group'}>
+          <InputTextContainer className="form-group">
             {showLabel ? <label htmlFor={field.name}>{labelText}</label> : null}
             <input
               className={
                 (touched[field.name] && formikError[field.name]) || error
-                  ? 'form-control is-invalid'
-                  : 'form-control'
+                  ? "form-control is-invalid"
+                  : "form-control"
               }
-              style={customStyles} // Aplicar estilos personalizados
               autoComplete={makeid(5)}
               placeholder={placeholder}
               disabled={disabled}
               data-testid={dataTestId}
               {...field}
               type={type}
-              onChange={(evt) => {
+              onChange={evt => {
                 setFieldValue(field.name, evt.target.value);
                 onChangeHandler(evt);
               }}
-              onBlur={(evt) => {
+              onBlur={evt => {
                 onBlurHandler(evt);
               }}
               maxLength={maxlength}
@@ -73,14 +71,14 @@ function InputTextField({
               <small
                 id={`${field.name}-error`}
                 className={
-                  isNil(formikError[field.name]) ? 'inactive' : 'form-text'
+                  isNil(formikError[field.name]) ? "inactive" : "form-text"
                 }
               >
                 {isNil(error)
                   ? formikError[field.name]
                   : length(error) > 1
-                    ? error
-                    : head(error)}
+                  ? error
+                  : head(error)}
               </small>
             ) : null}
           </InputTextContainer>
@@ -97,7 +95,6 @@ InputTextField.propTypes = {
   labelText: PropTypes.string,
   placeholder: PropTypes.string,
   disabled: PropTypes.bool,
-  customStyles: PropTypes.object, // Nuevo PropType
 };
 
 export default InputTextField;

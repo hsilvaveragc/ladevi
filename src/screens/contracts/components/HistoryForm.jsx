@@ -1,4 +1,5 @@
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
 const HistoryFormContainer = styled.div`
   margin-top: 10px;
@@ -9,13 +10,13 @@ const HistoryFormContainer = styled.div`
 
 export default function HistoryForm({ historicalData }) {
   return (
-    <HistoryFormContainer className='container'>
-      <table className='table table-sm table-striped'>
-        <thead className='thead-light'>
+    <HistoryFormContainer className="container">
+      <table className="table table-sm table-striped">
+        <thead className="thead-light">
           <tr>
-            <th scope='col'>Fecha</th>
-            <th scope='col'>Usuario</th>
-            <th scope='col'>Cambios</th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Usuario</th>
+            <th scope="col">Cambios</th>
           </tr>
         </thead>
         <tbody>

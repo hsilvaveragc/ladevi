@@ -1,30 +1,29 @@
-import axios from 'axios';
-
-import { getHeaders } from 'shared/services/utils';
+import axios from "axios";
+import { getHeaders } from "shared/services/utils";
 
 export default {
   fetchOptionsAppRoles: () =>
     axios
       .get(`ApplicationRole/options`, { headers: getHeaders() })
-      .then((response) => {
+      .then(response => {
         return response.data;
       }),
   fetchCountries: () =>
     axios
       .post(`Country/search`, { take: 1000 }, { headers: getHeaders() })
-      .then((response) => {
+      .then(response => {
         return response.data.data;
       }),
   getAllStatesGroupedByCountry: () =>
     axios
       .get(`state/grouped-by-country`, { headers: getHeaders() })
-      .then((response) => {
+      .then(response => {
         return response.data;
       }),
   getAllDistrictsGroupedByState: () =>
     axios
       .get(`district/grouped-by-state`, { headers: getHeaders() })
-      .then((response) => {
+      .then(response => {
         return response.data;
       }),
   fetchAppRoles: () =>
@@ -38,61 +37,61 @@ export default {
           headers: getHeaders(),
         }
       )
-      .then((response) => {
+      .then(response => {
         return response.data.data;
       }),
-  fetchStates: (countryId) =>
+  fetchStates: countryId =>
     axios
       .post(`State/search`, {
         take: 1000,
         filter: {
-          logic: 'and',
+          logic: "and",
           filters: [
             {
-              field: 'countryId',
-              operator: 'eq',
+              field: "countryId",
+              operator: "eq",
               value: countryId,
             },
           ],
         },
       })
-      .then((response) => {
+      .then(response => {
         return response.data.data;
       }),
-  fetchDistricts: (stateId) =>
+  fetchDistricts: stateId =>
     axios
       .post(`District/search`, {
         take: 1000,
         filter: {
-          logic: 'and',
+          logic: "and",
           filters: [
             {
-              field: 'stateId',
-              operator: 'eq',
+              field: "stateId",
+              operator: "eq",
               value: stateId,
             },
           ],
         },
       })
-      .then((response) => {
+      .then(response => {
         return response.data.data;
       }),
-  getAllCities: (districtId) =>
+  getAllCities: districtId =>
     axios
       .post(`City/search`, {
         take: 1000,
         filter: {
-          logic: 'and',
+          logic: "and",
           filters: [
             {
-              field: 'districtId',
-              operator: 'eq',
+              field: "districtId",
+              operator: "eq",
               value: +districtId,
             },
           ],
         },
       })
-      .then((response) => {
+      .then(response => {
         return response.data.data;
       }),
 };

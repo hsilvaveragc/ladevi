@@ -14,7 +14,7 @@ import {
   GET_ALL_CONTRACTS_INIT,
   GET_ALL_SPACESTYPES_INIT,
   GET_ALL_SPACELOCATIONS_INIT,
-} from './actionTypes.js';
+} from "./actionTypes.js";
 
 export const initialLoad = () => ({
   type: INITIAL_LOAD_INIT,
@@ -32,57 +32,57 @@ export const showDeleteModal = () => ({
   type: SHOW_DELETE_MODAL,
 });
 
-export const addOrder = (payload) => ({
+export const addOrder = payload => ({
   type: ADD_ORDER_INIT,
   payload,
 });
 
-export const editOrder = (payload) => ({
+export const editOrder = payload => ({
   type: EDIT_ORDER_INIT,
   payload,
 });
 
-export const deleteOrder = (payload) => ({
+export const deleteOrder = payload => ({
   type: DELETE_ORDER_INIT,
   payload,
 });
 
-export const filterOrders = (payload) => ({
+export const filterOrders = payload => ({
   type: FILTER_ORDERS_INIT,
   payload,
 });
 
-export const getEditionsFilter = (payload) => ({
+export const getEditionsFilter = payload => ({
   type: GETEDITIONSFILTER_INIT,
   payload,
 });
 
-export const getProductEditions = (payload) => ({
+export const getProductEditions = payload => ({
   type: GET_ALL_PRODUCTEDITIONS_INIT,
   payload,
 });
 
-export const getEditionsForOP = (payload) => ({
+export const getEditionsForOP = payload => ({
   type: GETEDITIONSFOROP_INIT,
   payload,
 });
 
-export const getClientsWithBalanceAvailable = (payload) => ({
+export const getClientsWithBalanceAvailable = payload => ({
   type: GET_CLIENTSWITHBALANCE_INIT,
   payload,
 });
 
-export const getContractsAvailable = (payload) => ({
+export const getContractsAvailable = payload => ({
   type: GET_ALL_CONTRACTS_INIT,
   payload,
 });
 
-export const getSpaceTypesAvailable = (payload) => ({
+export const getSpaceTypesAvailable = payload => ({
   type: GET_ALL_SPACESTYPES_INIT,
   payload,
 });
 
-export const getSpaceLocationsAvailable = (payload) => ({
+export const getSpaceLocationsAvailable = payload => ({
   type: GET_ALL_SPACELOCATIONS_INIT,
   payload,
 });

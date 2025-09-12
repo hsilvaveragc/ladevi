@@ -1,35 +1,35 @@
-import { useState } from 'react';
+import { useState } from "react";
 
-export const useCurrencyForm = (formikProps) => {
+export const useCurrencyForm = formikProps => {
   const [backupParities, setBackupParities] = useState(null);
   const dummyParity = {
     id: 0,
-    start: '',
-    end: '',
-    localCurrencyToDollarExchangeRate: '',
+    start: "",
+    end: "",
+    localCurrencyToDollarExchangeRate: "",
     shouldDelete: false,
   };
 
-  const handleCheckboxChange = (e) => {
+  const handleCheckboxChange = e => {
     const { checked } = e.target;
-    formikProps.setFieldValue('useEuro', checked);
+    formikProps.setFieldValue("useEuro", checked);
 
     if (checked) {
       setBackupParities([...formikProps.values.currencyParities]);
-      formikProps.setFieldValue('currencyParities', [dummyParity]);
-      formikProps.setFieldValue('name', '');
+      formikProps.setFieldValue("currencyParities", [dummyParity]);
+      formikProps.setFieldValue("name", "");
     } else if (backupParities) {
-      formikProps.setFieldValue('currencyParities', backupParities);
+      formikProps.setFieldValue("currencyParities", backupParities);
     }
   };
 
-  const handleNameChange = (e) => {
+  const handleNameChange = e => {
     const { value } = e.target;
-    formikProps.setFieldValue('name', value);
+    formikProps.setFieldValue("name", value);
     if (value) {
-      formikProps.setFieldValue('useEuro', false);
+      formikProps.setFieldValue("useEuro", false);
       if (backupParities) {
-        formikProps.setFieldValue('currencyParities', backupParities);
+        formikProps.setFieldValue("currencyParities", backupParities);
         setBackupParities(null);
       }
     }

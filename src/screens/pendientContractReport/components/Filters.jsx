@@ -1,15 +1,13 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { Formik, Form } from 'formik';
-import InputDatePickerField from 'shared/components/InputDatePickerField';
-import InputSelectField from 'shared/components/InputSelectField';
-import InputCheckboxField from 'shared/components/InputCheckboxField';
-import { SaveButton, DangerButton } from 'shared/components/Buttons';
-
-import useUser from 'shared/security/useUser';
-
-import ExcelExport from './ExcelExport';
-import PdfExport from './PdfExport';
+import React, { useState } from "react";
+import styled from "styled-components";
+import { Formik, Form } from "formik";
+import useUser from "shared/security/useUser";
+import InputDatePickerField from "shared/components/InputDatePickerField";
+import InputSelectField from "shared/components/InputSelectField";
+import InputCheckboxField from "shared/components/InputCheckboxField";
+import { SaveButton, DangerButton } from "shared/components/Buttons";
+import ExcelExport from "./ExcelExport";
+import PdfExport from "./PdfExport";
 
 const FiltersContainer = styled.div`
   width: 90vw;
@@ -38,20 +36,20 @@ const Filters = ({
   const [actualDate, setActualDate] = useState(new Date());
 
   const onlySellers = availableSellers.filter(
-    (x) =>
-      x.applicationRoleName === 'Vendedor Nacional' ||
-      x.applicationRoleName === 'Vendedor COMTUR'
+    x =>
+      x.applicationRoleName === "Vendedor Nacional" ||
+      x.applicationRoleName === "Vendedor COMTUR"
   );
 
   const defaultSeller = {
     id: -1,
-    fullName: 'Todos',
+    fullName: "Todos",
   };
 
   const defaultClient = {
     id: -1,
-    brandName: 'Todos',
-    legalName: '',
+    brandName: "Todos",
+    legalName: "",
   };
 
   return (
@@ -63,26 +61,26 @@ const Filters = ({
         onlyWithBalance: false,
       }}
       enableReinitialize={true}
-      onSubmit={(values) => {
+      onSubmit={values => {
         handleFilter(values);
       }}
     >
-      {(formikProps) => {
+      {formikProps => {
         return (
           <FiltersContainer>
             <Form>
-              <div className='form-row'>
-                <div className='col-2'>
+              <div className="form-row">
+                <div className="col-2">
                   <InputDatePickerField
-                    labelText='Fecha'
-                    name='date'
-                    onChangeHandler={(val) => setActualDate(val)}
+                    labelText="Fecha"
+                    name="date"
+                    onChangeHandler={val => setActualDate(val)}
                   />
                 </div>
-                <div className='col-2'>
+                <div className="col-2">
                   <InputSelectField
-                    labelText='Vendedor'
-                    name='sellerId'
+                    labelText="Vendedor"
+                    name="sellerId"
                     options={
                       isLoadingSellers
                         ? onlySellers
@@ -90,13 +88,13 @@ const Filters = ({
                     }
                     isLoading={isLoadingSellers}
                     disabled={isLoadingSellers || userRol.isSeller}
-                    getOptionLabel={(option) => option.fullName}
+                    getOptionLabel={option => option.fullName}
                   />
                 </div>
-                <div className='col-2'>
+                <div className="col-2">
                   <InputSelectField
-                    labelText='Cliente'
-                    name='clienteId'
+                    labelText="Cliente"
+                    name="clienteId"
                     options={
                       isLoadingAllClients
                         ? availableClients
@@ -104,23 +102,23 @@ const Filters = ({
                     }
                     isLoading={isLoadingAllClients}
                     disabled={isLoadingAllClients}
-                    getOptionLabel={(option) =>
+                    getOptionLabel={option =>
                       `${option.brandName} ${
-                        option.legalName ? `- ${option.legalName}` : ''
+                        option.legalName ? `- ${option.legalName}` : ""
                       }`
                     }
                   />
                 </div>
-                <div className='col-3' style={{ lineHeight: '5em' }}>
+                <div className="col-3" style={{ lineHeight: "5em" }}>
                   <InputCheckboxField
-                    labelText='Solo con saldo al día de hoy'
-                    name='onlyWithBalance'
+                    labelText="Solo con saldo al día de hoy"
+                    name="onlyWithBalance"
                     inline
                     // disabled={true}
                   />
                 </div>
-                <div className='col-3'>
-                  <div className='buttons-container'>
+                <div className="col-3">
+                  <div className="buttons-container">
                     <DangerButton
                       onClickHandler={() => {
                         formikProps.resetForm();
@@ -131,7 +129,7 @@ const Filters = ({
                       Limpiar
                     </DangerButton>
                     <SaveButton
-                      type='submit'
+                      type="submit"
                       disabled={isLoadingAllClients || isLoadingSellers}
                     >
                       Buscar
@@ -145,7 +143,7 @@ const Filters = ({
                   </div>
                 </div>
               </div>
-              <div className='form-row'></div>
+              <div className="form-row"></div>
             </Form>
           </FiltersContainer>
         );

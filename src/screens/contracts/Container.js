@@ -1,23 +1,8 @@
-import { bindActionCreators, compose } from 'redux';
-import { connect } from 'react-redux';
+// eslint-disable-next-line
+import { bindActionCreators, compose } from "redux";
+import { connect } from "react-redux";
+import ContractsPage from "./ContractsPage";
 
-import {
-  getEditions,
-  getSpaceTypes as getSpaceTypesForOrder,
-  getSpaceLocations as getSpaceLocationsForOrder,
-} from '../orders/reducer';
-import { loggedUserSelector } from '../../shared/appData/reducers';
-import {
-  getSpaceTypesAvailable,
-  getSpaceLocationsAvailable,
-  addOrder,
-  editOrder,
-  deleteOrder,
-  getClientsWithBalanceAvailable,
-  getEditionsForOP,
-} from '../orders/actionCreators';
-
-import ContractsPage from './ContractsPage';
 import {
   initialLoad,
   searchContracts,
@@ -28,7 +13,7 @@ import {
   addContract,
   editContract,
   deleteContract,
-} from './actionCreators';
+} from "./actionCreators";
 import {
   getContracts,
   getSalesmens,
@@ -45,9 +30,27 @@ import {
   getCurrencies,
   getLoading,
   getEuroParities,
-} from './reducer';
+} from "./reducer";
 
-const mapStateToProps = (state) => ({
+import {
+  getEditions,
+  getSpaceTypes as getSpaceTypesForOrder,
+  getSpaceLocations as getSpaceLocationsForOrder,
+} from "../orders/reducer";
+
+import { loggedUserSelector } from "../../shared/appData/reducers";
+
+import {
+  getSpaceTypesAvailable,
+  getSpaceLocationsAvailable,
+  addOrder,
+  editOrder,
+  deleteOrder,
+  getClientsWithBalanceAvailable,
+  getEditionsForOP,
+} from "../orders/actionCreators";
+
+const mapStateToProps = state => ({
   availableContracts: getContracts(state),
   availableSalesmens: getSalesmens(state),
   availableProducts: getProducts(state),
@@ -69,7 +72,7 @@ const mapStateToProps = (state) => ({
   loading: getLoading(state),
 });
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators(
     {
       initialLoad,
@@ -93,6 +96,9 @@ const mapDispatchToProps = (dispatch) => ({
   ),
 });
 
-export default compose(connect(mapStateToProps, mapDispatchToProps))(
-  ContractsPage
-);
+export default compose(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
+)(ContractsPage);

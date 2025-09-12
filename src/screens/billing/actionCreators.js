@@ -18,45 +18,45 @@ import {
   SET_SELECTED_PRODUCT,
   SET_SELECTED_EDITION,
   SEND_MULTIPLE_TO_XUBIO_INIT,
-} from './actionTypes.js';
+} from "./actionTypes.js";
 
 export const initialLoad = () => ({
   type: INITIAL_LOAD_INIT,
 });
 
-export const setClientType = (clientType) => ({
+export const setClientType = clientType => ({
   type: SET_CLIENT_TYPE,
   payload: clientType,
 });
 
-export const setEntityType = (entityType) => ({
+export const setEntityType = entityType => ({
   type: SET_ENTITY_TYPE,
   payload: entityType,
 });
 
 // Flujo de Contratos
-export const fetchClientsInit = (clientType) => ({
+export const fetchClientsInit = clientType => ({
   type: FETCH_CLIENTS_INIT,
   payload: clientType,
 });
 
-export const selectClient = (client) => ({
+export const selectClient = client => ({
   type: SELECT_CLIENT,
   payload: client,
 });
 
-export const fetchContractsInit = (clientId) => ({
+export const fetchContractsInit = clientId => ({
   type: FETCH_CONTRACTS_INIT,
   payload: clientId,
 });
 
 // Flujo de Órdenes
-export const fetchProductsInit = (clientType) => ({
+export const fetchProductsInit = clientType => ({
   type: FETCH_PRODUCTS_INIT,
   payload: clientType,
 });
 
-export const setSelectedProduct = (productId) => ({
+export const setSelectedProduct = productId => ({
   type: SET_SELECTED_PRODUCT,
   payload: productId,
 });
@@ -66,29 +66,29 @@ export const fetchEditionsInit = (productId, isComturClient) => ({
   payload: productId,
 });
 
-export const setSelectedEdition = (editionId) => ({
+export const setSelectedEdition = editionId => ({
   type: SET_SELECTED_EDITION,
   payload: editionId,
 });
 
-export const fetchOrdersInit = (payload) => ({
+export const fetchOrdersInit = payload => ({
   type: FETCH_ORDERS_INIT,
   payload,
 });
 
 //Filtro compartido entre contratos y órdenes
-export const setSelectedCurrency = (currency) => ({
+export const setSelectedCurrency = currency => ({
   type: SET_SELECTED_CURRENCY,
   payload: currency,
 });
 
 // Gestión del carrito
-export const addToCart = (item) => ({
+export const addToCart = item => ({
   type: ADD_TO_CART,
   payload: item,
 });
 
-export const removeFromCart = (itemId) => ({
+export const removeFromCart = itemId => ({
   type: REMOVE_FROM_CART,
   payload: itemId,
 });
@@ -107,13 +107,13 @@ export const hideInvoiceDialog = () => ({
 });
 
 // Envío a Xubio
-export const sendToXubioInit = (invoiceData) => ({
+export const sendToXubioInit = invoiceData => ({
   type: SEND_TO_XUBIO_INIT,
   payload: invoiceData,
 });
 
 // Envío múltiple a Xubio
-export const sendMultipleToXubioInit = (invoicesData) => ({
+export const sendMultipleToXubioInit = invoicesData => ({
   type: SEND_MULTIPLE_TO_XUBIO_INIT,
   payload: invoicesData,
 });

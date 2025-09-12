@@ -1,16 +1,13 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import HamburgerMenu from 'react-hamburger-menu';
-import CheeseburgerMenu from 'cheeseburger-menu';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
-
-import useUser from 'shared/security/useUser';
-
-import { headerBg } from '../../styles/constants';
-import logo from '../../images/logo-mini.png';
-
-import MenuContent from './components/MenuContent';
+import React, { useState } from "react";
+import styled from "styled-components";
+import HamburgerMenu from "react-hamburger-menu";
+import CheeseburgerMenu from "cheeseburger-menu";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import useUser from "shared/security/useUser";
+import { headerBg } from "../../styles/constants";
+import MenuContent from "./components/MenuContent";
+import logo from "../../images/logo-mini.png";
 
 const HeaderContainer = styled.header`
   background-color: ${headerBg};
@@ -56,22 +53,22 @@ const HeaderContainer = styled.header`
     }
   }
 `;
-const Header = (props) => {
+const Header = props => {
   const { userFullName } = useUser();
   const [menuOpen, setMenuOpen] = useState(false);
-  const routeName = props.match.path.split('/');
+  const routeName = props.match.path.split("/");
 
   return (
     <HeaderContainer>
       <CheeseburgerMenu
         isOpen={menuOpen}
         closeCallback={() => setMenuOpen(!menuOpen)}
-        topOffset='8vh'
-        backgroundColor='#0f609b'
+        topOffset="8vh"
+        backgroundColor="#0f609b"
       >
         <MenuContent menuToggler={() => setMenuOpen(!menuOpen)} />
       </CheeseburgerMenu>
-      <div className='hamburger-menu-container'>
+      <div className="hamburger-menu-container">
         <HamburgerMenu
           isOpen={menuOpen}
           menuClicked={() => setMenuOpen(!menuOpen)}
@@ -79,25 +76,25 @@ const Header = (props) => {
           height={24}
           strokeWidth={3}
           rotate={0}
-          color='white'
+          color="white"
           borderRadius={0}
           animationDuration={0.5}
         />
       </div>
-      <div className='info-container'>
-        <div className='logo-container'>
-          <a href='/'>
+      <div className="info-container">
+        <div className="logo-container">
+          <a href="/">
             <img
               style={{
-                width: '38px !important',
+                width: "38px !important",
               }}
-              height='38'
+              height="38"
               src={logo}
-              alt='Logo'
+              alt="Logo"
             />
           </a>
         </div>
-        <h4 data-testid='page-title'>{props.routeTitle || routeName[1]}</h4>
+        <h4 data-testid="page-title">{props.routeTitle || routeName[1]}</h4>
       </div>
       <button onClick={props.logoutHandler}>
         {userFullName}

@@ -1,7 +1,5 @@
-import { put, all, takeLatest, call } from 'redux-saga/effects';
-import { toast } from 'react-toastify';
-
-import { appDataService } from 'shared/services';
+import { put, all, takeLatest, call } from "redux-saga/effects";
+import { toast } from "react-toastify";
 
 import {
   USERS_INITIAL_LOAD_INIT,
@@ -22,8 +20,10 @@ import {
   FILTER_USERS_SUCCESS,
   FILTER_USERS_FAILURE,
   //DELETE_USER_FAILURE, //TODO
-} from './actionTypes';
-import usersService from './service';
+} from "./actionTypes";
+
+import usersService from "./service";
+import { appDataService } from "shared/services";
 
 export function* initialLoad() {
   try {
@@ -46,7 +46,7 @@ export function* initialLoad() {
         type: USERS_INITIAL_LOAD_FAILURE,
         errors: { ...err.response.data.errors },
       }),
-      call(toast.error, 'Hubo un error :('),
+      call(toast.error, "Hubo un error :("),
     ]);
   }
 }
@@ -61,7 +61,7 @@ export function* getUsers() {
         type: GET_ALL_USERS_FAILURE,
         errors: { ...err.response.data.errors },
       }),
-      call(toast.error, 'Hubo un error :('),
+      call(toast.error, "Hubo un error :("),
     ]);
   }
 }
@@ -76,7 +76,7 @@ export function* filterUsers({ payload }) {
         type: FILTER_USERS_FAILURE,
         errors: { ...err.response.data.errors },
       }),
-      call(toast.error, 'Hubo un error :('),
+      call(toast.error, "Hubo un error :("),
     ]);
   }
 }
@@ -86,7 +86,7 @@ export function* addUser({ payload }) {
     const usersPayload = yield call(usersService.addUser, payload);
     yield all([
       put({ type: ADD_USER_SUCCESS, payload: usersPayload }),
-      call(toast.success, 'Usuario creado con éxito!'),
+      call(toast.success, "Usuario creado con éxito!"),
       put({ type: FILTER_USERS_INIT, payload: payload.params || {} }),
     ]);
   } catch (err) {
@@ -95,7 +95,7 @@ export function* addUser({ payload }) {
         type: ADD_USER_FAILURE,
         errors: { ...err.response.data.errors },
       }),
-      call(toast.error, 'Hubo un error :('),
+      call(toast.error, "Hubo un error :("),
     ]);
   }
 }
@@ -105,7 +105,7 @@ export function* editUser({ payload }) {
     const usersPayload = yield call(usersService.editUser, payload);
     yield all([
       put({ type: EDIT_USER_SUCCESS, payload: usersPayload }),
-      call(toast.success, 'Usuario editado con éxito!'),
+      call(toast.success, "Usuario editado con éxito!"),
       put({ type: FILTER_USERS_INIT, payload: payload.params || {} }),
     ]);
   } catch (err) {
@@ -114,7 +114,7 @@ export function* editUser({ payload }) {
         type: EDIT_USER_FAILURE,
         errors: { ...err.response.data.errors },
       }),
-      call(toast.error, 'Hubo un error :('),
+      call(toast.error, "Hubo un error :("),
     ]);
   }
 }
@@ -124,12 +124,12 @@ export function* deleteUser({ payload }) {
     const usersPayload = yield call(usersService.deleteUser, payload);
     yield all([
       put({ type: DELETE_USER_SUCCESS, payload: usersPayload }),
-      call(toast.success, 'Usuario eliminado con éxito!'),
+      call(toast.success, "Usuario eliminado con éxito!"),
       put({ type: GET_ALL_USERS_INIT }),
     ]);
   } catch (err) {
     yield put({ type: DELETE_USER_SUCCESS, error: err.response.data.message });
-    yield call(toast.success, 'Usuario eliminado con éxito!');
+    yield call(toast.success, "Usuario eliminado con éxito!");
     yield put({ type: GET_ALL_USERS_INIT });
   }
 }
