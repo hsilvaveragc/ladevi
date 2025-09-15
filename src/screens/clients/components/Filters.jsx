@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { Formik, Form } from "formik";
 import { isEmpty } from "ramda";
-import useUser from "shared/security/useUser";
-import useAppData from "shared/appData/useAppData";
+//import * as Yup from "yup";
+
 import InputTextField from "shared/components/InputTextField";
 import InputSelectField from "shared/components/InputSelectField";
+// import InputSelect from "shared/components/InputAutocompleteField";
 import { SaveButton, DangerButton } from "shared/components/Buttons";
+import { getAssignedRole } from "shared/services/utils";
 
 const FiltersContainer = styled.div`
   width: 70vw;
@@ -24,22 +26,21 @@ const FiltersContainer = styled.div`
 `;
 
 export default function Filters({
-  availableUsers,
+  availableCountries,
+  availableStates,
+  availableDistricts,
   availableCities,
+  availableUsers,
+  getDistrictsHandler,
+  getStatesHandler,
   getCitiesHandler,
-  handleFilter,
-  handleResetFilters,
+  filterHandler,
+  resetFiltersHandler,
   handleChangeParams,
 }) {
-  const { userRol, userCountryId, userId } = useUser();
-  const {
-    countries,
-    statesGroupedByCountry,
-    districtsGroupedByState,
-  } = useAppData();
-
-  const [availableStates, setAvailableStates] = useState([]);
-  const [availableDistricts, setAvailableDistricts] = useState([]);
+  const userRole = getAssignedRole();
+  const userId = parseFloat(localStorage.getItem("userId"));
+  const userCountryId = parseFloat(localStorage.getItem("userCountryId"));
 
   const defaultOption = {
     id: -1,
@@ -51,80 +52,11 @@ export default function Filters({
     fullName: "Todos",
   };
 
-  // Actualizar estados cuando cambian los datos en Redux o cuando se monta el componente
   useEffect(() => {
-    // Si es supervisor o vendedor, filtrar estados de su país
-    if (userRol.isSupervisor) {
-      filterStatesForCountry(userCountryId);
+    if (userRole.isSupervisor) {
+      getStatesHandler(userCountryId);
     }
-  }, [countries, statesGroupedByCountry, userCountryId]);
-
-  // Función para filtrar estados por país
-  const filterStatesForCountry = countryId => {
-    if (countryId === -1 || isEmpty(statesGroupedByCountry)) {
-      setAvailableStates([]);
-      return;
-    }
-
-    const filteredStates =
-      statesGroupedByCountry.find(state => state.countryId === countryId)
-        ?.states ?? [];
-    setAvailableStates(filteredStates);
-  };
-
-  // Función para filtrar distritos por estado
-  const filterDistrictsForState = stateId => {
-    if (stateId === -1 || isEmpty(districtsGroupedByState)) {
-      setAvailableDistricts([]);
-      return;
-    }
-
-    // Filtrar los distritos por el estado seleccionado
-    const filteredDistricts =
-      districtsGroupedByState.find(district => district.stateId === stateId)
-        ?.districts ?? [];
-    setAvailableDistricts(filteredDistricts);
-
-    // Limpiar ciudades cuando cambia el estado
-    //setAvailableCities([]);
-  };
-
-  // Manejar el cambio de país
-  const handleCountryChange = (option, formikProps) => {
-    // Obtener estados para el país seleccionado
-    filterStatesForCountry(option.id);
-
-    // Resetear valores relacionados
-    formikProps.setFieldValue("stateId", -1);
-    formikProps.setFieldValue("districtId", -1);
-    formikProps.setFieldValue("cityId", -1);
-
-    // Limpiar listas filtradas
-    setAvailableDistricts([]);
-    getCitiesHandler(-1);
-  };
-
-  // Manejar el cambio de estado
-  const handleStateChange = (option, formikProps) => {
-    // Obtener distritos para el estado seleccionado;
-    filterDistrictsForState(option.id);
-
-    // Resetear valores relacionados
-    formikProps.setFieldValue("districtId", -1);
-    formikProps.setFieldValue("cityId", -1);
-
-    // Limpiar listas filtradas
-    getCitiesHandler(-1);
-  };
-
-  // Manejar el cambio de distrito
-  const handleDistrictChange = (option, formikProps) => {
-    // Obtener ciudades para el distrito seleccionado
-    getCitiesHandler(option.id);
-
-    // Resetear valor de ciudad
-    formikProps.setFieldValue("cityId", -1);
-  };
+  }, []);
 
   return (
     <Formik
@@ -133,19 +65,20 @@ export default function Filters({
       initialValues={{
         fullName: "",
         status: "onlyEnabled",
-        applicationUserSellerId: userRol.isSeller ? userId : -1,
-        countryId: userRol.isSupervisor ? userCountryId : -1,
+        applicationUserSellerId: userRole.isSeller ? userId : -1,
+        countryId: userRole.isSupervisor ? userCountryId : -1,
         stateId: -1,
         districtId: -1,
         cityId: -1,
       }}
       onSubmit={values => {
-        handleFilter(values);
+        filterHandler(values);
         handleChangeParams(values);
       }}
       enableReinitialize={true}
     >
       {formikProps => {
+        //console.log(formikProps);
         return (
           <FiltersContainer>
             <Form>
@@ -161,10 +94,7 @@ export default function Filters({
                     labelText="Estado"
                     name="status"
                     options={[
-                      {
-                        id: "onlyEnabled",
-                        name: "Solo Habilitados",
-                      },
+                      { id: "onlyEnabled", name: "Solo Habilitados" },
                       { id: "all", name: "Todos" },
                     ]}
                   />
@@ -175,17 +105,20 @@ export default function Filters({
                     name="applicationUserSellerId"
                     options={[allSellers, ...availableUsers]}
                     getOptionLabel={option => option.fullName}
-                    disabled={userRol.isSeller}
+                    disabled={userRole.isSeller}
                   />
                 </div>
                 <div className="col-3">
                   <InputSelectField
                     labelText="Pais"
                     name="countryId"
-                    options={[defaultOption, ...countries]}
-                    onChangeHandler={option =>
-                      handleCountryChange(option, formikProps)
-                    }
+                    options={[defaultOption, ...availableCountries]}
+                    onChangeHandler={option => {
+                      getStatesHandler(option.id);
+                      formikProps.setFieldValue("stateId", "");
+                      formikProps.setFieldValue("districtId", "");
+                      formikProps.setFieldValue("cityId", "");
+                    }}
                   />
                 </div>
               </div>
@@ -195,9 +128,7 @@ export default function Filters({
                     labelText="Provincia"
                     name="stateId"
                     options={[defaultOption, ...availableStates]}
-                    onChangeHandler={option =>
-                      handleStateChange(option, formikProps)
-                    }
+                    onChangeHandler={option => getDistrictsHandler(option.id)}
                     disabled={isEmpty(availableStates)}
                   />
                 </div>
@@ -206,9 +137,7 @@ export default function Filters({
                     labelText="Municipio"
                     name="districtId"
                     options={[defaultOption, ...availableDistricts]}
-                    onChangeHandler={option =>
-                      handleDistrictChange(option, formikProps)
-                    }
+                    onChangeHandler={option => getCitiesHandler(option.id)}
                     disabled={isEmpty(availableDistricts)}
                   />
                 </div>
@@ -225,7 +154,7 @@ export default function Filters({
                     <DangerButton
                       onClickHandler={() => {
                         formikProps.resetForm();
-                        handleResetFilters();
+                        resetFiltersHandler();
                       }}
                     >
                       Limpiar

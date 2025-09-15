@@ -1,4 +1,5 @@
 import axios from "axios";
+import { addYears } from "date-fns";
 import { dissoc } from "ramda";
 import { sortAlphabetically, sortCaseInsensitive } from "shared/utils";
 import { getHeaders } from "shared/services/utils";
@@ -213,32 +214,4 @@ export default {
         headers: getHeaders(),
       })
       .then(response => sortAlphabetically(response.data, "name")),
-
-  getXubioProducts: () =>
-    axios
-      .get(`Products/GetXubioProducts`, {
-        headers: getHeaders(),
-      })
-      .then(response => sortAlphabetically(response.data, "name")),
-
-  getXubioComturProducts: () =>
-    axios
-      .get(`Products/GetXubioProducts?isComtur=true`, {
-        headers: getHeaders(),
-      })
-      .then(response => sortAlphabetically(response.data, "name")),
-
-  getXubioGenericProduct: () =>
-    axios
-      .get(`Products/GetXubioGenericProductCode`, {
-        headers: getHeaders(),
-      })
-      .then(response => response.data),
-
-  getXubioComturGenericProduct: () =>
-    axios
-      .get(`Products/GetXubioGenericProductCode?isComtur=true`, {
-        headers: getHeaders(),
-      })
-      .then(response => response.data),
 };

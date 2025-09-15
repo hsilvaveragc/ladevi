@@ -29,8 +29,8 @@ export function* initialLoad() {
   try {
     const [availableUsers, availableCountries, availableAppRoles] = yield all([
       call(usersService.getUsers),
-      call(appDataService.fetchCountries),
-      call(appDataService.fetchAppRoles),
+      call(appDataService.getAllCountries),
+      call(appDataService.getAllAppRoles),
     ]);
     yield put({
       type: USERS_INITIAL_LOAD_SUCCESS,

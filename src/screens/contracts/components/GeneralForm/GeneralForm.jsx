@@ -2,10 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Form } from "formik";
 import { addYears } from "date-fns";
 import { toast } from "react-toastify";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 import { CONSTANTS } from "shared/utils/constants";
+import { findById } from "shared/utils";
 import InputTextField from "shared/components/InputTextField";
 import InputSelectField from "shared/components/InputSelectField";
 import InputCheckboxField from "shared/components/InputCheckboxField";
@@ -32,7 +31,6 @@ import {
   getCurrenciesForClient,
   getModifiedEuroCurrency,
 } from "../helper";
-import { gethasOrdersEditions } from "../../reducer";
 
 const ContractData = ({
   addMode,
@@ -58,35 +56,6 @@ const ContractData = ({
   formikPropsDuplicate,
   filters,
 }) => {
-  // Determinar si el campo debe ser read-only y la razón
-  const getInvoiceFieldState = () => {
-    const isAnticipated = formikProps.values.billingConditionId === 1;
-    const hasOrders = formikProps.values.publishingOrdersCounter > 0;
-    const isReadOnlyDueToOrders = isAnticipated && editMode && hasOrders;
-
-    return {
-      isReadOnly: deleteMode || isSeller || isReadOnlyDueToOrders,
-      reason: isReadOnlyDueToOrders
-        ? "El número de factura no puede modificarse porque este contrato anticipado tiene al menos una orden de publicación creada"
-        : "",
-    };
-  };
-
-  const getCurrencyFieldState = () => {
-    const isAnticipatedContract = formikProps.values.billingConditionId === 1;
-    const invoiceNumberHasValue = formikProps.values.invoiceNumber !== "";
-    const isDisabledByInvoiceNumber =
-      isAnticipatedContract && invoiceNumberHasValue && editMode;
-    return {
-      isReadOnly:
-        deleteMode || (isSeller && editMode) || isDisabledByInvoiceNumber,
-      reason: "",
-    };
-  };
-
-  const invoiceFieldState = getInvoiceFieldState();
-  const currencyFieldState = getCurrencyFieldState();
-
   const formikPropsValues =
     addMode && formikPropsDuplicate
       ? formikPropsDuplicate.values
@@ -204,15 +173,11 @@ const ContractData = ({
           const realUnitPrice = unitPriceLocal - unitDiscountsLocal;
           formikProps.setFieldValue(
             `soldSpaces.${i}.total`,
-            totalSoldSpace.toLocaleString("pt-BR", {
-              maximumFractionDigits: 2,
-            })
+            totalSoldSpace.toLocaleString("pt-BR", { maximumFractionDigits: 2 })
           );
           formikProps.setFieldValue(
             `soldSpaces.${i}.unitPriceWithDiscounts`,
-            realUnitPrice.toLocaleString("pt-BR", {
-              maximumFractionDigits: 2,
-            })
+            realUnitPrice.toLocaleString("pt-BR", { maximumFractionDigits: 2 })
           );
         }
 
@@ -388,10 +353,6 @@ const ContractData = ({
   const handleCurrencyChange = currency => {
     formikProps.setFieldValue("currencyId", currency.id);
     formikProps.setFieldValue("useEuro", currency.id === -1);
-
-    if (currency.id === -1) {
-      formikProps.setFieldValue("useEuro", true);
-    }
 
     let parity =
       currency?.currencyParities?.find(
@@ -608,7 +569,7 @@ const ContractData = ({
               labelText="Moneda *"
               name="currencyId"
               options={currencies}
-              disabled={currencyFieldState.isReadOnly}
+              disabled={deleteMode || (isSeller && editMode)}
               error={errors.currencyId}
               onChangeHandler={handleCurrencyChange}
             ></InputSelectField>
@@ -625,40 +586,16 @@ const ContractData = ({
             ></InputSelectField>
           </div>
 
-          {formikProps.values.billingConditionId === 1 && (
-            <div className="col-3" style={{ position: "relative" }}>
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
-              >
-                <div style={{ flex: 1 }}>
-                  <InputTextField
-                    labelText="Nro. Factura"
-                    name="invoiceNumber"
-                    disabled={invoiceFieldState.isReadOnly}
-                    error={errors.invoiceNumber}
-                  />
-                </div>
-                {invoiceFieldState.reason && (
-                  <div
-                    style={{
-                      position: "relative",
-                      top: "0.5rem",
-                      cursor: "pointer",
-                    }}
-                    title={invoiceFieldState.reason}
-                  >
-                    <FontAwesomeIcon
-                      icon={faInfoCircle}
-                      className="text-info"
-                      style={{
-                        fontSize: "1.25rem",
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
+          {formikProps.values.billingConditionId === 1 ? (
+            <div className="col-3">
+              <InputTextField
+                labelText="Nro. Factura"
+                name="invoiceNumber"
+                disabled={deleteMode || isSeller}
+                error={errors.invoiceNumber}
+              />
             </div>
-          )}
+          ) : null}
           {formikProps.values.billingConditionId === 1 ? (
             <div className="col-1">
               <div className="check-container">

@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { Formik, Form } from "formik";
-import useUser from "shared/security/useUser";
+
 import InputDatePickerField from "shared/components/InputDatePickerField";
 import InputSelectField from "shared/components/InputSelectField";
 import InputCheckboxField from "shared/components/InputCheckboxField";
 import { SaveButton, DangerButton } from "shared/components/Buttons";
+import { getAssignedRole } from "shared/services/utils";
 import ExcelExport from "./ExcelExport";
 import PdfExport from "./PdfExport";
 
@@ -24,15 +25,13 @@ const FiltersContainer = styled.div`
 const Filters = ({
   availableClients = [],
   availableSellers = [],
-  handleFilter,
+  filterHandler,
   data,
   clients,
   isLoadingAllClients,
   isLoadingSellers,
   clearFilters,
 }) => {
-  const { userRol, userId } = useUser();
-
   const [actualDate, setActualDate] = useState(new Date());
 
   const onlySellers = availableSellers.filter(
@@ -40,6 +39,8 @@ const Filters = ({
       x.applicationRoleName === "Vendedor Nacional" ||
       x.applicationRoleName === "Vendedor COMTUR"
   );
+  const userRole = getAssignedRole();
+  const userId = localStorage.getItem("userId");
 
   const defaultSeller = {
     id: -1,
@@ -57,12 +58,12 @@ const Filters = ({
       initialValues={{
         date: actualDate,
         clienteId: -1,
-        sellerId: userRol.isSeller ? parseFloat(userId) : -1,
+        sellerId: userRole.isSeller ? parseFloat(userId) : -1,
         onlyWithBalance: false,
       }}
       enableReinitialize={true}
       onSubmit={values => {
-        handleFilter(values);
+        filterHandler(values);
       }}
     >
       {formikProps => {
@@ -87,7 +88,7 @@ const Filters = ({
                         : [defaultSeller, ...onlySellers]
                     }
                     isLoading={isLoadingSellers}
-                    disabled={isLoadingSellers || userRol.isSeller}
+                    disabled={isLoadingSellers || userRole.isSeller}
                     getOptionLabel={option => option.fullName}
                   />
                 </div>

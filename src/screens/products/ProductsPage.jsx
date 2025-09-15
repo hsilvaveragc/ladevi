@@ -90,8 +90,6 @@ const ProductsPage = props => {
           productTypes={props.productTypes}
           availableCountries={props.availableCountries}
           availableAdsSpaceLocationType={props.availableAdsSpaceLocationType}
-          xubioProducts={props.xubioProducts}
-          xubioProductsComtur={props.xubioProductsComtur}
           saveHandler={props.actions.addProduct}
           addMode={true}
           errors={props.errors}
@@ -109,8 +107,6 @@ const ProductsPage = props => {
           productTypes={props.productTypes}
           availableCountries={props.availableCountries}
           availableAdsSpaceLocationType={props.availableAdsSpaceLocationType}
-          xubioProducts={props.xubioProducts}
-          xubioProductsComtur={props.xubioProductsComtur}
           saveHandler={props.actions.editProduct}
           editMode={true}
           errors={props.errors}
@@ -128,8 +124,6 @@ const ProductsPage = props => {
           productTypes={props.productTypes}
           availableCountries={props.availableCountries}
           availableAdsSpaceLocationType={props.availableAdsSpaceLocationType}
-          xubioProducts={props.xubioProducts}
-          xubioProductsComtur={props.xubioProductsComtur}
           addProductHandler={props.actions.addProduct}
           deleteMode={true}
           saveHandler={props.actions.deleteProduct}
@@ -140,8 +134,8 @@ const ProductsPage = props => {
       <Filters
         availableCountries={props.availableCountries}
         availableProductTypes={props.productTypes}
-        handleFilter={props.actions.filterProducts}
-        handleResetFilters={props.actions.getAllProducts}
+        filterHandler={props.actions.filterProducts}
+        resetFiltersHandler={props.actions.getAllProducts}
         handleChangeParams={setParams}
       />
       <div style={{ width: "100%" }}>

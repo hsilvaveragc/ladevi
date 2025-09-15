@@ -438,7 +438,7 @@ export default function Page(props) {
         availableProducts={props.availableProducts}
         availableEditions={props.availableEditions}
         availableSellers={props.availableSellers}
-        handleFilter={props.actions.filterReport}
+        filterHandler={props.actions.filterReport}
         clearFilters={props.actions.clearFilters}
         data={props.data}
         getProductHandler={props.actions.getProductsByType}

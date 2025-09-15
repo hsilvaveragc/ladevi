@@ -19,23 +19,24 @@ import {
   FILTER_CLIENTS_INIT,
   FILTER_CLIENTS_SUCCESS,
   FILTER_CLIENTS_FAILURE,
-  FETCH_STATES_INIT,
-  FETCH_STATES_SUCCESS,
-  FETCH_STATES_FAILURE,
-  FETCH_DISTRICTS_INIT,
-  FETCH_DISTRICTS_SUCCESS,
-  FETCH_DISTRICTS_FAILURE,
-  FETCH_CITIES_INIT,
-  FETCH_CITIES_SUCCESS,
-  FETCH_CITIES_FAILURE,
+  GET_ALL_COUNTRIES_INIT,
+  GET_ALL_COUNTRIES_SUCCESS,
+  GET_ALL_COUNTRIES_FAILURE,
+  GET_ALL_STATES_INIT,
+  GET_ALL_STATES_SUCCESS,
+  GET_ALL_STATES_FAILURE,
+  GET_ALL_DISTRICTS_INIT,
+  GET_ALL_DISTRICTS_SUCCESS,
+  GET_ALL_DISTRICTS_FAILURE,
+  GET_ALL_CITIES_INIT,
+  GET_ALL_CITIES_SUCCESS,
+  GET_ALL_CITIES_FAILURE,
   GET_LOCATION_DATA_INIT,
   GET_LOCATION_DATA_SUCCESS,
   GET_LOCATION_DATA_FAILURE,
   GET_ALL_TAX_CATEGORIES_INITS_INIT,
   GET_ALL_TAX_CATEGORIES_SUCCESS,
   GET_ALL_TAX_CATEGORIES_FAILURE,
-  SHOW_DUPLICATE_CUIT_MODAL,
-  HIDE_DUPLICATE_CUIT_MODAL,
 } from "./actionTypes.js";
 
 const initialState = {
@@ -52,8 +53,6 @@ const initialState = {
   showAddModal: false,
   showEditModal: false,
   showDeleteModal: false,
-  showDuplicateCuitModal: false,
-  duplicateCuitData: null,
 };
 
 export default function(state = initialState, action) {
@@ -102,16 +101,25 @@ export default function(state = initialState, action) {
       return {
         ...state,
         showEditModal: !state.showEditModal,
-        errors: {},
       };
     case DELETE_CLIENT_SUCCESS:
     case SHOW_DELETE_MODAL:
       return {
         ...state,
         showDeleteModal: !state.showDeleteModal,
-        errors: {},
       };
-    case FETCH_STATES_INIT:
+    case GET_ALL_COUNTRIES_INIT:
+      return {
+        ...state,
+        loading: true,
+      };
+    case GET_ALL_COUNTRIES_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        countries: [...action.payload],
+      };
+    case GET_ALL_STATES_INIT:
       return {
         ...state,
         loading: true,
@@ -119,7 +127,7 @@ export default function(state = initialState, action) {
         districts: [],
         cities: [],
       };
-    case FETCH_STATES_SUCCESS:
+    case GET_ALL_STATES_SUCCESS:
       return {
         ...state,
         loading: false,
@@ -127,24 +135,24 @@ export default function(state = initialState, action) {
         districts: [],
         cities: [],
       };
-    case FETCH_DISTRICTS_INIT:
+    case GET_ALL_DISTRICTS_INIT:
       return {
         ...state,
         loading: true,
       };
-    case FETCH_DISTRICTS_SUCCESS:
+    case GET_ALL_DISTRICTS_SUCCESS:
       return {
         ...state,
         loading: false,
         districts: [...action.payload],
         cities: [],
       };
-    case FETCH_CITIES_INIT:
+    case GET_ALL_CITIES_INIT:
       return {
         ...state,
         loading: true,
       };
-    case FETCH_CITIES_SUCCESS:
+    case GET_ALL_CITIES_SUCCESS:
       return {
         ...state,
         loading: false,
@@ -175,24 +183,12 @@ export default function(state = initialState, action) {
     case FILTER_CLIENTS_FAILURE:
     case ADD_CLIENT_FAILURE:
     case EDIT_CLIENT_FAILURE:
-    case FETCH_STATES_FAILURE:
-    case FETCH_DISTRICTS_FAILURE:
-    case FETCH_CITIES_FAILURE:
+    case GET_ALL_COUNTRIES_FAILURE:
+    case GET_ALL_STATES_FAILURE:
+    case GET_ALL_DISTRICTS_FAILURE:
+    case GET_ALL_CITIES_FAILURE:
     case GET_LOCATION_DATA_FAILURE:
       return { ...state, loading: false, errors: { ...action.errors } };
-    case SHOW_DUPLICATE_CUIT_MODAL:
-      return {
-        ...state,
-        showDuplicateCuitModal: true,
-        duplicateCuitData: action.payload,
-      };
-
-    case HIDE_DUPLICATE_CUIT_MODAL:
-      return {
-        ...state,
-        showDuplicateCuitModal: false,
-        duplicateCuitData: null,
-      };
     default:
       return state;
   }
@@ -245,17 +241,17 @@ export const getShowDeleteModal = createSelector(
   clientsReducer => clientsReducer.showDeleteModal
 );
 
-export const fetchCountries = createSelector(
+export const getAllCountries = createSelector(
   getClientsReducer,
   clientsReducer => clientsReducer.countries
 );
 
-export const fetchStates = createSelector(
+export const getAllStates = createSelector(
   getClientsReducer,
   clientsReducer => clientsReducer.states
 );
 
-export const fetchDistricts = createSelector(
+export const getAllDistricts = createSelector(
   getClientsReducer,
   clientsReducer => clientsReducer.districts
 );
@@ -263,14 +259,4 @@ export const fetchDistricts = createSelector(
 export const getAllCities = createSelector(
   getClientsReducer,
   clientsReducer => clientsReducer.cities
-);
-
-export const getShowDuplicateCuitModal = createSelector(
-  getClientsReducer,
-  clientsReducer => clientsReducer.showDuplicateCuitModal
-);
-
-export const getDuplicateCuitData = createSelector(
-  getClientsReducer,
-  clientsReducer => clientsReducer.duplicateCuitData
 );

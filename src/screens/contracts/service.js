@@ -152,17 +152,14 @@ export default {
         headers: getHeaders(),
       }
     ),
-
   editContract: payload =>
     axios.put(`Contract/Put/${payload.id}`, getAddUpdatePayload(payload), {
       headers: getHeaders(),
     }),
-
   deleteContract: payload =>
     axios.delete(`Contract/Delete/${payload.id}`, {
       headers: getHeaders(),
     }),
-
   getAllContracts: () => {
     return axios
       .post(
@@ -176,7 +173,6 @@ export default {
         return sortAlphabetically(response.data.data, "number");
       });
   },
-
   filterContracts: payload =>
     axios
       .post(

@@ -2,8 +2,10 @@ import axios from "axios";
 import { dissoc } from "ramda";
 import {
   transformIntoClientTaxes,
+  buildFilterCriteria,
   buildAddPayload,
   buildEditPayload,
+  buildLocationProps,
 } from "./utils";
 import { getHeaders } from "shared/services/utils";
 import { sortAlphabetically } from "shared/utils";
@@ -184,7 +186,7 @@ export default {
       .post(
         `Clients/Post`,
         {
-          ...buildAddPayload(payload),
+          ...dissoc("id", buildAddPayload(payload)),
         },
         {
           headers: getHeaders(),
@@ -209,7 +211,19 @@ export default {
         headers: getHeaders(),
       })
       .then(response => response.data.data),
-  fetchStates: countryId =>
+  getAllCountries: () =>
+    axios
+      .post(
+        `Country/search`,
+        { take: 1000 },
+        {
+          headers: getHeaders(),
+        }
+      )
+      .then(response => {
+        return sortAlphabetically(response.data.data, "name");
+      }),
+  getAllStates: countryId =>
     axios
       .post(
         `State/search`,
@@ -229,7 +243,7 @@ export default {
       .then(response => {
         return sortAlphabetically(response.data.data, "name");
       }),
-  fetchDistricts: stateId =>
+  getAllDistricts: stateId =>
     axios
       .post(
         `District/search`,
@@ -265,7 +279,7 @@ export default {
               {
                 field: "districtId",
                 operator: "eq",
-                value: districtId,
+                value: +districtId,
               },
             ],
           },
@@ -283,16 +297,11 @@ export default {
         headers: getHeaders(),
       })
       .then(response => sortAlphabetically(response.data, "brandName")),
-  getAllClientsOptionsFull: payload =>
+  getAllClientsOptionsFull: () =>
     axios
-      .get(
-        `Clients/OptionsFull?onlyArgentina=${payload?.onlyArgentina ??
-          false}&onlyComtur=${payload?.onlyComtur ??
-          false}&onlyEnabled=${payload?.onlyEnabled ?? false}`,
-        {
-          headers: getHeaders(),
-        }
-      )
+      .get(`Clients/OptionsFull`, {
+        headers: getHeaders(),
+      })
       .then(response => sortAlphabetically(response.data, "brandName")),
   getAllTaxCtegories: () =>
     axios
@@ -304,32 +313,4 @@ export default {
         }
       )
       .then(response => sortAlphabetically(response.data.data, "name")),
-
-  createAndAssociate: (clientData, xubioId) =>
-    axios
-      .post(
-        "/clients/CreateAndAssociate",
-        {
-          ClientData: dissoc("id", buildAddPayload(clientData)),
-          XubioId: xubioId,
-        },
-        {
-          headers: getHeaders(),
-        }
-      )
-      .then(x => x.data),
-
-  editAndAssociate: (clientData, xubioId) =>
-    axios
-      .put(
-        `Clients/EditAndAssociate/${clientData.id}`,
-        {
-          ClientData: buildAddPayload(clientData),
-          XubioId: xubioId,
-        },
-        {
-          headers: getHeaders(),
-        }
-      )
-      .then(x => x.data),
 };

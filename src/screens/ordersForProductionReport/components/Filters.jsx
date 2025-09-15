@@ -25,7 +25,7 @@ const FiltersContainer = styled.div`
 const Filters = ({
   availableProducts = [],
   availableEditions = [],
-  handleFilter,
+  filterHandler,
   getProductEditionsHandler,
   clearFilters,
   data,
@@ -45,7 +45,7 @@ const Filters = ({
         productEditionId: Yup.string().required("Requerido"),
       })}
       onSubmit={values => {
-        handleFilter(values);
+        filterHandler(values);
       }}
     >
       {formikProps => {

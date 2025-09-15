@@ -35,15 +35,11 @@ export function* initialLoad() {
       productTypes,
       adsSpaceLocationType,
       availableCountries,
-      xubioProducts,
-      xubioProductsComtur,
     ] = yield all([
       call(productsService.getAllProducts),
       call(productsService.getAllProductTypes),
       call(productsService.getAllAdvertisingSpaceLocationType),
-      call(appDataService.fetchCountries),
-      call(productsService.getXubioProducts),
-      call(productsService.getXubioComturProducts),
+      call(appDataService.getAllCountries),
     ]);
 
     yield put({
@@ -53,8 +49,6 @@ export function* initialLoad() {
         productTypes,
         adsSpaceLocationType,
         availableCountries,
-        xubioProducts,
-        xubioProductsComtur,
       },
     });
   } catch (err) {

@@ -11,6 +11,7 @@ import {
   getAllAccountingFields,
   filterAccountingFields,
 } from "./actionCreators.js";
+
 import {
   getAccountingFields,
   getCountries,
@@ -20,22 +21,23 @@ import {
   getShowEditModal,
   getShowDeleteModal,
 } from "./reducer.js";
-import Page from "./Page.jsx";
+import PAge from "./Page.jsx";
 
 const mapStateToProps = state => ({
-  accountingFields: getAccountingFields(state),
+  accountingFieldsAvailable: getAccountingFields(state),
   errors: getErrors(state),
   isLoading: getLoading(state),
   showAddModal: getShowAddModal(state),
   showEditModal: getShowEditModal(state),
   showDeleteModal: getShowDeleteModal(state),
-  countries: getCountries(state),
+  availableCountries: getCountries(state),
 });
 
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators(
     {
       initialLoad,
+
       addAccountingField,
       editAccountingField,
       deleteAccountingField,
@@ -54,4 +56,4 @@ export default compose(
     mapStateToProps,
     mapDispatchToProps
   )
-)(Page);
+)(PAge);

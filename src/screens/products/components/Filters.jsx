@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { Formik, Form } from "formik";
-import useUser from "shared/security/useUser";
+
 import InputTextField from "shared/components/InputTextField";
 import InputSelectField from "shared/components/InputSelectField";
 import { SaveButton, DangerButton } from "shared/components/Buttons";
@@ -24,11 +24,14 @@ const FiltersContainer = styled.div`
 export default function Filters({
   availableCountries,
   availableProductTypes,
-  handleFilter,
-  handleResetFilters,
+  filterHandler,
+  resetFiltersHandler,
   handleChangeParams,
 }) {
-  const { userRol, userCountryId } = useUser();
+  const isNationalSeller =
+    localStorage.getItem("loggedUser") == "Vendedor Nacional";
+  const isSupervisor = localStorage.getItem("loggedUser") == "Supervisor";
+  const countryId = parseFloat(localStorage.getItem("userCountryId"));
 
   const defaultOption = {
     id: -1,
@@ -41,14 +44,11 @@ export default function Filters({
       validateOnBlur={false}
       initialValues={{
         name: "",
-        countryId:
-          userRol.isNationalSeller || userRol.isSupervisor
-            ? parseFloat(userCountryId)
-            : -1,
+        countryId: isNationalSeller || isSupervisor ? countryId : -1,
         productTypeId: -1,
       }}
       onSubmit={values => {
-        handleFilter(values);
+        filterHandler(values);
         handleChangeParams(values);
       }}
       enableReinitialize={true}
@@ -66,7 +66,7 @@ export default function Filters({
                     labelText="Pais"
                     name="countryId"
                     options={[defaultOption, ...availableCountries]}
-                    disabled={userRol.isNationalSeller || userRol.isSupervisor}
+                    disabled={isNationalSeller || isSupervisor}
                   />
                 </div>
                 <div className="col-3">
@@ -81,7 +81,7 @@ export default function Filters({
                     <DangerButton
                       onClickHandler={() => {
                         formikProps.resetForm();
-                        handleResetFilters();
+                        resetFiltersHandler();
                       }}
                     >
                       Limpiar

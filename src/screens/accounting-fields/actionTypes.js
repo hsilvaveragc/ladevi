@@ -1,6 +1,9 @@
-export const INITIAL_LOAD_INIT = "@accountingFields/INITIAL_LOAD_INIT";
-export const INITIAL_LOAD_SUCCESS = "@accountingFields/INITIAL_LOAD_SUCCESS";
-export const INITIAL_LOAD_FAILURE = "@accountingFields/INITIAL_LOAD_FAILURE";
+export const ACCOUNTING_FIELDS_INITIAL_LOAD_INIT =
+  "@accountingFields/ACCOUNTING_FIELDS_INITIAL_LOAD_INIT";
+export const ACCOUNTING_FIELDS_INITIAL_LOAD_SUCCESS =
+  "@accountingFields/ACCOUNTING_FIELDS_INITIAL_LOAD_SUCCESS";
+export const ACCOUNTING_FIELDS_INITIAL_LOAD_FAILURE =
+  "@accountingFields/ACCOUNTING_FIELDS_INITIAL_LOAD_FAILURE";
 
 export const GET_ALL_ACCOUNTING_FIELDS_INIT =
   "@accountingFields/GET_ALL_ACCOUNTING_FIELDS_INIT";
@@ -37,6 +40,9 @@ export const DELETE_ACCOUNTING_FIELD_SUCCESS =
 export const DELETE_ACCOUNTING_FIELD_FAILURE =
   "@accountingFields/DELETE_ACCOUNTING_FIELD_FAILURE";
 
-export const SHOW_ADD_MODAL = "@accountingFields/SHOW_ADD_MODAL";
-export const SHOW_EDIT_MODAL = "@accountingFields/SHOW_EDIT_MODAL";
-export const SHOW_DELETE_MODAL = "@accountingFields/SHOW_DELETE_MODAL";
+export const ACCOUNTING_FIELDS_SHOW_ADD_MODAL =
+  "@accountingFields/SHOW_ADD_MODAL";
+export const ACCOUNTING_FIELDS_SHOW_EDIT_MODAL =
+  "@accountingFields/SHOW_EDIT_MODAL";
+export const ACCOUNTING_FIELDS_SHOW_DELETE_MODAL =
+  "@accountingFields/SHOW_DELETE_MODAL";

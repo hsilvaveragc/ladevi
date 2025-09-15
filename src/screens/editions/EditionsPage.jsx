@@ -153,7 +153,7 @@ const EditionsPage = props => {
         />
       </Modal>
       <FiltersForm
-        handleFilter={props.actions.filterEditions}
+        filterHandler={props.actions.filterEditions}
         productsAvailable={props.productsAvailable}
         resetFilterHandler={props.actions.getAllEditions}
         handleChangeParams={setParams}

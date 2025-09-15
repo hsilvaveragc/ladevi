@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import useUser from "shared/security/useUser";
 
 const MenuContentContainer = styled.div`
   display: flex;
@@ -18,7 +17,10 @@ const MenuContentContainer = styled.div`
 `;
 
 export default function MenuContent({ menuToggler }) {
-  const { userRol } = useUser();
+  const userRole = localStorage.getItem("loggedUser");
+  const isAdmin = userRole == "Administrador";
+  const isSeller =
+    userRole == "Vendedor Nacional" || userRole == "Vendedor COMTUR";
 
   return (
     <MenuContentContainer>
@@ -34,13 +36,10 @@ export default function MenuContent({ menuToggler }) {
       <Link to="/ordenes" onClick={menuToggler}>
         Órdenes de Publicación
       </Link>
-      <Link to="/facturacion" onClick={menuToggler}>
-        Facturación
-      </Link>
       <Link to="/reportes" onClick={menuToggler}>
         Reportes
       </Link>
-      {userRol.isAdmin && (
+      {isAdmin && (
         <>
           <Link to="/usuarios" onClick={menuToggler}>
             Usuarios

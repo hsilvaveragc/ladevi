@@ -214,7 +214,7 @@ export function* importEditions({ payload }) {
   }
 }
 
-export default function* rootEditionsSaga() {
+export default function* rootUsersSaga() {
   yield all([
     takeLatest(EDITIONS_INITIAL_LOAD_INIT, initialLoad),
     takeLatest(GET_ALL_EDITIONS_INIT, getAllEditions),

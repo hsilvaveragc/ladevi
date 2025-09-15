@@ -23,8 +23,6 @@ import {
   getShowEditModal,
   getShowDeleteModal,
   getErrors,
-  getXubioProducts,
-  getXubioProductsComtur,
 } from "./reducer.js";
 
 import ProductsPage from "./ProductsPage";
@@ -39,8 +37,6 @@ const mapStateToProps = state => ({
   showEditModal: getShowEditModal(state),
   showDeleteModal: getShowDeleteModal(state),
   errors: getErrors(state),
-  xubioProducts: getXubioProducts(state),
-  xubioProductsComtur: getXubioProductsComtur(state),
 });
 
 const mapDispatchToProps = dispatch => ({

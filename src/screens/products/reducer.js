@@ -27,8 +27,6 @@ const initialState = {
   countries: [],
   productTypes: [],
   adsSpaceLocationType: [],
-  xubioProducts: [],
-  xubioProductsComtur: [],
   errors: {},
   loading: true,
   showAddModal: false,
@@ -46,8 +44,6 @@ export default function(state = initialState, action) {
         productTypes: [...action.payload.productTypes],
         adsSpaceLocationType: [...action.payload.adsSpaceLocationType],
         countries: [...action.payload.availableCountries],
-        xubioProducts: [...action.payload.xubioProducts],
-        xubioProductsComtur: [...action.payload.xubioProductsComtur],
       };
     case GET_ALL_PRODUCTS_INIT:
     case FILTER_PRODUCTS_INIT:
@@ -152,14 +148,4 @@ export const getShowEditModal = createSelector(
 export const getShowDeleteModal = createSelector(
   getProductsReducer,
   productsReducer => productsReducer.showDeleteModal
-);
-
-export const getXubioProducts = createSelector(
-  getProductsReducer,
-  productsReducer => productsReducer.xubioProducts
-);
-
-export const getXubioProductsComtur = createSelector(
-  getProductsReducer,
-  productsReducer => productsReducer.xubioProductsComtur
 );

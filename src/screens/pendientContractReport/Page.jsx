@@ -197,7 +197,7 @@ export default function Page(props) {
       <Filter
         availableClients={props.availableClients}
         availableSellers={props.availableSellers}
-        handleFilter={props.actions.filterReport}
+        filterHandler={props.actions.filterReport}
         data={props.data}
         clients={clients}
         isLoadingAllClients={props.isLoadingAllClients}

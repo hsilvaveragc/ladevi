@@ -86,7 +86,6 @@ export default function LoginForm({ error, actions, isLoading, modalHandler }) {
                   labelText="Nombre de usuario"
                   error={errors.username}
                   name="username"
-                  data-testid="username-input"
                 />
               </div>
               <div className="form-group">
@@ -95,7 +94,6 @@ export default function LoginForm({ error, actions, isLoading, modalHandler }) {
                   labelText="Contraseña"
                   error={errors.password}
                   name="password"
-                  data-testid="password-input"
                 />
               </div>
               <div className="form-group form-check">
@@ -109,18 +107,12 @@ export default function LoginForm({ error, actions, isLoading, modalHandler }) {
                 </label>
               </div>
               {isEmpty(error) ? null : (
-                <div
-                  className="error-container"
-                  data-testid="error-container-login"
-                >
-                  {error}
-                </div>
+                <div className="error-container">{error}</div>
               )}
               <button
+                type="submit"
                 className="btn btn-primary"
                 disabled={isLoading}
-                type="submit"
-                data-testid="login-button"
               >
                 {!isLoading ? "Ingresar" : <Spinner />}
               </button>

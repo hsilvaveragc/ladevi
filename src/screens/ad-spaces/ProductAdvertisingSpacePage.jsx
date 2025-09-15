@@ -145,8 +145,8 @@ const ProductAdvertisingSpacePage = props => {
       </Modal>
       <Filters
         availableProducts={props.productsAvailable}
-        handleFilter={props.actions.filterProductAdvertisingSpace}
-        handleResetFilters={props.actions.getAllProductAdvertisingSpaces}
+        filterHandler={props.actions.filterProductAdvertisingSpace}
+        resetFiltersHandler={props.actions.getAllProductAdvertisingSpaces}
         handleChangeParams={setParams}
       />
       <div style={{ width: "100%" }}>

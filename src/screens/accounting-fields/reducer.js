@@ -1,23 +1,23 @@
 import { createSelector } from "reselect";
 import {
-  INITIAL_LOAD_INIT,
-  INITIAL_LOAD_SUCCESS,
-  INITIAL_LOAD_FAILURE,
+  ACCOUNTING_FIELDS_INITIAL_LOAD_INIT,
+  ACCOUNTING_FIELDS_INITIAL_LOAD_SUCCESS,
+  ACCOUNTING_FIELDS_INITIAL_LOAD_FAILURE,
   GET_ALL_ACCOUNTING_FIELDS_INIT,
   GET_ALL_ACCOUNTING_FIELDS_SUCCESS,
   GET_ALL_ACCOUNTING_FIELDS_FAILURE,
-  FILTER_ACCOUNTING_FIELDS_INIT,
-  FILTER_ACCOUNTING_FIELDS_SUCCESS,
-  FILTER_ACCOUNTING_FIELDS_FAILURE,
   ADD_ACCOUNTING_FIELD_SUCCESS,
   ADD_ACCOUNTING_FIELD_FAILURE,
   EDIT_ACCOUNTING_FIELD_SUCCESS,
   EDIT_ACCOUNTING_FIELD_FAILURE,
   DELETE_ACCOUNTING_FIELD_SUCCESS,
   DELETE_ACCOUNTING_FIELD_FAILURE,
-  SHOW_ADD_MODAL,
-  SHOW_EDIT_MODAL,
-  SHOW_DELETE_MODAL,
+  ACCOUNTING_FIELDS_SHOW_ADD_MODAL,
+  ACCOUNTING_FIELDS_SHOW_EDIT_MODAL,
+  ACCOUNTING_FIELDS_SHOW_DELETE_MODAL,
+  FILTER_ACCOUNTING_FIELDS_INIT,
+  FILTER_ACCOUNTING_FIELDS_SUCCESS,
+  FILTER_ACCOUNTING_FIELDS_FAILURE,
 } from "./actionTypes.js";
 
 const initialState = {
@@ -32,19 +32,19 @@ const initialState = {
 
 export default function(state = initialState, action) {
   switch (action.type) {
-    case INITIAL_LOAD_INIT:
+    case ACCOUNTING_FIELDS_INITIAL_LOAD_SUCCESS:
+      return {
+        ...state,
+        items: [...action.payload.availableAccountingFields],
+        countries: [...action.payload.availableCountries],
+        loading: false,
+      };
+    case ACCOUNTING_FIELDS_INITIAL_LOAD_INIT:
     case FILTER_ACCOUNTING_FIELDS_INIT:
     case GET_ALL_ACCOUNTING_FIELDS_INIT:
       return {
         ...state,
         loading: true,
-      };
-    case INITIAL_LOAD_SUCCESS:
-      return {
-        ...state,
-        items: [...action.payload.accountingFields],
-        countries: [...action.payload.countries],
-        loading: false,
       };
     case FILTER_ACCOUNTING_FIELDS_SUCCESS:
     case GET_ALL_ACCOUNTING_FIELDS_SUCCESS:
@@ -54,24 +54,24 @@ export default function(state = initialState, action) {
         items: [...action.payload],
       };
     case ADD_ACCOUNTING_FIELD_SUCCESS:
-    case SHOW_ADD_MODAL:
+    case ACCOUNTING_FIELDS_SHOW_ADD_MODAL:
       return {
         ...state,
         showAddModal: !state.showAddModal,
       };
     case EDIT_ACCOUNTING_FIELD_SUCCESS:
-    case SHOW_EDIT_MODAL:
+    case ACCOUNTING_FIELDS_SHOW_EDIT_MODAL:
       return {
         ...state,
         showEditModal: !state.showEditModal,
       };
     case DELETE_ACCOUNTING_FIELD_SUCCESS:
-    case SHOW_DELETE_MODAL:
+    case ACCOUNTING_FIELDS_SHOW_DELETE_MODAL:
       return {
         ...state,
         showDeleteModal: !state.showDeleteModal,
       };
-    case INITIAL_LOAD_FAILURE:
+    case ACCOUNTING_FIELDS_INITIAL_LOAD_FAILURE:
     case GET_ALL_ACCOUNTING_FIELDS_FAILURE:
     case ADD_ACCOUNTING_FIELD_FAILURE:
     case EDIT_ACCOUNTING_FIELD_FAILURE:

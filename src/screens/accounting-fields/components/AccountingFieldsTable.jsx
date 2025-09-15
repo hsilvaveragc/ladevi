@@ -5,7 +5,7 @@ import { getHeaderStyleTable, createDeleteColumn } from "shared/utils/index";
 
 const AccountingFieldsTable = ({
   data,
-  countries,
+  availableCountries,
   isLoading,
   showAddModal,
   onEdit,
@@ -22,7 +22,8 @@ const AccountingFieldsTable = ({
       Header: "País",
       accessor: "countryId",
       width: "25%",
-      Cell: props => countries.find(x => x.id === props.value)?.name ?? "-",
+      Cell: props =>
+        availableCountries.find(x => x.id === props.value)?.name ?? "-",
       headerStyle: getHeaderStyleTable(),
     },
     {

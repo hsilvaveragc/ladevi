@@ -53,8 +53,6 @@ const NewProductForm = ({
   productTypes,
   availableCountries,
   availableAdsSpaceLocationType,
-  xubioProducts,
-  xubioProductsComtur,
   deleteMode,
   editMode,
   addMode,
@@ -92,7 +90,6 @@ const NewProductForm = ({
           : selectedItem.iva.toLocaleString("pt-BR", {
               maximumFractionDigits: 2,
             }),
-        xubioProductCode: addMode ? "" : selectedItem.xubioProductCode,
         discountForSameCountry: addMode
           ? ""
           : selectedItem.discountForSameCountry.toLocaleString("pt-BR", {
@@ -246,28 +243,6 @@ const NewProductForm = ({
                     disabled={deleteMode}
                     error={errors.iva}
                     parseNumber
-                  />
-                </div>
-              </div>
-              <div className="form-row">
-                <div className="col-md-6">
-                  <InputSelectField
-                    labelText="Producto Xubio Argentina"
-                    name="xubioProductCode"
-                    options={xubioProducts}
-                    disabled={deleteMode}
-                    error={errors.countryId}
-                    getOptionValue={option => option.code}
-                  />
-                </div>
-                <div className="col-md-6">
-                  <InputSelectField
-                    labelText="Producto Xubio Comtur"
-                    name="comturXubioProductCode"
-                    options={xubioProductsComtur}
-                    disabled={deleteMode}
-                    error={errors.comturXubioProductCode}
-                    getOptionValue={option => option.code}
                   />
                 </div>
               </div>

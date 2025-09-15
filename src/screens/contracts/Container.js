@@ -38,7 +38,7 @@ import {
   getSpaceLocations as getSpaceLocationsForOrder,
 } from "../orders/reducer";
 
-import { loggedUserSelector } from "../../shared/appData/reducers";
+import { getUserLogueado } from "../../shared/reducers/appData";
 
 import {
   getSpaceTypesAvailable,
@@ -65,7 +65,7 @@ const mapStateToProps = state => ({
   showAddModal: getShowAddModal(state),
   showEditModal: getShowEditModal(state),
   showDeleteModal: getShowDeleteModal(state),
-  loggedUser: loggedUserSelector(state),
+  userLogueado: getUserLogueado(state),
   availableEditions: getEditions(state),
   availableSpaceLocationsForOrder: getSpaceLocationsForOrder(state),
   availableSpaceTypesForOrder: getSpaceTypesForOrder(state),

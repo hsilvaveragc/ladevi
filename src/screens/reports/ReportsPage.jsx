@@ -1,7 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import useUser from "shared/security/useUser";
+import { getAssignedRole } from "../../shared/services/utils";
+import productosIcon from "shared/images/icon-productos.png";
+import edicionesIcon from "shared/images/icon-ediciones.png";
+import contablesIcon from "shared/images/icon-contables.png";
 import espaciosIcon from "shared/images/icon-espacios.png";
 
 const PageContainer = styled.div`
@@ -30,12 +33,12 @@ const PageContainer = styled.div`
   }
 `;
 export default function ReportsPage() {
-  const { userRol } = useUser();
+  const userRole = getAssignedRole();
 
   return (
     <PageContainer>
       <div className="menu-container">
-        {(userRol.isAdmin || userRol.isSupervisor) && (
+        {(userRole.isAdmin || userRole.isSupervisor) && (
           <Link to="/reportes/reportOPP">
             <img src={espaciosIcon} alt="Icono" />
             <span>Órdenes de publicación para producción</span>

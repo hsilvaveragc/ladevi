@@ -166,7 +166,7 @@ export function* filterProductAdvertisingSpace({ payload }) {
   }
 }
 
-export default function* rootAdSpacesSaga() {
+export default function* rootUsersSaga() {
   yield all([
     takeLatest(PRODUCT_ADVERTISING_SPACE_INITIAL_LOAD_INIT, initialLoad),
     takeLatest(

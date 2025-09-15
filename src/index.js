@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import configureStore from "./shared/redux/store";
+import configureStore from "./shared/store";
 import Root from "shell/Root";
 
 import "bootstrap/dist/css/bootstrap.css";

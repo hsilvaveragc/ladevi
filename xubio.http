@@ -1,0 +1,46 @@
+@base_url = https://xubio.com/API/1.1
+@ClientId= 6962354219199868526651247314045762528930220187616390692304990087017350980512421919696235482121313869
+@SecretId= lFBRZ/KLyxzB5O8NJ18l/afcRkZG1AwruJzz3wx7-ofxJsw0X0JGGJcgp2SUYMmcQfC+dHKh5QIrjQ1*puOt02hinf80bmAdjzPFa0T-dlFBRZ/KLyxzB5O8NJ18l/afc
+
+POST {{base_url}}/TokenEndpoint
+Content-Type: application/x-www-form-urlencoded
+Authorization: Basic {{ClientId}}:{{SecretId}}
+
+grant_type=client_credentials
+
+###
+@token=HqL8HsfHHVOct=9wBbAMro8OQ6CTwcqH/ZghySWo_SNe11VzzO2czTNR8_um2BHFC*Fw2W*8WUe10ikKrxbV=T/5j4CI+1b_GiAZmQ/1diwPtKJ=qJiYjcKjMNR5THqL8HsfHHVOct=9wBbAMro8OQ
+
+###
+POST {{base_url}}/clientebean
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nombre": "Cliente 1 Xubio srl",
+  "identificacionTributaria": {
+    "codigo": "CUIT"
+  },
+  "cuit": "11245544455",
+  "categoriaFiscal": {
+    "codigo": "RI"
+  },
+  "email": "cliente1.xubio@mail.com",
+  "telefono": "541113151564654",
+  "domicilio": "lalala 123",
+  "pais": {
+    "codigo": "ARGENTINA"
+  },
+  "provincia": {
+    "codigo": "CIUDAD_AUTONOMA_DE_BUENOS_AIRES"
+  },
+  "localidad": {
+    "codigo": "LA_PATERNAL"
+  }
+}
+
+###
+GET https://xubio.com/API/1.1/clienteBean?activo=1
+Content-Type: application/json
+Accept: : application/json
+Authorization: Bearer THqL8HsfHHVOct=9wBbAMro8OQ6CTwcqH/ZghySWo_SNe11VzzO2czTNR8_um2BHFC*Fw2W*8WUe10ikKrxbV=T/5j4CI+1b_GiAZmQ/1diwPtKJ=qJiYjcKjMNR5THqL8HsfHHVOct=9wBbAMro8OQ

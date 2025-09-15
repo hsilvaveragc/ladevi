@@ -58,8 +58,8 @@ export default function ContractsPage(props) {
           availableProducts={props.availableProducts}
           availableStatus={props.availableStatus}
           availableSalesmen={props.availableSalesmens}
-          handleFilter={props.actions.filterContracts}
-          handleResetFilters={props.actions.searchContracts}
+          filterHandler={props.actions.filterContracts}
+          resetFiltersHandler={props.actions.searchContracts}
           handleChangeFilter={setFiltros}
           errors={props.errors}
         />

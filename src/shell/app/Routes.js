@@ -3,8 +3,8 @@ import { Route, Switch } from "react-router-dom";
 import styled from "styled-components";
 import { ConnectedRouter } from "connected-react-router";
 import { ToastContainer, Zoom } from "react-toastify";
-import useUser from "shared/security/useUser";
-import { history } from "shared/redux/store/history";
+
+import { history } from "../../shared/store/history";
 import LoginPage from "../../screens/login";
 import ClientsPage from "../../screens/clients";
 import ContractsPage from "../../screens/contracts";
@@ -12,7 +12,6 @@ import HomePage from "../../screens/home";
 import OrdersPage from "../../screens/orders";
 import ReportsPage from "../../screens/reports";
 import SettingsPage from "../../screens/settings";
-import Billing from "../../screens/billing";
 import UsersPage from "../../screens/users";
 import AccountingFields from "../../screens/accounting-fields";
 import Editions from "../../screens/editions";
@@ -42,8 +41,13 @@ const LayoutContainer = styled.div`
   min-height: 100vh;
 `;
 
-const Routes = () => {
-  const { userRol } = useUser();
+const Routes = props => {
+  const userRole = localStorage.getItem("loggedUser"); //.toString();
+  const roleName = userRole ? userRole.toString() : "";
+  const isSeller =
+    roleName == "Vendedor Nacional" || roleName == "Vendedor COMTUR";
+
+  console.log(props);
 
   return (
     <ConnectedRouter history={history}>
@@ -68,95 +72,107 @@ const Routes = () => {
               exact
               path="/"
               component={HomePage}
+              {...props}
               routeTitle="Home"
             />
-            <Route path="/recuperar-contrasena" component={RetrievePassword} />
-            <PrivateRoute path="/clientes" component={ClientsPage} />
+            <Route
+              path="/recuperar-contrasena"
+              component={RetrievePassword}
+              {...props}
+            />
+            <PrivateRoute path="/clientes" component={ClientsPage} {...props} />
             <PrivateRoute
               path="/reportes/reportOPP"
               routeTitle="Órdenes de Publicación para Producción"
               component={OrdersForProductionReport}
+              {...props}
             />
             <PrivateRoute
               path="/reportes/reportEPV"
               routeTitle="Espacios publicados por vendedor"
               component={PublishedSpaceBySellerReport}
+              {...props}
             />
             <PrivateRoute
               path="/reportes/reportEPC"
               routeTitle="Espacios publicados por cliente"
               component={PublishedSpaceByClientReport}
+              {...props}
             />
             <PrivateRoute
               path="/reportes/reporteCPV"
               routeTitle="Contratos pendientes por vendedor"
               component={PendientContractReport}
+              {...props}
             />
-            <PrivateRoute path="/contratos" component={ContractsPage} />
+            <PrivateRoute
+              path="/contratos"
+              component={ContractsPage}
+              {...props}
+            />
             <PrivateRoute
               path="/ordenes"
               component={OrdersPage}
               routeTitle="Órdenes de Publicación"
+              {...props}
             />
-            <PrivateRoute path="/reportes" component={ReportsPage} />
-            <PrivateRoute
-              path="/facturacion"
-              component={Billing}
-              routeTitle="Facturación"
-            />
+            <PrivateRoute path="/reportes" component={ReportsPage} {...props} />
+
             <PrivateRoute
               path="/usuarios"
-              component={userRol.isSeller ? HomePage : UsersPage}
+              component={isSeller ? HomePage : UsersPage}
+              {...props}
             />
             <PrivateRoute
               exact={true}
               path="/configuracion"
-              routeTitle={userRol.isSeller ? "Home" : "Configuración"}
-              component={userRol.isSeller ? HomePage : SettingsPage}
+              routeTitle={isSeller ? "Home" : "Configuración"}
+              component={isSeller ? HomePage : SettingsPage}
+              {...props}
             />
             <PrivateRoute
               path="/configuracion/contables"
-              component={userRol.isSeller ? HomePage : AccountingFields}
+              component={isSeller ? HomePage : AccountingFields}
               routeTitle={
-                userRol.isSeller ? "Home" : "Administración de Campos Contables"
+                isSeller ? "Home" : "Administración de Campos Contables"
               }
+              {...props}
             />
             <PrivateRoute
               path="/configuracion/productos"
-              component={userRol.isSeller ? HomePage : Products}
-              routeTitle={
-                userRol.isSeller ? "Home" : "Administración de Productos"
-              }
+              component={isSeller ? HomePage : Products}
+              routeTitle={isSeller ? "Home" : "Administración de Productos"}
+              {...props}
             />
             <PrivateRoute
               path="/configuracion/espacios"
-              component={userRol.isSeller ? HomePage : AdvertisingSpaces}
+              component={isSeller ? HomePage : AdvertisingSpaces}
               routeTitle={
-                userRol.isSeller ? "Home" : "Administración de Tipos de espacio"
+                isSeller ? "Home" : "Administración de Tipos de espacio"
               }
+              {...props}
             />
             <PrivateRoute
               path="/configuracion/ediciones"
-              component={userRol.isSeller ? HomePage : Editions}
-              routeTitle={
-                userRol.isSeller ? "Home" : "Administración de Ediciones"
-              }
+              component={isSeller ? HomePage : Editions}
+              routeTitle={isSeller ? "Home" : "Administración de Ediciones"}
+              {...props}
             />
 
             <PrivateRoute
               path="/configuracion/monedas"
-              component={userRol.isSeller ? HomePage : Moneda}
-              routeTitle={
-                userRol.isSeller ? "Home" : "Administración de Monedas"
-              }
+              component={isSeller ? HomePage : Moneda}
+              routeTitle={isSeller ? "Home" : "Administración de Monedas"}
+              {...props}
             />
 
             <PrivateRoute
               path="/auditoria"
-              component={userRol.isSeller ? HomePage : Auditory}
-              routeTitle={userRol.isSeller ? "Home" : "Auditoría"}
+              component={isSeller ? HomePage : Auditory}
+              routeTitle={isSeller ? "Home" : "Auditoría"}
+              {...props}
             />
-            <Route path="/login" component={LoginPage} />
+            <Route path="/login" component={LoginPage} {...props} />
           </Switch>
         </RoutesContainer>
       </LayoutContainer>

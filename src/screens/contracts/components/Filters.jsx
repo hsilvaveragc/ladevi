@@ -2,11 +2,11 @@ import React from "react";
 import styled from "styled-components";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import useUser from "shared/security/useUser";
 import InputTextField from "shared/components/InputTextField";
 import InputSelectField from "shared/components/InputSelectField";
 import InputDatePickerField from "shared/components/InputDatePickerField";
 import { SaveButton, DangerButton } from "shared/components/Buttons";
+import { getAssignedRole } from "shared/services/utils";
 
 const FiltersContainer = styled.div`
   width: 80vw;
@@ -28,12 +28,14 @@ export default function Filters({
   availableProducts,
   availableStatus,
   availableSalesmen,
-  handleFilter,
-  handleResetFilters,
+  filterHandler,
+  resetFiltersHandler,
   handleChangeFilter,
   errors,
 }) {
-  const { userRol, userCountryId, userId } = useUser();
+  const userRole = getAssignedRole();
+  const userId = localStorage.getItem("userId");
+  const userCountryId = parseFloat(localStorage.getItem("userCountryId"));
 
   const defaultOption = {
     id: -1,
@@ -53,16 +55,16 @@ export default function Filters({
         number: "",
         client: "",
         name: "",
-        countryId: userRol.isSupervisor ? userCountryId : -1,
+        countryId: userRole.isSupervisor ? userCountryId : -1,
         productId: -1,
         status: "",
-        salesmenId: userRol.isSeller ? parseFloat(userId) : -1,
+        salesmenId: userRole.isSeller ? parseFloat(userId) : -1,
         fromDate: "",
         toDate: "",
         saldo: 2,
       }}
       onSubmit={values => {
-        handleFilter(values);
+        filterHandler(values);
         handleChangeFilter(values);
       }}
       enableReinitialize={true}
@@ -114,7 +116,7 @@ export default function Filters({
                     labelText="Vendedor"
                     name="salesmenId"
                     options={[allSellers, ...availableSalesmen]}
-                    disabled={userRol.isSeller}
+                    disabled={userRole.isSeller}
                     getOptionLabel={option => option.fullName}
                   />
                 </div>
@@ -148,7 +150,7 @@ export default function Filters({
                     <DangerButton
                       onClickHandler={() => {
                         formikProps.resetForm();
-                        handleResetFilters();
+                        resetFiltersHandler();
                       }}
                     >
                       Limpiar

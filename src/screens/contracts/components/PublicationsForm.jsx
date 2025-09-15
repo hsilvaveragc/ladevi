@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import useUser from "shared/security/useUser";
+
 import Table from "shared/components/Table";
 import { SaveButton } from "shared/components/Buttons";
 import Modal from "shared/components/Modal";
 import { RemoveButton } from "shared/components/Buttons";
+import { getAssignedRole } from "shared/services/utils";
 import Order from "../../orders/components/Form";
 import ExcelExport from "./GeneralForm/ExcelExport";
 import PdfExport from "./GeneralForm/PdfExport";
@@ -24,7 +25,6 @@ const PublicationsOrderContainer = styled.div`
 `;
 
 export default function PublicationsForm(props) {
-  const { userRol } = useUser();
   const [showModal, setShowModal] = useState(false);
   const [ordenes, setOrdenes] = useState(props.availableOrders);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -75,6 +75,8 @@ export default function PublicationsForm(props) {
   };
 
   const updateOrdenesEdit = values => {
+    const userRole = getAssignedRole();
+
     const orderIndex = ordenes.findIndex(x => x.id === values.id);
     const oldQuantity = ordenes[orderIndex].quantity;
     values.canDelete =

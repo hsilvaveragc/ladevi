@@ -3,20 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "build": "react-scripts --max_old_space_size=4096 build",
     "commit": "git-cz",
     "eject": "react-scripts eject",
     "format": "prettier --write '{src,__{tests,mocks}__}/**/*.{js,jsx,json,scss}'",
-    "start": "NODE_OPTIONS=--openssl-legacy-provider npm-run-all -p start:js",
+    "start": "npm-run-all -p start:js",
     "start:js": "react-scripts start",
-    "build": "NODE_OPTIONS=--openssl-legacy-provider react-scripts --max_old_space_size=4096 build",
-    "test": "react-scripts test",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
-    "test:e2e:headed": "playwright test --headed",
-    "test:e2e:debug": "playwright test --debug",
-    "test:e2e:setup": "docker-compose -f testing/docker-compose.test.yml up --build -d",
-    "test:e2e:teardown": "docker-compose -f testing/docker-compose.test.yml down -v",
-    "test:e2e:full": "bash testing/run-tests.sh"
+    "test": "react-scripts test"
   },
   "husky": {
     "hooks": {
@@ -57,11 +50,10 @@
     "react-datepicker": "2.8.0",
     "react-dom": "16.8.6",
     "react-hamburger-menu": "1.1.1",
-    "react-input-mask": "^2.0.4",
     "react-loading-skeleton": "^3.5.0",
     "react-modal": "3.8.1",
     "react-number-format": "4.4.1",
-    "react-redux": "7.2.9",
+    "react-redux": "7.0.3",
     "react-router": "5.0.1",
     "react-router-breadcrumbs-hoc": "3.2.0",
     "react-router-dom": "5.0.1",
@@ -79,7 +71,6 @@
     "yup": "0.27.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.55.0",
     "body-parser": "1.19.0",
     "commitizen": "3.1.1",
     "connect-pause": "0.1.0",
@@ -120,6 +111,7 @@
     ]
   },
   "volta": {
-    "node": "18.20.8"
+    "node": "14.21.3",
+    "npm": "6.14.18"
   }
 }

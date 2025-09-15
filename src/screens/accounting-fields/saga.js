@@ -2,9 +2,9 @@ import { put, all, takeLatest, call } from "redux-saga/effects";
 import { toast } from "react-toastify";
 
 import {
-  INITIAL_LOAD_INIT,
-  INITIAL_LOAD_SUCCESS,
-  INITIAL_LOAD_FAILURE,
+  ACCOUNTING_FIELDS_INITIAL_LOAD_INIT,
+  ACCOUNTING_FIELDS_INITIAL_LOAD_SUCCESS,
+  ACCOUNTING_FIELDS_INITIAL_LOAD_FAILURE,
   GET_ALL_ACCOUNTING_FIELDS_INIT,
   GET_ALL_ACCOUNTING_FIELDS_SUCCESS,
   GET_ALL_ACCOUNTING_FIELDS_FAILURE,
@@ -19,6 +19,7 @@ import {
   FILTER_ACCOUNTING_FIELDS_INIT,
   FILTER_ACCOUNTING_FIELDS_SUCCESS,
   FILTER_ACCOUNTING_FIELDS_FAILURE,
+  //DELETE_ACCOUNTING_FIELD_FAILURE,
 } from "./actionTypes.js";
 
 import accountingFieldsService from "./service";
@@ -26,21 +27,21 @@ import { appDataService } from "shared/services";
 
 export function* initialLoad() {
   try {
-    const [accountingFields, countries] = yield all([
+    const [availableAccountingFields, availableCountries] = yield all([
       call(accountingFieldsService.getAllAccountingFields),
-      call(appDataService.fetchCountries),
+      call(appDataService.getAllCountries),
     ]);
     yield put({
-      type: INITIAL_LOAD_SUCCESS,
+      type: ACCOUNTING_FIELDS_INITIAL_LOAD_SUCCESS,
       payload: {
-        accountingFields,
-        countries,
+        availableAccountingFields,
+        availableCountries,
       },
     });
   } catch (error) {
     yield all([
       put({
-        type: INITIAL_LOAD_FAILURE,
+        type: ACCOUNTING_FIELDS_INITIAL_LOAD_FAILURE,
         errors: { ...error.response.data.errors },
       }),
       call(toast.error, "Hubo un error :("),
@@ -162,9 +163,9 @@ export function* deleteAccountingField({ payload }) {
   }
 }
 
-export default function* rootAccountingFieldsSaga() {
+export default function* rootUsersSaga() {
   yield all([
-    takeLatest(INITIAL_LOAD_INIT, initialLoad),
+    takeLatest(ACCOUNTING_FIELDS_INITIAL_LOAD_INIT, initialLoad),
     takeLatest(GET_ALL_ACCOUNTING_FIELDS_INIT, getAllAccountingFields),
     takeLatest(ADD_ACCOUNTING_FIELD_INIT, addAccountingField),
     takeLatest(EDIT_ACCOUNTING_FIELD_INIT, editAccountingField),

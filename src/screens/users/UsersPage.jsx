@@ -143,8 +143,8 @@ export default function UsersPage(props) {
       </Modal>
       <Filter
         availableCountries={props.availableCountries}
-        handleFilter={props.actions.filterUsers}
-        handleResetFilters={props.actions.getUsersInit}
+        filterHandler={props.actions.filterUsers}
+        resetFiltersHandler={props.actions.getUsersInit}
         availableRoles={props.availableAppRoles}
         handleChangeParams={setParams}
       />

@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
 import { Formik, Form } from "formik";
-import { isEmpty } from "ramda";
-import useUser from "shared/security/useUser";
+import { all, isEmpty } from "ramda";
+
 import InputSelectField from "shared/components/InputSelectField";
 import { SaveButton, DangerButton } from "shared/components/Buttons";
+import { getAssignedRole } from "shared/services/utils";
 import ExcelExport from "./ExcelExport";
 import PdfExport from "./PdfExport";
 
@@ -28,8 +29,8 @@ const Filters = ({
   availableEditions,
   availableSalesmens,
   availableClients,
-  handleFilter,
-  handleResetFilters,
+  filterHandler,
+  resetFiltersHandler,
   getProductEditionsHandler,
   data,
   handleChangeParams,
@@ -39,14 +40,15 @@ const Filters = ({
   isLoadingSalesmens,
   isLoadingEditionsFilter,
 }) => {
-  const { userRol, userId } = useUser();
-
   const [filtersUsed, setFiltersUsed] = React.useState({
     producto: "",
     edicion: "",
     vendedor: "",
     cliente: "",
   });
+
+  const userRole = getAssignedRole();
+  const userId = localStorage.getItem("userId");
 
   const defaultOption = {
     id: -1,
@@ -68,12 +70,12 @@ const Filters = ({
       initialValues={{
         productId: -1,
         productEditionId: -1,
-        salesmenId: userRol.isSeller ? parseFloat(userId) : -1,
+        salesmenId: userRole.isSeller ? parseFloat(userId) : -1,
         clientId: -1,
       }}
       enableReinitialize={true}
       onSubmit={values => {
-        handleFilter(values);
+        filterHandler(values);
         handleChangeParams(values);
 
         const products = [defaultOption, ...availableProducts];
@@ -140,7 +142,7 @@ const Filters = ({
                         : [allSellers, ...availableSalesmens]
                     }
                     isLoading={isLoadingSalesmens}
-                    disabled={isLoadingSalesmens || userRol.isSeller}
+                    disabled={isLoadingSalesmens || userRole.isSeller}
                     getOptionLabel={option => option.fullName}
                   />
                 </div>
@@ -163,7 +165,7 @@ const Filters = ({
                     <DangerButton
                       onClickHandler={() => {
                         formikProps.resetForm();
-                        handleResetFilters();
+                        resetFiltersHandler();
                       }}
                       disabled={
                         isLoadingAllClients ||

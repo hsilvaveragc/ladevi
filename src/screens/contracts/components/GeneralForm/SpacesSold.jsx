@@ -39,6 +39,8 @@ const SpacesSoldData = ({
   selectedItem,
   productSelected,
 }) => {
+  const [totals, setTotals] = useState([]);
+
   const countryAndClientSameCountry = () => {
     return equals(
       formikProps.values.clientCountryId,
@@ -46,10 +48,40 @@ const SpacesSoldData = ({
     );
   };
 
-  const isAnticipatedContract = formikProps.values.billingConditionId === 1;
-  const invoiceNumberHasValue = formikProps.values.invoiceNumber !== "";
-  const disabledByInvoiceNumber =
-    isAnticipatedContract && invoiceNumberHasValue && editMode;
+  // // Calculate totals only when relevant values change
+  // useEffect(() => {
+  //   debu
+  //   const totalsCalculated = formikProps.values.soldSpaces.map(
+  //     (item, index) => {
+  //       const spaceType = availableSpaceTypes.find(
+  //         x => x.id === item.productAdvertisingSpaceId
+  //       );
+
+  //       const dollarPrice =
+  //         addMode || item.productAdvertisingSpaceId !== spaceType?.id
+  //           ? spaceType?.dollarPrice ?? undefined
+  //           : item.spacePrice;
+
+  //       const spacePrice = editMode ? dollarPrice : undefined;
+
+  //       return makeTotals(
+  //         formikProps.values,
+  //         index,
+  //         undefined,
+  //         undefined,
+  //         spacePrice
+  //       );
+  //     }
+  //   );
+
+  //   setTotals(totalsCalculated);
+  // }, [
+  //   formikProps.values.soldSpaces,
+  //   addMode,
+  //   editMode,
+  //   availableSpaceTypes,
+  //   // Add other dependencies that affect the totals calculation
+  // ]);
 
   return (
     <FieldArray
@@ -369,10 +401,7 @@ const SpacesSoldData = ({
                             );
                           }}
                           disabled={
-                            deleteMode ||
-                            (isSeller && editMode) ||
-                            isDisabled ||
-                            disabledByInvoiceNumber
+                            deleteMode || (isSeller && editMode) || isDisabled
                           }
                           error={
                             formikProps.errors.soldSpaces &&
@@ -450,11 +479,7 @@ const SpacesSoldData = ({
                               })
                             );
                           }}
-                          disabled={
-                            deleteMode ||
-                            (isSeller && editMode) ||
-                            disabledByInvoiceNumber
-                          }
+                          disabled={deleteMode || (isSeller && editMode)}
                           error={
                             formikProps.errors.soldSpaces &&
                             formikProps.errors.soldSpaces[index] &&
@@ -468,11 +493,7 @@ const SpacesSoldData = ({
                         <InputTextField
                           labelText="Cantidad *"
                           name={`soldSpaces.${index}.quantity`}
-                          disabled={
-                            deleteMode ||
-                            (isSeller && editMode) ||
-                            disabledByInvoiceNumber
-                          }
+                          disabled={deleteMode || (isSeller && editMode)}
                           onChangeHandler={evt => {
                             let spaceTypeSelected = availableSpaceTypes.find(
                               x =>
@@ -637,8 +658,7 @@ const SpacesSoldData = ({
                               disabled={
                                 deleteMode ||
                                 formikProps.values.paymentMethodId === 3 ||
-                                (isSeller && editMode) ||
-                                disabledByInvoiceNumber
+                                (isSeller && editMode)
                               }
                               error={
                                 formikProps.errors.soldSpaces &&
@@ -746,11 +766,7 @@ const SpacesSoldData = ({
                                 labelText="Pagada"
                                 showLabel={false}
                                 name={`soldSpaces.${index}.applyDiscountForSameCountry`}
-                                disabled={
-                                  deleteMode ||
-                                  (isSeller && editMode) ||
-                                  disabledByInvoiceNumber
-                                }
+                                disabled={deleteMode || (isSeller && editMode)}
                                 error={
                                   formikProps.errors.soldSpaces &&
                                   formikProps.errors.soldSpaces[index] &&
@@ -860,11 +876,7 @@ const SpacesSoldData = ({
                                 labelText="Pagada"
                                 showLabel={false}
                                 name={`soldSpaces.${index}.applyDiscountForOtherCountry`}
-                                disabled={
-                                  deleteMode ||
-                                  (isSeller && editMode) ||
-                                  disabledByInvoiceNumber
-                                }
+                                disabled={deleteMode || (isSeller && editMode)}
                                 error={
                                   formikProps.errors.soldSpaces &&
                                   formikProps.errors.soldSpaces[index] &&
@@ -974,11 +986,7 @@ const SpacesSoldData = ({
                               labelText="Pagada"
                               showLabel={false}
                               name={`soldSpaces.${index}.applyDiscountForLoyalty`}
-                              disabled={
-                                deleteMode ||
-                                (isSeller && editMode) ||
-                                disabledByInvoiceNumber
-                              }
+                              disabled={deleteMode || (isSeller && editMode)}
                               error={
                                 formikProps.errors.soldSpaces &&
                                 formikProps.errors.soldSpaces[index] &&
@@ -1086,8 +1094,7 @@ const SpacesSoldData = ({
                               name={`soldSpaces.${index}.appyDiscountForAgency`}
                               disabled={
                                 !formikProps.values.clientIsAgency ||
-                                (isSeller && editMode) ||
-                                disabledByInvoiceNumber
+                                (isSeller && editMode)
                               }
                               error={
                                 formikProps.errors.soldSpaces &&
@@ -1194,11 +1201,7 @@ const SpacesSoldData = ({
                               labelText="Pagada"
                               showLabel={false}
                               name={`soldSpaces.${index}.applyDiscountForVolume`}
-                              disabled={
-                                deleteMode ||
-                                (isSeller && editMode) ||
-                                disabledByInvoiceNumber
-                              }
+                              disabled={deleteMode || (isSeller && editMode)}
                               error={
                                 formikProps.errors.soldSpaces &&
                                 formikProps.errors.soldSpaces[index] &&
@@ -1298,11 +1301,7 @@ const SpacesSoldData = ({
                             { id: 1, name: "Descuento" },
                             { id: 2, name: "Recargo" },
                           ]}
-                          disabled={
-                            deleteMode ||
-                            (isSeller && editMode) ||
-                            disabledByInvoiceNumber
-                          }
+                          disabled={deleteMode || (isSeller && editMode)}
                           error={
                             formikProps.errors.soldSpaces &&
                             formikProps.errors.soldSpaces[index] &&
@@ -1375,11 +1374,7 @@ const SpacesSoldData = ({
                         <InputTextField
                           labelText="Descripción"
                           name={`soldSpaces.${index}.descriptionSpecialDiscount`}
-                          disabled={
-                            deleteMode ||
-                            (isSeller && editMode) ||
-                            disabledByInvoiceNumber
-                          }
+                          disabled={deleteMode || (isSeller && editMode)}
                           error={
                             formikProps.errors.soldSpaces &&
                             formikProps.errors.soldSpaces[index] &&
@@ -1393,11 +1388,7 @@ const SpacesSoldData = ({
                         <InputTextField
                           labelText="%"
                           name={`soldSpaces.${index}.specialDiscount`}
-                          disabled={
-                            deleteMode ||
-                            (isSeller && editMode) ||
-                            disabledByInvoiceNumber
-                          }
+                          disabled={deleteMode || (isSeller && editMode)}
                           error={
                             formikProps.errors.soldSpaces &&
                             formikProps.errors.soldSpaces[index] &&
@@ -1471,9 +1462,7 @@ const SpacesSoldData = ({
                             { id: 1, name: "Descuento" },
                             { id: 2, name: "Recargo" },
                           ]}
-                          disabled={
-                            deleteMode || isSeller || disabledByInvoiceNumber
-                          }
+                          disabled={deleteMode || isSeller}
                           error={
                             formikProps.errors.soldSpaces &&
                             formikProps.errors.soldSpaces[index] &&
@@ -1520,9 +1509,7 @@ const SpacesSoldData = ({
                         <InputTextField
                           labelText="Descripción"
                           name={`soldSpaces.${index}.descriptionGerentialDiscount`}
-                          disabled={
-                            deleteMode || isSeller || disabledByInvoiceNumber
-                          }
+                          disabled={deleteMode || isSeller}
                           error={
                             formikProps.errors.soldSpaces &&
                             formikProps.errors.soldSpaces[index] &&
@@ -1536,9 +1523,7 @@ const SpacesSoldData = ({
                         <InputTextField
                           labelText="%"
                           name={`soldSpaces.${index}.gerentialDiscount`}
-                          disabled={
-                            deleteMode || isSeller || disabledByInvoiceNumber
-                          }
+                          disabled={deleteMode || isSeller}
                           error={
                             formikProps.errors.soldSpaces &&
                             formikProps.errors.soldSpaces[index] &&
@@ -1696,11 +1681,7 @@ const SpacesSoldData = ({
                       <div className="col-2">
                         <InputTextField
                           showLabel={false}
-                          disabled={
-                            deleteMode ||
-                            (isSeller && editMode) ||
-                            disabledByInvoiceNumber
-                          }
+                          disabled={deleteMode || (isSeller && editMode)}
                           name={`soldSpaces.${index}.unitPriceWithDiscounts`}
                           onBlurHandler={() => {
                             // Recalculamos el precio unitario sin IVA ya que por temas de redondeo al aplicar el descuento
@@ -2004,9 +1985,7 @@ const SpacesSoldData = ({
                             formikProps.values.soldSpaces.length === 1 ||
                             (!addMode &&
                               formikProps.values.soldSpaces[index].balance <
-                                formikProps.values.soldSpaces[index]
-                                  .quantity) ||
-                            disabledByInvoiceNumber
+                                formikProps.values.soldSpaces[index].quantity)
                           }
                           onClickHandler={() => {
                             const qtyDeleted =
@@ -2029,11 +2008,7 @@ const SpacesSoldData = ({
               <div className="add-space-button">
                 <button
                   className="btn btn-primary "
-                  disabled={
-                    deleteMode ||
-                    (isSeller && editMode) ||
-                    disabledByInvoiceNumber
-                  }
+                  disabled={deleteMode || (isSeller && editMode)}
                   onClick={e => {
                     e.preventDefault();
                     push({
