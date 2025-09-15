@@ -23,24 +23,24 @@ import {
   GET_LOCATION_DATA_INIT,
   GET_LOCATION_DATA_SUCCESS,
   GET_LOCATION_DATA_FAILURE,
-  GET_ALL_COUNTRIES_INIT,
-  GET_ALL_COUNTRIES_SUCCESS,
-  GET_ALL_COUNTRIES_FAILURE,
-  GET_ALL_STATES_INIT,
-  GET_ALL_STATES_SUCCESS,
-  GET_ALL_STATES_FAILURE,
-  GET_ALL_DISTRICTS_INIT,
-  GET_ALL_DISTRICTS_SUCCESS,
-  GET_ALL_DISTRICTS_FAILURE,
-  GET_ALL_CITIES_INIT,
-  GET_ALL_CITIES_SUCCESS,
-  GET_ALL_CITIES_FAILURE,
+  FETCH_STATES_INIT,
+  FETCH_STATES_SUCCESS,
+  FETCH_STATES_FAILURE,
+  FETCH_DISTRICTS_INIT,
+  FETCH_DISTRICTS_SUCCESS,
+  FETCH_DISTRICTS_FAILURE,
+  FETCH_CITIES_INIT,
+  FETCH_CITIES_SUCCESS,
+  FETCH_CITIES_FAILURE,
   DELETE_CLIENT_INIT,
   DELETE_CLIENT_SUCCESS,
   DELETE_CLIENT_FAILURE,
   GET_ALL_TAX_CATEGORIES_INIT,
   GET_ALL_TAX_CATEGORIES_SUCCESS,
   GET_ALL_TAX_CATEGORIES_FAILURE,
+  SHOW_DUPLICATE_CUIT_MODAL,
+  HIDE_DUPLICATE_CUIT_MODAL,
+  CONFIRM_DUPLICATE_CUIT_ASSOCIATION,
 } from "./actionTypes.js";
 
 import clientsService from "./service";
@@ -60,9 +60,6 @@ export function* initialLoad() {
         availableTaxes,
         availableTaxCategories,
       },
-    });
-    yield put({
-      type: GET_ALL_COUNTRIES_INIT,
     });
   } catch (err) {
     console.log(err);
@@ -130,6 +127,7 @@ export function* filterClients({ payload }) {
 
 export function* addClient({ payload }) {
   try {
+    payload = { ...payload, id: 0 };
     const addClientPayload = yield call(clientsService.addClient, payload);
     yield all([
       put({ type: ADD_CLIENT_SUCCESS, payload: addClientPayload }),
@@ -137,25 +135,72 @@ export function* addClient({ payload }) {
       put({ type: FILTER_CLIENTS_INIT, payload: payload.params || {} }),
     ]);
   } catch (err) {
-    const auxError = {
-      ...err.response.data.errors,
-      brandName:
-        err.response.data.errors.brandName &&
-        err.response.data.errors.brandName[0].includes("Unicidad")
-          ? "La marca ya se encuentra en uso"
-          : err.response.data.errors.brandName,
-      legalName:
-        err.response.data.errors.legalName &&
-        err.response.data.errors.legalName[0].includes("Unicidad")
-          ? "La razón social ya se encuentra en uso"
-          : err.response.data.errors.legalName,
-    };
+    let auxError = {};
+
+    if (err.response && err.response.data && err.response.data.errors) {
+      auxError = {
+        ...err.response.data.errors,
+      };
+
+      if (
+        auxError.identificationValue &&
+        auxError.identificationValue[0] &&
+        auxError.identificationValue[0].startsWith("DUPLICATE_CUIT|")
+      ) {
+        const errorMsg = auxError.identificationValue[0];
+        const [, xubioId, existingClientName, cuit] = errorMsg.split("|");
+
+        yield put({
+          type: SHOW_DUPLICATE_CUIT_MODAL,
+          payload: {
+            xubioId: parseInt(xubioId),
+            existingClientName,
+            cuit,
+            isEdit: false,
+            originalPayload: payload,
+          },
+        });
+        return; // Salir sin procesar otros errores
+      }
+
+      // Manejar errores específicos con mensajes personalizados
+      if (
+        auxError.brandName &&
+        auxError.brandName[0] &&
+        auxError.brandName[0].includes("Unicidad")
+      ) {
+        auxError.brandName = "La marca ya se encuentra en uso";
+      }
+
+      if (
+        auxError.legalName &&
+        auxError.legalName[0] &&
+        auxError.legalName[0].includes("Unicidad")
+      ) {
+        // AGREGAR esta verificación ANTES de los otros manejos:
+        auxError.legalName = "La razón social ya se encuentra en uso";
+      }
+
+      // Manejar el caso especial cuando hay una clave vacía en el objeto de errores
+      if (auxError[""] && auxError[""].length > 0) {
+        // Mostrar el primer mensaje de error en la clave vacía
+        yield call(toast.error, auxError[""][0]);
+
+        // Si solo hay errores en la clave vacía, también podemos crear un error general
+        if (Object.keys(auxError).length === 1) {
+          auxError.general = auxError[""][0];
+        }
+      }
+    }
+
     console.log(auxError);
     yield put({
       type: ADD_CLIENT_FAILURE,
       errors: auxError,
     });
-    if (!auxError) {
+
+    // Si no hay errores específicos o si auxError está vacío, mostrar mensaje genérico
+    if (Object.keys(auxError).length === 0) {
       yield call(toast.error, "Hubo un error");
     }
   }
@@ -171,6 +216,35 @@ export function* editClient({ payload }) {
     ]);
   } catch (err) {
     console.log(err);
+
+    // Verificar si es error de CUIT duplicado
+    if (err.response && err.response.data && err.response.data.errors) {
+      const auxError = err.response.data.errors;
+
+      if (
+        auxError.identificationValue &&
+        auxError.identificationValue[0] &&
+        auxError.identificationValue[0].startsWith("DUPLICATE_CUIT|")
+      ) {
+        const errorMsg = auxError.identificationValue[0];
+        const [, xubioId, existingClientName, cuit] = errorMsg.split("|");
+
+        yield put({
+          type: SHOW_DUPLICATE_CUIT_MODAL,
+          payload: {
+            xubioId: parseInt(xubioId),
+            existingClientName,
+            cuit,
+            clientId: payload.id,
+            isEdit: true,
+            originalPayload: payload,
+          },
+        });
+        return; // Salir sin procesar otros errores
+      }
+    }
+
+    // Manejo de errores normal
     yield put({
       type: EDIT_CLIENT_FAILURE,
       errors: { ...err.response.data.errors },
@@ -189,9 +263,9 @@ export function* locationData({ payload }) {
       districtsPayload,
       citiesPayload,
     ] = yield all([
-      call(clientsService.getAllCountries),
-      call(clientsService.getAllStates, payload.countryId),
-      call(clientsService.getAllDistricts, payload.stateId),
+      call(clientsService.fetchCountries),
+      call(clientsService.fetchStates, payload.countryId),
+      call(clientsService.fetchDistricts, payload.stateId),
       call(clientsService.getAllCities, payload.districtId),
     ]);
     yield put({
@@ -216,49 +290,31 @@ export function* locationData({ payload }) {
   }
 }
 
-export function* getAllCountries() {
+export function* fetchStates({ payload }) {
   try {
-    const countriesPayload = yield call(clientsService.getAllCountries);
+    const statesPayload = yield call(clientsService.fetchStates, payload);
     yield put({
-      type: GET_ALL_COUNTRIES_SUCCESS,
-      payload: [...countriesPayload],
-    });
-  } catch (err) {
-    yield put({
-      type: GET_ALL_COUNTRIES_FAILURE,
-      error: err.response.data.message,
-    });
-  }
-}
-
-export function* getAllStates({ payload }) {
-  try {
-    const statesPayload = yield call(clientsService.getAllStates, payload);
-    yield put({
-      type: GET_ALL_STATES_SUCCESS,
+      type: FETCH_STATES_SUCCESS,
       payload: [...statesPayload],
     });
   } catch (err) {
     yield put({
-      type: GET_ALL_STATES_FAILURE,
+      type: FETCH_STATES_FAILURE,
       error: err.response.data.message,
     });
   }
 }
 
-export function* getAllDistricts({ payload }) {
+export function* fetchDistricts({ payload }) {
   try {
-    const districtsPayload = yield call(
-      clientsService.getAllDistricts,
-      payload
-    );
+    const districtsPayload = yield call(clientsService.fetchDistricts, payload);
     yield put({
-      type: GET_ALL_DISTRICTS_SUCCESS,
+      type: FETCH_DISTRICTS_SUCCESS,
       payload: [...districtsPayload],
     });
   } catch (err) {
     yield put({
-      type: GET_ALL_DISTRICTS_FAILURE,
+      type: FETCH_DISTRICTS_FAILURE,
       error: err.response.data.message,
     });
   }
@@ -268,12 +324,12 @@ export function* getAllCities({ payload }) {
   try {
     const citiesPayload = yield call(clientsService.getAllCities, payload);
     yield put({
-      type: GET_ALL_CITIES_SUCCESS,
+      type: FETCH_CITIES_SUCCESS,
       payload: [...citiesPayload],
     });
   } catch (err) {
     yield put({
-      type: GET_ALL_CITIES_FAILURE,
+      type: FETCH_CITIES_FAILURE,
       error: err.response.data.message,
     });
   }
@@ -314,20 +370,73 @@ export function* getAllTaxCategories({ payload }) {
   }
 }
 
+// Saga para confirmar asociación
+export function* confirmDuplicateCuitAssociation({ payload }) {
+  try {
+    const { xubioId, clientId, isEdit, originalPayload } = payload;
+
+    if (isEdit) {
+      debugger;
+      // Para edición: cliente ya existe, solo asociar
+      const confirmResponse = yield call(
+        clientsService.editAndAssociate,
+        originalPayload,
+        xubioId
+      );
+      debugger;
+      yield all([
+        put({ type: EDIT_CLIENT_SUCCESS, payload: confirmResponse }),
+        put({ type: HIDE_DUPLICATE_CUIT_MODAL }),
+        call(toast.success, "Cliente editado con éxito"),
+        put({
+          type: FILTER_CLIENTS_INIT,
+          payload: originalPayload.params || {},
+        }),
+      ]);
+    } else {
+      // Para creación: crear cliente y asociar en una sola operación
+      const createResponse = yield call(
+        clientsService.createAndAssociate,
+        originalPayload,
+        xubioId
+      );
+
+      yield all([
+        put({ type: ADD_CLIENT_SUCCESS, payload: createResponse }),
+        put({ type: HIDE_DUPLICATE_CUIT_MODAL }),
+        call(toast.success, "Cliente creado con éxito"),
+        put({
+          type: FILTER_CLIENTS_INIT,
+          payload: originalPayload.params || {},
+        }),
+      ]);
+    }
+  } catch (error) {
+    debugger;
+    yield all([
+      put({ type: HIDE_DUPLICATE_CUIT_MODAL }),
+      call(toast.error, "Error al asociar cliente"),
+    ]);
+  }
+}
+
 export default function* rootClientsSaga() {
   yield all([
-    takeLatest(SEARCH_CLIENTS_INIT, searchClients),
+    // takeLatest(SEARCH_CLIENTS_INIT, searchClients),
     takeLatest(INITIAL_LOAD_INIT, initialLoad),
     takeLatest(GET_TAXES_INIT, getTaxes),
     takeLatest(FILTER_CLIENTS_INIT, filterClients),
     takeLatest(ADD_CLIENT_INIT, addClient),
     takeLatest(EDIT_CLIENT_INIT, editClient),
     takeLatest(GET_LOCATION_DATA_INIT, locationData),
-    takeLatest(GET_ALL_COUNTRIES_INIT, getAllCountries),
-    takeLatest(GET_ALL_STATES_INIT, getAllStates),
-    takeLatest(GET_ALL_DISTRICTS_INIT, getAllDistricts),
-    takeLatest(GET_ALL_CITIES_INIT, getAllCities),
+    takeLatest(FETCH_STATES_INIT, fetchStates),
+    takeLatest(FETCH_DISTRICTS_INIT, fetchDistricts),
+    takeLatest(FETCH_CITIES_INIT, getAllCities),
     takeLatest(DELETE_CLIENT_INIT, deleteClient),
     takeLatest(GET_ALL_TAX_CATEGORIES_INIT, getAllTaxCategories),
+    takeLatest(
+      CONFIRM_DUPLICATE_CUIT_ASSOCIATION,
+      confirmDuplicateCuitAssociation
+    ),
   ]);
 }

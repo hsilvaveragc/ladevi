@@ -143,3 +143,20 @@ export const PageContainer = styled.div`
 `;
 
 export const findById = (array, id) => array.find(item => item.id === id);
+
+export const getAllItem = () => {
+  return { id: -1, name: "Todos" };
+};
+
+// Función para formatear números con punto como separador de miles y coma decimal
+export const formatCurrency = (amount, currencySymbol) => {
+  return (
+    currencySymbol +
+    " " +
+    new Intl.NumberFormat("es-AR", {
+      style: "decimal",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount)
+  );
+};

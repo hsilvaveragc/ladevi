@@ -10,12 +10,10 @@ import {
   showDeleteModal,
   filterClients,
   editClient,
-  getLocationData,
-  getAllStatesByID,
-  getAllDistrictsByID,
-  getAllCitiesByID,
+  fetchCitiesById,
   deleteClient,
-  // getAllTaxCategories,
+  confirmDuplicateCuitAssociation,
+  hideDuplicateCuitModal,
 } from "./actionCreators.js";
 
 import {
@@ -26,11 +24,10 @@ import {
   getShowEditModal,
   getShowDeleteModal,
   getErrors,
-  getAllCountries,
-  getAllStates,
-  getAllDistricts,
   getAllCities,
   getAllTaxCategories,
+  getShowDuplicateCuitModal,
+  getDuplicateCuitData,
 } from "./reducer";
 
 import Page from "./Page.jsx";
@@ -38,16 +35,15 @@ import Page from "./Page.jsx";
 const mapStateToProps = state => ({
   availableClients: getAllClients(state),
   availableUsers: getUsers(state),
-  availableTaxes: getTaxes(state),
-  availableCountries: getAllCountries(state),
-  availableStates: getAllStates(state),
-  availableDistricts: getAllDistricts(state),
   availableCities: getAllCities(state),
+  availableTaxes: getTaxes(state),
   availableTaxCategories: getAllTaxCategories(state),
   showAddModal: getShowAddModal(state),
   showEditModal: getShowEditModal(state),
   showDeleteModal: getShowDeleteModal(state),
   errors: getErrors(state),
+  showDuplicateCuitModal: getShowDuplicateCuitModal(state),
+  duplicateCuitData: getDuplicateCuitData(state),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -56,18 +52,16 @@ const mapDispatchToProps = dispatch => ({
       searchClientsInit,
       addClient,
       initialLoad,
-      getAllStatesByID,
-      getAllDistrictsByID,
-      getAllCitiesByID,
+      fetchCitiesById,
       getTaxesInit,
-      // getAllTaxCategories,
       showAddModal,
       showEditModal,
       showDeleteModal,
       filterClients,
       editClient,
-      getLocationData,
       deleteClient,
+      confirmDuplicateCuitAssociation,
+      hideDuplicateCuitModal,
     },
     dispatch
   ),

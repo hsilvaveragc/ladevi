@@ -26,6 +26,7 @@ function InputTextField({
   onChangeHandler = () => {},
   onBlurHandler = () => {},
   maxlength,
+  "data-testid": dataTestId,
 }) {
   const makeid = length => {
     var result = "";
@@ -53,6 +54,7 @@ function InputTextField({
               autoComplete={makeid(5)}
               placeholder={placeholder}
               disabled={disabled}
+              data-testid={dataTestId}
               {...field}
               type={type}
               onChange={evt => {

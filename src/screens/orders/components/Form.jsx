@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Formik, Form } from "formik";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import useUser from "shared/security/useUser";
 import InputTextField from "shared/components/InputTextField";
 import InputSelectField from "shared/components/InputSelectField";
 import InputCheckboxField from "shared/components/InputCheckboxField";
 import InputTextAreaField from "shared/components/InputTextAreaField";
 import { SaveButton, DangerButton } from "shared/components/Buttons";
-import { getAssignedRole } from "shared/services/utils";
 
 const NewOrderFormContainer = styled.div`
   width: 50vw;
@@ -73,22 +75,20 @@ const Order = ({
   isLoadingSpaceTypes,
   isLoadingSpaceLocations,
 }) => {
-  const userRole = getAssignedRole();
-  const userId = localStorage.getItem("userId");
+  const { userRol, userId } = useUser();
 
-  debugger;
-  const disabledByCloseDate =
+  const disabledByClosedEdition =
     editMode && !selectedItem.canDelete && selectedItem.productEdition.closed;
 
   const disabledByPageNumber =
-    editMode && selectedItem.pageNumber !== "" && !userRole.isAdmin;
+    editMode && selectedItem.pageNumber !== "" && !userRol.isAdmin;
 
   const getSellerId = () => {
     if (isFromContract) {
-      return userRole.isSeller ? parseFloat(userId) : contract.sellerId;
+      return userRol.isSeller ? parseFloat(userId) : contract.sellerId;
     } else {
       if (addMode) {
-        return userRole.isSeller ? parseFloat(userId) : "";
+        return userRol.isSeller ? parseFloat(userId) : "";
       } else {
         return selectedItem.sellerId;
       }
@@ -126,7 +126,7 @@ const Order = ({
         availableSpaceLocations = [];
       }
 
-      setEnableInvoice(contract.billingConditionId === 2 && !userRole.isSeller);
+      setEnableInvoice(contract.billingConditionId === 2 && !userRol.isSeller);
       setShowInvoice(contract.billingConditionId !== 1);
     } else {
       if (!addMode) {
@@ -171,7 +171,7 @@ const Order = ({
           if (selectedItem.contractId) {
             setEnableInvoice(
               selectedItem.contract.billingConditionId === 2 &&
-                !userRole.isSeller
+                !userRol.isSeller
             );
           } else {
             setEnableInvoice(false);
@@ -385,7 +385,7 @@ const Order = ({
                     disabled={
                       isFromContract ||
                       deleteMode ||
-                      disabledByCloseDate ||
+                      disabledByClosedEdition ||
                       (editMode && formikProps.values.latent) ||
                       disabledByPageNumber
                     }
@@ -430,7 +430,7 @@ const Order = ({
                           isFromContract ||
                           deleteMode ||
                           formikProps.values.contractId > 0 ||
-                          disabledByCloseDate ||
+                          disabledByClosedEdition ||
                           disabledByPageNumber
                         }
                         error={errors.latent}
@@ -461,29 +461,57 @@ const Order = ({
                 )}
               </div>
               <div className="form-row">
-                <div className="col-md-12">
-                  <InputSelectField
-                    labelText="Edición *"
-                    name="productEditionId"
-                    options={availableEditions}
-                    disabled={
-                      deleteMode ||
-                      (editMode && formikProps.values.latent) ||
-                      disabledByCloseDate ||
-                      disabledByPageNumber
-                    }
-                    error={errors.productEditionId}
-                    onChangeHandler={edicion => {
-                      if (formikProps.values.latent) {
-                        getSpaceTypesAvailableHandler({
-                          latent: true,
-                          contractId: 0,
-                          productId: formikProps.values.productId,
-                          soldSpaceId: 0,
-                        });
-                      }
+                <div className="col-md-12" style={{ position: "relative" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
                     }}
-                  />
+                  >
+                    <div style={{ flex: 1 }}>
+                      <InputSelectField
+                        labelText="Edición *"
+                        name="productEditionId"
+                        options={availableEditions}
+                        disabled={
+                          deleteMode ||
+                          (editMode && formikProps.values.latent) ||
+                          disabledByClosedEdition ||
+                          disabledByPageNumber
+                        }
+                        error={errors.productEditionId}
+                        onChangeHandler={edicion => {
+                          if (formikProps.values.latent) {
+                            getSpaceTypesAvailableHandler({
+                              latent: true,
+                              contractId: 0,
+                              productId: formikProps.values.productId,
+                              soldSpaceId: 0,
+                            });
+                          }
+                        }}
+                      />
+                    </div>
+                    {editMode && selectedItem.productEdition.closed && (
+                      <div
+                        style={{
+                          position: "relative",
+                          top: "0.5rem",
+                          cursor: "pointer",
+                        }}
+                        title="No se puede modificar el aviso ya que la edición está cerrada"
+                      >
+                        <FontAwesomeIcon
+                          icon={faInfoCircle}
+                          className="text-info"
+                          style={{
+                            fontSize: "1.25rem",
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="form-row">
@@ -507,7 +535,7 @@ const Order = ({
                     disabled={
                       isFromContract ||
                       deleteMode ||
-                      disabledByCloseDate ||
+                      disabledByClosedEdition ||
                       disabledByPageNumber ||
                       isLoadingClients
                     }
@@ -558,7 +586,7 @@ const Order = ({
                     disabled={
                       isFromContract ||
                       deleteMode ||
-                      disabledByCloseDate ||
+                      disabledByClosedEdition ||
                       formikProps.values.latent ||
                       disabledByPageNumber ||
                       isLoadingContracts
@@ -582,7 +610,7 @@ const Order = ({
                       });
 
                       setEnableInvoice(
-                        contract.billingConditionId === 2 && !userRole.isSeller
+                        contract.billingConditionId === 2 && !userRol.isSeller
                       );
                       setShowInvoice(contract.billingConditionId !== 1);
                       console.log(contract.billingConditionId);
@@ -599,7 +627,7 @@ const Order = ({
                     isLoading={isLoadingSpaceTypes}
                     disabled={
                       deleteMode ||
-                      disabledByCloseDate ||
+                      disabledByClosedEdition ||
                       (editMode && formikProps.values.latent) ||
                       disabledByPageNumber ||
                       isLoadingSpaceTypes
@@ -642,7 +670,7 @@ const Order = ({
                     type="number"
                     disabled={
                       deleteMode ||
-                      disabledByCloseDate ||
+                      disabledByClosedEdition ||
                       (editMode && formikProps.values.latent) ||
                       disabledByPageNumber
                     }
@@ -659,9 +687,9 @@ const Order = ({
                         name="invoiceNumber"
                         disabled={
                           deleteMode ||
-                          userRole.isSeller ||
+                          userRol.isSeller ||
                           !enableInvoice ||
-                          (disabledByCloseDate && !userRole.isAdmin) ||
+                          disabledByClosedEdition ||
                           disabledByPageNumber
                         }
                         error={errors.invoiceNumber}
@@ -675,7 +703,7 @@ const Order = ({
                           disabled={
                             deleteMode ||
                             !formikProps.values.invoiceNumber ||
-                            userRole.isSeller ||
+                            userRol.isSeller ||
                             !enableInvoice ||
                             disabledByPageNumber
                           }
@@ -694,8 +722,7 @@ const Order = ({
                     name="pageNumber"
                     disabled={
                       deleteMode ||
-                      disabledByCloseDate ||
-                      (disabledByCloseDate && !userRole.isAdmin) ||
+                      disabledByClosedEdition ||
                       disabledByPageNumber
                     }
                     error={errors.pageNumber}
@@ -713,7 +740,7 @@ const Order = ({
                       deleteMode ||
                       (editMode && formikProps.values.latent) ||
                       formikProps.values.auxProductAdvertisingSpaceId === -1 ||
-                      disabledByCloseDate ||
+                      disabledByClosedEdition ||
                       disabledByPageNumber ||
                       isLoadingSpaceLocations
                     }
@@ -729,7 +756,7 @@ const Order = ({
                     disabled={
                       deleteMode ||
                       (editMode && formikProps.values.latent) ||
-                      disabledByCloseDate ||
+                      disabledByClosedEdition ||
                       disabledByPageNumber
                     }
                   />
@@ -756,10 +783,7 @@ const Order = ({
                     </DangerButton>
                     <SaveButton
                       type="button"
-                      disabled={
-                        (disabledByCloseDate && !userRole.isAdmin) ||
-                        disabledByPageNumber
-                      }
+                      disabled={disabledByClosedEdition || disabledByPageNumber}
                       onClickHandler={evt => {
                         formikProps.validateForm();
                       }}

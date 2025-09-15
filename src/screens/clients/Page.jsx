@@ -14,13 +14,11 @@ export default function Page(props) {
 
   const handleEdit = item => {
     setSelectedItem(item);
-    props.actions.getLocationData(item);
     props.actions.showEditModal();
   };
 
   const handleDelete = item => {
     setSelectedItem(item);
-    props.actions.getLocationData(item);
     props.actions.showDeleteModal();
   };
 
@@ -33,16 +31,11 @@ export default function Page(props) {
         isLoading={props.isLoading}
       />
       <Filters
-        availableCountries={props.availableCountries}
-        availableStates={props.availableStates}
-        availableDistricts={props.availableDistricts}
         availableCities={props.availableCities}
-        getDistrictsHandler={props.actions.getAllDistrictsByID}
-        getStatesHandler={props.actions.getAllStatesByID}
-        getCitiesHandler={props.actions.getAllCitiesByID}
         availableUsers={props.availableUsers}
-        filterHandler={props.actions.filterClients}
-        resetFiltersHandler={props.actions.searchClientsInit}
+        getCitiesHandler={props.actions.fetchCitiesById}
+        handleFilter={props.actions.filterClients}
+        handleResetFilters={props.actions.searchClientsInit}
         handleChangeParams={setParams}
       />
       <ClientTable

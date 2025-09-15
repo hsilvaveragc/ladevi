@@ -3,12 +3,11 @@ import styled from "styled-components";
 import { Formik, Form } from "formik";
 import { isEmpty } from "ramda";
 import * as Yup from "yup";
-
+import useUser from "shared/security/useUser";
 import InputSelectField from "shared/components/InputSelectField";
 import InputDatePickerField from "shared/components/InputDatePickerField";
 import InputCheckboxField from "shared/components/InputCheckboxField";
 import { SaveButton, DangerButton } from "shared/components/Buttons";
-import { getAssignedRole } from "shared/services/utils";
 import ExcelExport from "./ExcelExport";
 import PdfExport from "./PdfExport";
 
@@ -29,7 +28,7 @@ const Filters = ({
   availableProducts = [],
   availableEditions = [],
   availableSellers = [],
-  filterHandler,
+  handleFilter,
   clearFilters,
   getProductHandler,
   getProductEditionsHandler,
@@ -39,8 +38,7 @@ const Filters = ({
   isLoadingProducts,
   isLoadingProductEditions,
 }) => {
-  const userRole = getAssignedRole();
-  const userId = localStorage.getItem("userId");
+  const { userRol, userId } = useUser();
   const [actualDate, setActualDate] = useState(new Date());
   const [oneMonthAgo, setOneMonthAgo] = useState(
     actualDate
@@ -67,7 +65,7 @@ const Filters = ({
       initialValues={{
         fromDate: oneMonthAgo,
         toDate: actualDate,
-        selledId: userRole.isSeller ? parseFloat(userId) : -1,
+        selledId: userRol.isSeller ? parseFloat(userId) : -1,
         productType: -1,
         product: -1,
         productEdition: -1,
@@ -76,7 +74,7 @@ const Filters = ({
       enableReinitialize={true}
       validationSchema={Yup.object().shape({})}
       onSubmit={values => {
-        filterHandler(values);
+        handleFilter(values);
       }}
     >
       {formikProps => {
@@ -108,7 +106,7 @@ const Filters = ({
                         : [defaultSeller, ...availableSellers]
                     }
                     isLoading={isLoadingSellers}
-                    disabled={isLoadingSellers || userRole.isSeller}
+                    disabled={isLoadingSellers || userRol.isSeller}
                     getOptionLabel={option => option.fullName}
                   />
                 </div>

@@ -138,7 +138,7 @@ export default function Page(props) {
       <Filters
         availableProducts={props.availableProducts}
         availableEditions={props.availableEditions}
-        filterHandler={props.actions.filterReport}
+        handleFilter={props.actions.filterReport}
         clearFilters={props.actions.clearFilters}
         data={props.data}
         getProductEditionsHandler={props.actions.getProductEditions}

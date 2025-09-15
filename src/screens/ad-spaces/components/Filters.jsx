@@ -23,8 +23,8 @@ const FiltersContainer = styled.div`
 
 export default function Filters({
   availableProducts,
-  filterHandler,
-  resetFiltersHandler,
+  handleFilter,
+  handleResetFilters,
   handleChangeParams,
 }) {
   const defaultOption = {
@@ -41,7 +41,7 @@ export default function Filters({
         productId: -1,
       }}
       onSubmit={values => {
-        filterHandler(values);
+        handleFilter(values);
         handleChangeParams(values);
       }}
       enableReinitialize={true}
@@ -66,7 +66,7 @@ export default function Filters({
                     <DangerButton
                       onClickHandler={() => {
                         formikProps.resetForm();
-                        resetFiltersHandler();
+                        handleResetFilters();
                       }}
                     >
                       Limpiar

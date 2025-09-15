@@ -1,49 +1,42 @@
-import React, { useState, useEffect } from "react";
-import { PageContainer } from "shared/utils";
-import Modals from "./components/Modals";
+import React from "react";
+import BasePage from "shared/components/BasePage";
+import AccountingFieldModal from "./components/AccountingFieldModal";
 import Filters from "./components/Filters";
 import AccountingFieldsTable from "./components/AccountingFieldsTable";
 
-export default function Page(props) {
-  const [selectedItem, setSelectedItem] = useState({});
-  const [params, setParams] = useState();
-
-  useEffect(() => {
-    props.actions.initialLoad();
-  }, [props.actions]);
-
-  const handleEdit = item => {
-    setSelectedItem(item);
-    props.actions.showEditModal();
+const Page = props => {
+  const filterProps = {
+    countries: props.countries,
+    handleFilter: props.actions.filterAccountingFields,
+    handleResetFilters: props.actions.getAllAccountingFields,
   };
 
-  const handleDelete = item => {
-    setSelectedItem(item);
-    props.actions.showDeleteModal();
+  const tableProps = {
+    countries: props.countries,
+  };
+
+  const modalProps = {
+    ...props,
   };
 
   return (
-    <PageContainer>
-      <Modals
-        {...props}
-        selectedItem={selectedItem}
-        params={params}
-        isLoading={props.isLoading}
-      />
-      <Filters
-        availableCountries={props.availableCountries}
-        filterHandler={props.actions.filterAccountingFields}
-        resetFiltersHandler={props.actions.getAllAccountingFields}
-        handleChangeParams={setParams}
-      />
-      <AccountingFieldsTable
-        data={props.accountingFieldsAvailable}
-        availableCountries={props.availableCountries}
-        isLoading={props.isLoading}
-        showAddModal={props.actions.showAddModal}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
-    </PageContainer>
+    <BasePage
+      // Componentes
+      FilterComponent={Filters}
+      TableComponent={AccountingFieldsTable}
+      ModalComponent={AccountingFieldModal}
+      // Datos
+      filterProps={filterProps}
+      tableProps={tableProps}
+      tableData={props.accountingFields}
+      modalProps={modalProps}
+      // Acciones y estado
+      actions={props.actions}
+      isLoading={props.isLoading}
+      // Callbacks
+      initialLoad={props.actions.initialLoad}
+    />
   );
-}
+};
+
+export default Page;

@@ -1,13 +1,13 @@
 import React from "react";
 import styled from "styled-components";
 import { Formik, Form } from "formik";
+import useUser from "shared/security/useUser";
 import "shared/utils/extensionsMethods.js";
 import { SaveButton, RemoveConfirmButton } from "shared/components/Buttons";
 import { CurrencyFields } from "./FormFields";
 import ParityGrid from "./ParityGrid";
 import { useCurrencyForm } from "../hooks/useCurrencyForm";
 import { getValidationSchema } from "../validationSchemas";
-import { getAssignedRole } from "shared/services/utils";
 
 const CurrencyFormContainer = styled.div`
   width: 30vw;
@@ -100,13 +100,12 @@ const CurrencyForm = ({
   data,
   isLoading,
 }) => {
-  const userRole = getAssignedRole();
-  const userCountryId = parseFloat(localStorage.getItem("userCountryId"));
+  const { userRol, userCountryId } = useUser();
 
   const getInitialValues = () => ({
     id: addMode ? "" : selectedItem.id,
     countryId: addMode
-      ? userRole.isSupervisor
+      ? userRol.isSupervisor
         ? userCountryId
         : ""
       : selectedItem.countryId,
@@ -163,7 +162,7 @@ const CurrencyForm = ({
             formikProps={formikProps}
             errors={errors}
             deleteMode={deleteMode}
-            isSupervisor={userRole.isSupervisor}
+            isSupervisor={userRol.isSupervisor}
             editMode={editMode}
             selectedItem={selectedItem}
             closeHandler={closeHandler}

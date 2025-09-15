@@ -38,6 +38,10 @@ import {
   GETEDITIONSFILTER_SUCCESS,
   GETEDITIONSFILTER_FAILURE,
 } from "./actionTypes.js";
+import {
+  UPDATE_ORDERS_CONTRACT,
+  UPDATE_CONTRACT_HISTORIAL,
+} from "../contracts/actionTypes.js";
 
 import ordersService from "./service";
 import contractsService from "../contracts/service";
@@ -94,7 +98,7 @@ export function* addOrder({ payload }) {
       });
 
       yield put({
-        type: "UPDATE_ORDERS_CONTRACT",
+        type: UPDATE_ORDERS_CONTRACT,
         payload: {
           ...addOrderPayload.data,
           productEdition: payload.productEditionSel,
@@ -109,19 +113,35 @@ export function* addOrder({ payload }) {
       yield call(payload.updateHistorial, historial);
 
       yield put({
-        type: "UPDATE_CONTRACT_HISTORIAL",
+        type: UPDATE_CONTRACT_HISTORIAL,
         payload: historial,
       });
     }
   } catch (err) {
-    console.log(err);
-    yield all([
-      put({
-        type: ADD_ORDER_FAILURE,
-        errors: { ...err.response.data.errors },
-      }),
-      call(toast.error, "Hubo un error :("),
-    ]);
+    let auxError = {};
+    debugger;
+    // Verificar si existe la respuesta y los datos de error
+    if (err.response && err.response.data && err.response.data.errors) {
+      auxError = {
+        ...err.response.data.errors,
+      };
+      // Manejar el caso especial cuando hay una clave vacía en el objeto de errores
+      if (auxError[""] && auxError[""].length > 0) {
+        // Mostrar el primer mensaje de error en la clave vacía
+        yield call(toast.error, auxError[""][0], { position: "top-center" });
+
+        // Si solo hay errores en la clave vacía, también podemos crear un error general
+        if (Object.keys(auxError).length === 1) {
+          auxError.general = auxError[""][0];
+        }
+      }
+    }
+
+    console.log(auxError);
+    yield put({
+      type: ADD_ORDER_FAILURE,
+      errors: auxError,
+    });
   }
 }
 
@@ -345,7 +365,7 @@ export function* getClientsWithBalance({ payload }) {
   }
 }
 
-export default function* rootUsersSaga() {
+export default function* rootOrdersSaga() {
   yield all([
     takeLatest(INITIAL_LOAD_INIT, initialLoad),
     takeLatest(GETEDITIONSFILTER_INIT, getEditionsFilter),

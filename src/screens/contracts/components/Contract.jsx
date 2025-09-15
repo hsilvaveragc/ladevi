@@ -3,14 +3,12 @@ import { TabContent, TabPane, Nav, NavItem, NavLink } from "reactstrap";
 import { Formik, Form } from "formik";
 import classnames from "classnames";
 import { equals } from "ramda";
-import * as Yup from "yup";
 import { toast } from "react-toastify";
-
+import useUser from "shared/security/useUser";
 import GeneralForm from "./GeneralForm";
 import PaychecksForm from "./PaychecksForm";
 import PublicationsForm from "./PublicationsForm";
 import HistoryForm from "./HistoryForm";
-import { getAssignedRole } from "../../../shared/services/utils";
 import {
   GetInitValuesInAddMode,
   GetInitValuesIsDuplicate,
@@ -50,6 +48,7 @@ const Contract = ({
   formikPropsDuplicateHandler,
   formikPropsDuplicate,
 }) => {
+  const { userRol } = useUser();
   const [historicalData, setHistoricalData] = useState(
     addMode ? [] : selectedItem.contractHistoricals
   );
@@ -204,7 +203,7 @@ const Contract = ({
                 saveHandler={saveHandler}
                 closeHandler={closeHandler}
                 formikProps={formikProps}
-                isSeller={getAssignedRole().isSeller}
+                isSeller={userRol.isSeller}
                 availableCurrencies={availableCurrencies}
                 availableEuroParities={availableEuroParities}
                 selectedItem={selectedItem}

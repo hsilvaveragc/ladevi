@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { Formik, Form } from "formik";
+import useUser from "shared/security/useUser";
 import "shared/utils/extensionsMethods.js";
 import InputDatePickerField from "shared/components/InputDatePickerField";
 import InputTextField from "shared/components/InputTextField";
@@ -74,8 +75,7 @@ const EuroForm = ({
   params,
   data,
 }) => {
-  const userRole = localStorage.getItem("loggedUser")?.toString() || "";
-  const isSupervisor = userRole == "Supervisor";
+  const { userRol } = useUser();
 
   const getInitialValues = () => ({
     id: addMode ? "" : selectedItem.id,
@@ -106,7 +106,7 @@ const EuroForm = ({
             formikProps={formikProps}
             errors={errors}
             deleteMode={deleteMode}
-            isSupervisor={isSupervisor}
+            isSupervisor={userRol.isSupervisor}
             closeHandler={closeHandler}
             saveHandler={saveHandler}
           />

@@ -43,7 +43,7 @@ function InputSelect({
       }) => {
         const optionsLocal = options || [];
         const selectValue = optionsLocal.filter(
-          option => option.id === field.value
+          option => (option.id ?? option.code) === field.value
         )[0];
         return (
           <InputSelectContainer className="form-group">
@@ -57,7 +57,7 @@ function InputSelect({
               }
               isDisabled={disabled}
               onChange={option => {
-                setFieldValue(field.name, option.id);
+                setFieldValue(field.name, option.id ?? option.code);
                 onChangeHandler(option);
               }}
               value={isNil(selectValue) ? null : selectValue}
@@ -80,11 +80,19 @@ function InputSelect({
               <small
                 id={`${field.name}-error`}
                 className={
-                  isNil(formikError[field.name]) ? "inactive" : "form-text"
+                  isNil(formikError[field.name]) && isNil(error)
+                    ? "inactive"
+                    : "form-text"
                 }
-                style={{ display: formikError[field.name] ? "inline" : "none" }}
+                style={{
+                  display: formikError[field.name] || error ? "inline" : "none",
+                }}
               >
-                {isNil(error) ? formikError[field.name] : head(error)}
+                {isNil(error)
+                  ? formikError[field.name]
+                  : Array.isArray(error)
+                  ? error[0]
+                  : error}
               </small>
             ) : null}
           </InputSelectContainer>

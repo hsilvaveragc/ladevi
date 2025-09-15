@@ -32,8 +32,8 @@ export default function Page(props) {
         availableEditions={props.availableEditionsForFilter}
         availableSalesmens={props.availableSalesmens}
         availableClients={props.allClients}
-        filterHandler={props.actions.filterOrders}
-        resetFiltersHandler={props.actions.initialLoad}
+        handleFilter={props.actions.filterOrders}
+        handleResetFilters={props.actions.initialLoad}
         getProductEditionsHandler={props.actions.getEditionsFilter}
         data={props.availableOrders}
         handleChangeParams={setParams}

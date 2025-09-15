@@ -9,11 +9,12 @@ import {
   FILTER_CLIENTS_INIT,
   EDIT_CLIENT_INIT,
   GET_LOCATION_DATA_INIT,
-  GET_ALL_STATES_INIT,
-  GET_ALL_DISTRICTS_INIT,
-  GET_ALL_CITIES_INIT,
+  FETCH_STATES_INIT,
+  FETCH_DISTRICTS_INIT,
+  FETCH_CITIES_INIT,
   DELETE_CLIENT_INIT,
-  GET_ALL_TAX_CATEGORIES_INIT,
+  CONFIRM_DUPLICATE_CUIT_ASSOCIATION,
+  HIDE_DUPLICATE_CUIT_MODAL,
 } from "./actionTypes.js";
 
 export const initialLoad = () => ({
@@ -62,17 +63,17 @@ export const getLocationData = payload => ({
 });
 
 export const getAllStatesByID = payload => ({
-  type: GET_ALL_STATES_INIT,
+  type: FETCH_STATES_INIT,
   payload,
 });
 
 export const getAllDistrictsByID = payload => ({
-  type: GET_ALL_DISTRICTS_INIT,
+  type: FETCH_DISTRICTS_INIT,
   payload,
 });
 
-export const getAllCitiesByID = payload => ({
-  type: GET_ALL_CITIES_INIT,
+export const fetchCitiesById = payload => ({
+  type: FETCH_CITIES_INIT,
   payload,
 });
 
@@ -81,7 +82,11 @@ export const deleteClient = payload => ({
   payload,
 });
 
-// export const getAllTaxCategories = payload => ({
-//   type: GET_ALL_TAX_CATEGORIES_INIT,
-//   payload,
-// });
+export const confirmDuplicateCuitAssociation = payload => ({
+  type: CONFIRM_DUPLICATE_CUIT_ASSOCIATION,
+  payload,
+});
+
+export const hideDuplicateCuitModal = () => ({
+  type: HIDE_DUPLICATE_CUIT_MODAL,
+});

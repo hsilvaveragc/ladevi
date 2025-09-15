@@ -1,7 +1,6 @@
 import { put, all, takeLatest, call } from "redux-saga/effects";
 import { push } from "connected-react-router";
 import { toast } from "react-toastify";
-
 import loginService from "./service";
 import {
   LOGIN_INIT,
@@ -12,7 +11,6 @@ import {
   FORGOT_PASSWORD_INIT,
   FORGOT_PASSWORD_SUCCESS,
   FORGOT_PASSWORD_FAILURE,
-  GET_ALL_API_DATA_INIT,
   CONFIRM_USER_INIT,
   CONFIRM_USER_SUCCESS,
   CONFIRM_USER_FAILURE,
@@ -20,16 +18,18 @@ import {
   RESET_PASSWORD_SUCCESS,
   RESET_PASSWORD_FAILURE,
 } from "./actionTypes";
-
-import loginUtils from "./utils";
+import { SET_LOGGED_USER } from "shared/appData/actionTypes";
+import {
+  setAuthFromStorage,
+  removeAuthFromStorage,
+} from "shared/security/utils";
 
 export function* loginFlow({ payload }) {
   try {
     const loginPayload = yield call(loginService.login, payload);
-    console.log(loginPayload);
-    yield call(loginUtils.setLocalStorage, loginPayload);
+    yield call(setAuthFromStorage, loginPayload);
     yield put({ type: LOGIN_SUCCESS, payload: loginPayload.user });
-    yield put({ type: GET_ALL_API_DATA_INIT });
+    yield put({ type: SET_LOGGED_USER, payload: loginPayload.user });
     yield put(push("/"));
   } catch (err) {
     yield put({ type: LOGIN_FAILURE, error: "Usuario / Contraseña inválidos" });
@@ -37,10 +37,8 @@ export function* loginFlow({ payload }) {
 }
 
 export function* logoutFlow() {
-  const localStorageClear = localStorage.clear();
-  const reload = window.location.reload();
-  yield call(reload);
-  yield call(localStorageClear);
+  yield call(removeAuthFromStorage);
+  window.location.reload();
   yield put({ type: LOGOUT_SUCCESS });
 }
 
