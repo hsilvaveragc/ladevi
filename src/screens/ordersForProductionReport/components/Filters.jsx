@@ -1,14 +1,13 @@
-import React from "react";
-import styled from "styled-components";
-import { Formik, Form } from "formik";
-import { isEmpty } from "ramda";
-import * as Yup from "yup";
+import styled from 'styled-components';
+import { Formik, Form } from 'formik';
+import { isEmpty } from 'ramda';
+import * as Yup from 'yup';
+import InputSelectField from 'shared/components/InputSelectField';
+import InputCheckboxField from 'shared/components/InputCheckboxField';
+import { SaveButton, DangerButton } from 'shared/components/Buttons';
 
-import InputSelectField from "shared/components/InputSelectField";
-import InputCheckboxField from "shared/components/InputCheckboxField";
-import { SaveButton, DangerButton } from "shared/components/Buttons";
-import ExcelExport from "./ExcelExport";
-import PdfExport from "./PdfExport";
+import ExcelExport from './ExcelExport';
+import PdfExport from './PdfExport';
 
 const FiltersContainer = styled.div`
   width: 80vw;
@@ -36,40 +35,40 @@ const Filters = ({
   return (
     <Formik
       initialValues={{
-        productId: "",
-        productEditionId: "",
+        productId: '',
+        productEditionId: '',
         onlyNews: false,
       }}
       enableReinitialize={true}
       validationSchema={Yup.object().shape({
-        productEditionId: Yup.string().required("Requerido"),
+        productEditionId: Yup.string().required('Requerido'),
       })}
-      onSubmit={values => {
+      onSubmit={(values) => {
         handleFilter(values);
       }}
     >
-      {formikProps => {
+      {(formikProps) => {
         return (
           <FiltersContainer>
             <Form>
-              <div className="form-row">
-                <div className="col-3">
+              <div className='form-row'>
+                <div className='col-3'>
                   <InputSelectField
-                    labelText="Producto"
-                    name="productId"
+                    labelText='Producto'
+                    name='productId'
                     options={availableProducts}
                     isLoading={isLoadingProducts}
                     disabled={isLoadingProducts || isEmpty(availableProducts)}
-                    onChangeHandler={option => {
+                    onChangeHandler={(option) => {
                       getProductEditionsHandler(option.id);
-                      formikProps.setFieldValue("productEditionId", "");
+                      formikProps.setFieldValue('productEditionId', '');
                     }}
                   />
                 </div>
-                <div className="col-3">
+                <div className='col-3'>
                   <InputSelectField
-                    labelText="Edición"
-                    name="productEditionId"
+                    labelText='Edición'
+                    name='productEditionId'
                     options={availableEditions}
                     isLoading={isLoadingProductEditions}
                     disabled={
@@ -79,16 +78,16 @@ const Filters = ({
                     }
                   />
                 </div>
-                <div className="col-2" style={{ lineHeight: "5em" }}>
+                <div className='col-2' style={{ lineHeight: '5em' }}>
                   <InputCheckboxField
-                    labelText="Solo novedades"
-                    name="onlyNews"
+                    labelText='Solo novedades'
+                    name='onlyNews'
                     inline
                     // disabled={true}
                   />
                 </div>
-                <div className="col-4">
-                  <div className="buttons-container">
+                <div className='col-4'>
+                  <div className='buttons-container'>
                     <DangerButton
                       disabled={isLoadingProducts}
                       onClickHandler={() => {
@@ -98,7 +97,7 @@ const Filters = ({
                     >
                       Limpiar
                     </DangerButton>
-                    <SaveButton type="submit" disabled={isLoadingProducts}>
+                    <SaveButton type='submit' disabled={isLoadingProducts}>
                       Buscar
                     </SaveButton>
                     {data.length > 0 && (

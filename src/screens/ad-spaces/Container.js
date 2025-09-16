@@ -1,5 +1,6 @@
-import { bindActionCreators, compose } from "redux";
-import { connect } from "react-redux";
+import { bindActionCreators, compose } from 'redux';
+import { connect } from 'react-redux';
+
 import {
   initialLoad,
   getAllProductAdvertisingSpaces,
@@ -10,7 +11,7 @@ import {
   showEditModal,
   showDeleteModal,
   filterProductAdvertisingSpace,
-} from "./actionCreators";
+} from './actionCreators';
 import {
   getProducts,
   getProductAdvertisingSpaces,
@@ -20,11 +21,10 @@ import {
   getShowAddModal,
   getShowEditModal,
   getShowDeleteModal,
-} from "./reducer";
+} from './reducer';
+import ProductAdvertisingSpacePage from './ProductAdvertisingSpacePage';
 
-import ProductAdvertisingSpacePage from "./ProductAdvertisingSpacePage";
-
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   productAdvertisingSpacesAvailable: getProductAdvertisingSpaces(state),
   availableAdsSpaceLocationType: getAdsSpaceLocationType(state),
   productsAvailable: getProducts(state),
@@ -35,7 +35,7 @@ const mapStateToProps = state => ({
   showDeleteModal: getShowDeleteModal(state),
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators(
     {
       getAllProductAdvertisingSpaces,

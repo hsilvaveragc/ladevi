@@ -1,7 +1,6 @@
-import React from "react";
-import Table from "shared/components/Table";
-import "shared/utils/extensionsMethods.js";
-import { getHeaderStyleTable, createDeleteColumn } from "shared/utils/index";
+import Table from 'shared/components/Table';
+import 'shared/utils/extensionsMethods.js';
+import { getHeaderStyleTable, createDeleteColumn } from 'shared/utils/index';
 
 const AccountingFieldsTable = ({
   data,
@@ -13,22 +12,22 @@ const AccountingFieldsTable = ({
 }) => {
   const columns = [
     {
-      Header: "Nombre",
-      accessor: "name",
-      width: "25%",
+      Header: 'Nombre',
+      accessor: 'name',
+      width: '25%',
       headerStyle: getHeaderStyleTable(),
     },
     {
-      Header: "País",
-      accessor: "countryId",
-      width: "25%",
-      Cell: props => countries.find(x => x.id === props.value)?.name ?? "-",
+      Header: 'País',
+      accessor: 'countryId',
+      width: '25%',
+      Cell: (props) => countries.find((x) => x.id === props.value)?.name ?? '-',
       headerStyle: getHeaderStyleTable(),
     },
     {
-      Header: "Opciones",
-      accessor: "optionsInternal",
-      width: "25%",
+      Header: 'Opciones',
+      accessor: 'optionsInternal',
+      width: '25%',
       headerStyle: getHeaderStyleTable(),
     },
     createDeleteColumn(onDelete),
@@ -36,7 +35,7 @@ const AccountingFieldsTable = ({
 
   const rowEvents = {
     onClick: (e, selectedItem) => {
-      if (e.target.type !== "button") {
+      if (e.target.type !== 'button') {
         onEdit(selectedItem);
       }
     },
@@ -47,7 +46,7 @@ const AccountingFieldsTable = ({
       data={data}
       columns={columns}
       buttonHandler={showAddModal}
-      buttonText="Agregar Campo Contable"
+      buttonText='Agregar Campo Contable'
       loading={isLoading}
       showButton
       rowClickHandler={rowEvents.onClick}

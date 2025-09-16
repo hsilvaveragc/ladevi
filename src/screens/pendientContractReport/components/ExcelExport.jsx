@@ -1,140 +1,90 @@
-import React from "react";
-import ReactExport from "react-data-export";
-import Moment from "moment";
-import excelIcon from "shared/images/iconExcel.png";
+import React from 'react';
+import * as XLSX from 'xlsx';
+import { format } from 'date-fns';
 
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+import excelIcon from 'shared/images/iconExcel.png';
 
-const haederStyle = {
-  font: {
-    sz: "12",
-    bold: true,
-    color: { rgb: "ffffff" },
-  },
-  alignment: { horizontal: "center" },
-  fill: {
-    patternType: "solid",
-    fgColor: { rgb: "003e6b" },
-  },
-};
-const bodySizeText = "12";
+export default function ExcelExport({ tableRef }) {
+  const [excelD, setExcelD] = React.useState([]);
 
-const getReporteExcelfile = data => [
-  {
-    columns: [
-      {
-        title: "Cliente".toLocaleUpperCase(),
-        width: { wpx: 300 },
-        style: haederStyle,
-      },
-      {
-        title: "N°Cont.".toLocaleUpperCase(),
-        width: { wpx: 90 },
-        style: haederStyle,
-      },
-      {
-        title: "Contrato".toLocaleUpperCase(),
-        width: { wpx: 300 },
-        style: haederStyle,
-      },
-      {
-        title: "Tipo de Espacio".toLocaleUpperCase(),
-        width: { wpx: 180 },
-        style: haederStyle,
-      },
-      {
-        title: "Cant. Publicada".toLocaleUpperCase(),
-        width: { wpx: 120 },
-        style: haederStyle,
-      },
-      {
-        title: "Saldo".toLocaleUpperCase(),
-        width: { wpx: 80 },
-        style: haederStyle,
-      },
-      {
-        title: "Moneda".toLocaleUpperCase(),
-        width: { wpx: 80 },
-        style: haederStyle,
-      },
-      {
-        title: "Importe Unitario".toLocaleUpperCase(),
-        width: { wpx: 120 },
-        style: haederStyle,
-      },
-      {
-        title: "Moneda".toLocaleUpperCase(),
-        width: { wpx: 80 },
-        style: haederStyle,
-      },
-      {
-        title: "Imp. no publicado".toLocaleUpperCase(),
-        width: { wpx: 120 },
-        style: haederStyle,
-      },
-      {
-        title: "Factura".toLocaleUpperCase(),
-        width: { wpx: 160 },
-        style: haederStyle,
-      },
-    ],
-    data: data.map(d => [
-      { value: d.client, style: { font: { sz: bodySizeText } } },
-      { value: Number(d.numero), style: { font: { sz: bodySizeText } } },
-      {
-        value: d.contrato,
-        style: { font: { sz: bodySizeText } },
-      },
-      {
-        value: d.spaceType,
-        style: { font: { sz: bodySizeText } },
-      },
-      {
-        value: d.selledQuantity,
-        style: { font: { sz: bodySizeText } },
-      },
-      {
-        value: d.balance,
-        style: { font: { sz: bodySizeText } },
-      },
-      {
-        value: d.moneda,
-        style: { font: { sz: bodySizeText } },
-      },
-      {
-        value: d.amount,
-        style: { font: { sz: bodySizeText }, numFmt: "0.00" },
-      },
-      {
-        value: d.moneda,
-        style: { font: { sz: bodySizeText } },
-      },
-      {
-        value: d.pendientAmount,
-        style: { font: { sz: bodySizeText }, numFmt: "0.00" },
-      },
-      {
-        value: `${d.billingCondition} ${d.invoice}`,
-        style: { font: { sz: bodySizeText } },
-      },
-    ]),
-  },
-];
+  React.useEffect(() => {
+    if (Array.isArray(excelD) && excelD.length > 0) {
+      downloadExcel(excelD);
+    }
+  }, [excelD]);
 
-export default function ExcelExport({ data }) {
+  const downloadExcel = (data) => {
+    // Preparar datos para Excel
+    const excelData = data.map((d) => ({
+      CLIENTE: d.client,
+      'Nº CONT.': d.contractNumber,
+      CONTRATO: d.contractName,
+      'TIPO DE ESPACIO': d.productAdvertisingSpace,
+      'CANT. PUBLICADA': d.publishedQuantity,
+      SALDO: d.balance,
+      MONEDA: d.currency,
+      'IMPORTE UNITARIO': d.unitAmount,
+      'MONEDA TOTAL': d.currency2,
+      'IMP. TOTAL SALDO': d.totalBalanceAmount,
+    }));
+
+    // Crear workbook
+    const ws = XLSX.utils.json_to_sheet(excelData);
+    const wb = XLSX.utils.book_new();
+
+    // Configurar anchos de columnas
+    const colWidths = [
+      { wch: 40 }, // Cliente
+      { wch: 12 }, // Nº Cont.
+      { wch: 40 }, // Contrato
+      { wch: 25 }, // Tipo de Espacio
+      { wch: 18 }, // Cant. Publicada
+      { wch: 12 }, // Saldo
+      { wch: 12 }, // Moneda
+      { wch: 18 }, // Importe Unitario
+      { wch: 12 }, // Moneda
+      { wch: 20 }, // Imp. Total Saldo
+    ];
+    ws['!cols'] = colWidths;
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Contratos Pendientes');
+
+    // Descargar archivo
+    const filename = `Contratos pendientes ${format(
+      new Date(),
+      'dd-MM-yyyy HH:mm:ss'
+    )}
+    )}.xlsx`;
+    XLSX.writeFile(wb, filename);
+  };
+
+  const getExcelData = () => {
+    const data = (
+      tableRef?.current?.paginationContext?.props?.data ||
+      tableRef?.current ||
+      []
+    ).map((d) => ({
+      client: d.client,
+      contractNumber: d.contractNumber,
+      contractName: d.contractName,
+      productAdvertisingSpace: d.productAdvertisingSpace,
+      publishedQuantity: d.publishedQuantity,
+      balance: d.balance,
+      currency: d.currency,
+      unitAmount: d.unitAmount,
+      currency2: d.currency2,
+      totalBalanceAmount: d.totalBalanceAmount,
+    }));
+    return data;
+  };
+
+  const handleClickExcel = () => {
+    setExcelD(getExcelData());
+  };
+
   return (
-    <ExcelFile
-      filename={`Contratos pendientes por vendedor ${Moment(new Date()).format(
-        "DD-MM-YYYY HH:mm:ss"
-      )}`}
-      element={
-        <button type="button" className="btn">
-          <img src={excelIcon} width="26" height="32" />
-        </button>
-      }
-    >
-      <ExcelSheet dataSet={getReporteExcelfile(data)} name="Reporte" />
-    </ExcelFile>
+    <button type='button' className='btn' onClick={handleClickExcel}>
+      <img src={excelIcon} width='26' height='32' />
+    </button>
   );
 }

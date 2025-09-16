@@ -5,9 +5,9 @@ import {
   FETCH_STATES_INIT,
   FETCH_DISTRICTS_INIT,
   FETCH_CITIES_INIT,
-} from "./actionTypes";
+} from './actionTypes';
 
-export const setLoggedUser = payload => ({
+export const setLoggedUser = (payload) => ({
   type: SET_LOGGED_USER,
   payload,
 });
@@ -24,12 +24,12 @@ export const fetchStates = () => ({
   type: FETCH_STATES_INIT,
 });
 
-export const fetchDistricts = payload => ({
+export const fetchDistricts = (payload) => ({
   type: FETCH_DISTRICTS_INIT,
   payload,
 });
 
-export const fetchCitiesById = payload => ({
+export const fetchCitiesById = (payload) => ({
   type: FETCH_CITIES_INIT,
   payload,
 });

@@ -1,5 +1,7 @@
-import { put, all, takeLatest, call } from "redux-saga/effects";
-import { toast } from "react-toastify";
+import { put, all, takeLatest, call } from 'redux-saga/effects';
+import { toast } from 'react-toastify';
+
+import productsService from '../products/service';
 
 import {
   GET_ALL_PRODUCT_ADVERTISING_SPACES_INIT,
@@ -20,10 +22,8 @@ import {
   FILTER_PRODUCT_ADVERTISING_SPACES_INIT,
   FILTER_PRODUCT_ADVERTISING_SPACES_SUCCESS,
   FILTER_PRODUCT_ADVERTISING_SPACES_FAILURE,
-} from "./actionTypes";
-
-import productsService from "../products/service";
-import productAdsService from "./service";
+} from './actionTypes';
+import productAdsService from './service';
 
 export function* initialLoad() {
   try {
@@ -68,7 +68,7 @@ export function* getAllProductAdvertisingSpaces({ payload }) {
         type: GET_ALL_PRODUCT_ADVERTISING_SPACES_FAILURE,
         errors: { ...error.response.data.errors },
       }),
-      call(toast.error, "Hubo un error :("),
+      call(toast.error, 'Hubo un error :('),
     ]);
   }
 }
@@ -77,7 +77,7 @@ export function* addProductAdvertisingSpace({ payload }) {
   try {
     yield call(productAdsService.addProductAdvertisingSpace, payload);
     yield all([
-      call(toast.success, "Tipo de Espacio guardado con exito!"),
+      call(toast.success, 'Tipo de Espacio guardado con exito!'),
       put({
         type: ADD_PRODUCT_ADVERTISING_SPACE_SUCCESS,
       }),
@@ -92,7 +92,7 @@ export function* addProductAdvertisingSpace({ payload }) {
         type: ADD_PRODUCT_ADVERTISING_SPACE_FAILURE,
         errors: { ...error.response.data.errors },
       }),
-      call(toast.error, "Hubo un error :("),
+      call(toast.error, 'Hubo un error :('),
     ]);
   }
 }
@@ -101,7 +101,7 @@ export function* editProductAdvertisingSpace({ payload }) {
   try {
     yield call(productAdsService.editProductAdvertisingSpace, payload);
     yield all([
-      call(toast.success, "Tipo de Espacio editado con exito!"),
+      call(toast.success, 'Tipo de Espacio editado con exito!'),
       put({
         type: EDIT_PRODUCT_ADVERTISING_SPACE_SUCCESS,
       }),
@@ -116,7 +116,7 @@ export function* editProductAdvertisingSpace({ payload }) {
         type: EDIT_PRODUCT_ADVERTISING_SPACE_FAILURE,
         errors: { ...error.response.data.errors },
       }),
-      call(toast.error, "Hubo un error :("),
+      call(toast.error, 'Hubo un error :('),
     ]);
   }
 }
@@ -125,7 +125,7 @@ export function* deleteProductAdvertisingSpace({ payload }) {
   try {
     yield call(productAdsService.deleteProductAdvertisingSpace, payload);
     yield all([
-      call(toast.success, "Tipo de Espacio borrado con exito!"),
+      call(toast.success, 'Tipo de Espacio borrado con exito!'),
       put({
         type: DELETE_PRODUCT_ADVERTISING_SPACE_SUCCESS,
       }),
@@ -140,7 +140,7 @@ export function* deleteProductAdvertisingSpace({ payload }) {
         type: DELETE_PRODUCT_ADVERTISING_SPACE_FAILURE,
         errors: { ...error.response.data.errors },
       }),
-      call(toast.error, "Hubo un error :("),
+      call(toast.error, 'Hubo un error :('),
     ]);
   }
 }
@@ -161,7 +161,7 @@ export function* filterProductAdvertisingSpace({ payload }) {
         type: FILTER_PRODUCT_ADVERTISING_SPACES_FAILURE,
         errors: { ...error.response.data.errors },
       }),
-      call(toast.error, "Hubo un error :("),
+      call(toast.error, 'Hubo un error :('),
     ]);
   }
 }

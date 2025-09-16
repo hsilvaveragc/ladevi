@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
-import { Formik, Form } from "formik";
-import * as Yup from "yup";
+import { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import { Formik, Form } from 'formik';
+import * as Yup from 'yup';
+import InputTextField from 'shared/components/InputTextField';
+import { SaveButton } from 'shared/components/Buttons';
 
-import InputTextField from "shared/components/InputTextField";
-import { SaveButton } from "shared/components/Buttons";
-import { getTotalContract } from "../utils2";
+import { getTotalContract } from '../utils2';
 
 const PaycheckFormContainer = styled.div`
   table {
@@ -24,12 +24,7 @@ export default function PaychecksForm({
   totalContract =
     totalContract === 0
       ? 0
-      : parseFloat(
-          totalContract
-            .split(".")
-            .join("")
-            .replace(",", ".")
-        );
+      : parseFloat(totalContract.split('.').join('').replace(',', '.'));
 
   const calculatePayments = ({
     checkQuantity,
@@ -47,9 +42,9 @@ export default function PaychecksForm({
         payment: i + 1,
         date:
           actualDate.getDate() +
-          "/" +
+          '/' +
           (actualDate.getMonth() + 1) +
-          "/" +
+          '/' +
           actualDate.getFullYear(),
         total: checkQuantity ? totalContract / checkQuantity : 0,
       });
@@ -57,7 +52,7 @@ export default function PaychecksForm({
     setPayments(aux);
   };
 
-  const handleSubmit = values => {
+  const handleSubmit = (values) => {
     calculatePayments(values);
   };
 
@@ -68,7 +63,7 @@ export default function PaychecksForm({
   }, []);
 
   return (
-    <PaycheckFormContainer className="container">
+    <PaycheckFormContainer className='container'>
       {/* <Form
         autoComplete="off"
         onSubmit={evt => {
@@ -76,33 +71,33 @@ export default function PaychecksForm({
           calculatePayments(formikProps.values);
         }}
       > */}
-      <div className="form-row">
-        <div className="col-3">
+      <div className='form-row'>
+        <div className='col-3'>
           <InputTextField
-            labelText="Cantidad de Cheques:"
-            name="checkQuantity"
+            labelText='Cantidad de Cheques:'
+            name='checkQuantity'
             error={errors.checkQuantity}
           />
         </div>
-        <div className="col-3">
+        <div className='col-3'>
           <InputTextField
-            labelText="Dias al primero:"
-            name="daysToFirstPayment"
+            labelText='Dias al primero:'
+            name='daysToFirstPayment'
             error={errors.daysToFirstPayment}
           />
         </div>
-        <div className="col-4">
+        <div className='col-4'>
           <InputTextField
-            labelText="Dias entre cheques:"
-            name="daysBetweenChecks"
+            labelText='Dias entre cheques:'
+            name='daysBetweenChecks'
             error={errors.daysBetweenChecks}
           />
         </div>
-        <div className="col-2">
-          <div style={{ paddingTop: "25%" }}>
+        <div className='col-2'>
+          <div style={{ paddingTop: '25%' }}>
             <button
-              className="btn btn-primary"
-              onClick={evt => {
+              className='btn btn-primary'
+              onClick={(evt) => {
                 evt.preventDefault();
                 calculatePayments(formikProps.values);
               }}
@@ -114,21 +109,21 @@ export default function PaychecksForm({
         </div>
       </div>
       {/* </Form> */}
-      <table className="table table-sm table-striped">
-        <thead className="thead-light">
+      <table className='table table-sm table-striped'>
+        <thead className='thead-light'>
           <tr>
-            <th scope="col">Pago</th>
-            <th scope="col">Fecha</th>
-            <th scope="col">Monto</th>
+            <th scope='col'>Pago</th>
+            <th scope='col'>Fecha</th>
+            <th scope='col'>Monto</th>
           </tr>
         </thead>
         <tbody>
-          {payments.map(p => (
+          {payments.map((p) => (
             <tr key={p.payment}>
-              <th scope="row">{p.payment}</th>
+              <th scope='row'>{p.payment}</th>
               <td>{p.date.toString()}</td>
               <td>
-                {p.total.toLocaleString("pt-BR", {
+                {p.total.toLocaleString('pt-BR', {
                   maximumFractionDigits: 2,
                 })}
               </td>

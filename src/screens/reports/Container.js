@@ -1,15 +1,12 @@
-// eslint-disable-next-line
-import { bindActionCreators, compose } from "redux";
-import { connect } from "react-redux";
-import ReportsPage from "./ReportsPage";
+import { bindActionCreators, compose } from 'redux';
+import { connect } from 'react-redux';
 
-const mapStateToProps = state => ({});
+import ReportsPage from './ReportsPage';
 
-const mapDispatchToProps = dispatch => ({});
+const mapStateToProps = (state) => ({});
 
-export default compose(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
-)(ReportsPage);
+const mapDispatchToProps = (dispatch) => ({});
+
+export default compose(connect(mapStateToProps, mapDispatchToProps))(
+  ReportsPage
+);

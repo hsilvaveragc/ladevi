@@ -1,20 +1,23 @@
-import React, { useState } from "react";
-import { TabContent, TabPane, Nav, NavItem, NavLink } from "reactstrap";
-import { Formik, Form } from "formik";
-import classnames from "classnames";
-import { equals } from "ramda";
-import { toast } from "react-toastify";
-import useUser from "shared/security/useUser";
-import GeneralForm from "./GeneralForm";
-import PaychecksForm from "./PaychecksForm";
-import PublicationsForm from "./PublicationsForm";
-import HistoryForm from "./HistoryForm";
+import React, { useState } from 'react';
+import { TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
+import { Formik, Form } from 'formik';
+import classnames from 'classnames';
+import { equals } from 'ramda';
+import { toast } from 'react-toastify';
+
+import useUser from 'shared/security/useUser';
+
+import { getValidationSchema } from '../validationSchemas';
+
+import GeneralForm from './GeneralForm';
+import PaychecksForm from './PaychecksForm';
+import PublicationsForm from './PublicationsForm';
+import HistoryForm from './HistoryForm';
 import {
   GetInitValuesInAddMode,
   GetInitValuesIsDuplicate,
   GetInitValuesIsEditMode,
-} from "./helper";
-import { getValidationSchema } from "../validationSchemas";
+} from './helper';
 
 const Contract = ({
   selectedItem,
@@ -53,7 +56,7 @@ const Contract = ({
     addMode ? [] : selectedItem.contractHistoricals
   );
 
-  let initValuesForm = addMode
+  const initValuesForm = addMode
     ? formikPropsDuplicate
       ? GetInitValuesIsDuplicate(
           availableClients,
@@ -80,26 +83,23 @@ const Contract = ({
       initialValues={initValuesForm}
       enableReinitialize={false}
       validationSchema={getValidationSchema()}
-      onSubmit={values => {
+      onSubmit={(values) => {
         if (loading) {
           return;
         }
 
         for (let i = 0; i < values.soldSpaces.length; i++) {
           const totalSP = parseFloat(
-            values.soldSpaces[i].total
-              .split(".")
-              .join("")
-              .replace(",", ".")
+            values.soldSpaces[i].total.split('.').join('').replace(',', '.')
           );
           if (totalSP < 0) {
-            toast.error("La cantidad de descuentos no puede ser mayor al 100%");
+            toast.error('La cantidad de descuentos no puede ser mayor al 100%');
             return;
           }
           if (editMode) {
             if (values.soldSpaces[i].quantity < values.quantityOP) {
               toast.error(
-                "La cantidad no puede ser menor a la cantidad de órdenes publicadas"
+                'La cantidad no puede ser menor a la cantidad de órdenes publicadas'
               );
               return;
             }
@@ -118,7 +118,7 @@ const Contract = ({
         // }
       }}
     >
-      {formikProps => (
+      {(formikProps) => (
         // <Form autoComplete="off">
         <>
           <Nav tabs>
@@ -127,7 +127,7 @@ const Contract = ({
                 className={classnames({
                   active: equals(formikProps.values.activeTab, 1),
                 })}
-                onClick={() => formikProps.setFieldValue("activeTab", 1)}
+                onClick={() => formikProps.setFieldValue('activeTab', 1)}
               >
                 General
               </NavLink>
@@ -136,43 +136,43 @@ const Contract = ({
               style={{
                 display:
                   formikProps.values.paymentMethodId === 1
-                    ? "inline-block"
-                    : "none",
+                    ? 'inline-block'
+                    : 'none',
               }}
             >
               <NavLink
                 className={classnames({
                   active: equals(formikProps.values.activeTab, 2),
                 })}
-                onClick={() => formikProps.setFieldValue("activeTab", 2)}
+                onClick={() => formikProps.setFieldValue('activeTab', 2)}
               >
                 Cheques
               </NavLink>
             </NavItem>
             <NavItem
               style={{
-                display: !addMode ? "inline-block" : "none",
+                display: !addMode ? 'inline-block' : 'none',
               }}
             >
               <NavLink
                 className={classnames({
                   active: equals(formikProps.values.activeTab, 3),
                 })}
-                onClick={() => formikProps.setFieldValue("activeTab", 3)}
+                onClick={() => formikProps.setFieldValue('activeTab', 3)}
               >
                 Publicaciones
               </NavLink>
             </NavItem>
             <NavItem
               style={{
-                display: !addMode ? "inline-block" : "none",
+                display: !addMode ? 'inline-block' : 'none',
               }}
             >
               <NavLink
                 className={classnames({
                   active: equals(formikProps.values.activeTab, 4),
                 })}
-                onClick={() => formikProps.setFieldValue("activeTab", 4)}
+                onClick={() => formikProps.setFieldValue('activeTab', 4)}
               >
                 Historial
               </NavLink>
@@ -189,7 +189,7 @@ const Contract = ({
                 availableSpaceTypes={
                   addMode
                     ? availableSpaceTypes.filter(
-                        x =>
+                        (x) =>
                           x.show !== undefined &&
                           x.show !== null &&
                           x.show === true

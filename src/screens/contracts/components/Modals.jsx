@@ -1,13 +1,14 @@
-import React from "react";
-import Modal from "shared/components/Modal";
-import ContractForm from "./Contract";
+import Modal from 'shared/components/Modal';
 
-export default props => (
+import ContractForm from './Contract';
+
+const ContractsModals = (props) => (
   <>
     <Modal
       shouldClose={true}
       closeHandler={props.actions.showAddModal}
       isOpen={props.showAddModal}
+      size='lg'
     >
       <ContractForm
         selectedItem={{}}
@@ -41,6 +42,7 @@ export default props => (
       shouldClose={true}
       closeHandler={props.actions.showEditModal}
       isOpen={props.showEditModal}
+      size='lg'
     >
       <ContractForm
         selectedItem={props.selectedItem}
@@ -78,6 +80,7 @@ export default props => (
       shouldClose={true}
       closeHandler={props.actions.showDeleteModal}
       isOpen={props.showDeleteModal}
+      size='lg'
     >
       <ContractForm
         selectedItem={props.selectedItem}
@@ -98,3 +101,5 @@ export default props => (
     </Modal>
   </>
 );
+
+export default ContractsModals;

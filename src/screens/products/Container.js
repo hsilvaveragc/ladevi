@@ -1,5 +1,6 @@
-import { bindActionCreators, compose } from "redux";
-import { connect } from "react-redux";
+import { bindActionCreators, compose } from 'redux';
+import { connect } from 'react-redux';
+
 import {
   getAllProductTypes,
   addProduct,
@@ -11,8 +12,7 @@ import {
   showDeleteModal,
   getAllProducts,
   filterProducts,
-} from "./actionCreators.js";
-
+} from './actionCreators.js';
 import {
   getProducts,
   getCountries,
@@ -25,11 +25,10 @@ import {
   getErrors,
   getXubioProducts,
   getXubioProductsComtur,
-} from "./reducer.js";
+} from './reducer.js';
+import ProductsPage from './ProductsPage';
 
-import ProductsPage from "./ProductsPage";
-
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   products: getProducts(state),
   availableCountries: getCountries(state),
   availableAdsSpaceLocationType: getAdsSpaceLocationType(state),
@@ -43,7 +42,7 @@ const mapStateToProps = state => ({
   xubioProductsComtur: getXubioProductsComtur(state),
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators(
     {
       initialLoad,
@@ -61,9 +60,6 @@ const mapDispatchToProps = dispatch => ({
   ),
 });
 
-export default compose(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
-)(ProductsPage);
+export default compose(connect(mapStateToProps, mapDispatchToProps))(
+  ProductsPage
+);

@@ -1,7 +1,14 @@
-import { put, all, takeLatest, call } from "redux-saga/effects";
-import { push } from "connected-react-router";
-import { toast } from "react-toastify";
-import loginService from "./service";
+import { put, all, takeLatest, call } from 'redux-saga/effects';
+import { push } from 'connected-react-router';
+import { toast } from 'react-toastify';
+
+import { SET_LOGGED_USER } from 'shared/appData/actionTypes';
+import {
+  setAuthFromStorage,
+  removeAuthFromStorage,
+} from 'shared/security/utils';
+
+import loginService from './service';
 import {
   LOGIN_INIT,
   LOGIN_SUCCESS,
@@ -17,12 +24,7 @@ import {
   RESET_PASSWORD_INIT,
   RESET_PASSWORD_SUCCESS,
   RESET_PASSWORD_FAILURE,
-} from "./actionTypes";
-import { SET_LOGGED_USER } from "shared/appData/actionTypes";
-import {
-  setAuthFromStorage,
-  removeAuthFromStorage,
-} from "shared/security/utils";
+} from './actionTypes';
 
 export function* loginFlow({ payload }) {
   try {
@@ -30,9 +32,9 @@ export function* loginFlow({ payload }) {
     yield call(setAuthFromStorage, loginPayload);
     yield put({ type: LOGIN_SUCCESS, payload: loginPayload.user });
     yield put({ type: SET_LOGGED_USER, payload: loginPayload.user });
-    yield put(push("/"));
+    yield put(push('/'));
   } catch (err) {
-    yield put({ type: LOGIN_FAILURE, error: "Usuario / Contraseña inválidos" });
+    yield put({ type: LOGIN_FAILURE, error: 'Usuario / Contraseña inválidos' });
   }
 }
 
@@ -56,7 +58,7 @@ export function* forgotPasswordFlow({ payload }) {
   } catch (err) {
     yield put({
       type: FORGOT_PASSWORD_FAILURE,
-      error: "Error",
+      error: 'Error',
     });
   }
 }
@@ -71,14 +73,13 @@ export function* confirmUser({ payload }) {
   } catch (err) {
     yield put({
       type: CONFIRM_USER_FAILURE,
-      error: "Error",
+      error: 'Error',
     });
   }
 }
 
 export function* resetPassword({ payload }) {
   try {
-    console.log(payload);
     const resetPasswordPayload = yield call(
       loginService.resetPassword,
       payload
@@ -93,7 +94,7 @@ export function* resetPassword({ payload }) {
     yield call(toast.error, `Hubo un error :(`);
     yield put({
       type: RESET_PASSWORD_FAILURE,
-      error: "Error",
+      error: 'Error',
     });
   }
 }

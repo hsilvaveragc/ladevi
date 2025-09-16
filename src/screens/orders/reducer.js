@@ -1,4 +1,5 @@
-import { createSelector } from "reselect";
+import { createSelector } from 'reselect';
+
 import {
   INITIAL_LOAD_INIT,
   INITIAL_LOAD_SUCCESS,
@@ -33,7 +34,7 @@ import {
   GET_ALL_SPACELOCATIONS_INIT,
   GET_ALL_SPACELOCATIONS_SUCESS,
   GET_ALL_SPACELOCATIONS_FAILURE,
-} from "./actionTypes.js";
+} from './actionTypes.js';
 
 const initialState = {
   orders: [],
@@ -62,7 +63,7 @@ const initialState = {
   loadingSpaceLocations: false,
 };
 
-export default function(state = initialState, action) {
+export default function (state = initialState, action) {
   switch (action.type) {
     case INITIAL_LOAD_INIT: {
       return {
@@ -259,124 +260,124 @@ export default function(state = initialState, action) {
   }
 }
 
-const getOrdersReducer = state => state.orders;
+const getOrdersReducer = (state) => state.orders;
 
 export const getOrders = createSelector(
   getOrdersReducer,
-  ordersReducer => ordersReducer.orders
+  (ordersReducer) => ordersReducer.orders
 );
 
 export const getProducts = createSelector(
   getOrdersReducer,
-  ordersReducer => ordersReducer.products
+  (ordersReducer) => ordersReducer.products
 );
 
 export const getEditionsForFilter = createSelector(
   getOrdersReducer,
-  ordersReducer => ordersReducer.editionsFilter
+  (ordersReducer) => ordersReducer.editionsFilter
 );
 
 export const getSalesmens = createSelector(
   getOrdersReducer,
-  ordersReducer => ordersReducer.salesmens
+  (ordersReducer) => ordersReducer.salesmens
 );
 
 export const getAllClients = createSelector(
   getOrdersReducer,
-  ordersReducer => ordersReducer.allClients
+  (ordersReducer) => ordersReducer.allClients
 );
 
 export const getEditions = createSelector(
   getOrdersReducer,
-  ordersReducer => ordersReducer.editions
+  (ordersReducer) => ordersReducer.editions
 );
 
 export const getClientsWithBalance = createSelector(
   getOrdersReducer,
-  ordersReducer => ordersReducer.clientsWithBalance
+  (ordersReducer) => ordersReducer.clientsWithBalance
 );
 
 export const getContracts = createSelector(
   getOrdersReducer,
-  ordersReducer => ordersReducer.contracts
+  (ordersReducer) => ordersReducer.contracts
 );
 
 export const getSpaceTypes = createSelector(
   getOrdersReducer,
-  ordersReducer => ordersReducer.spaceTypes
+  (ordersReducer) => ordersReducer.spaceTypes
 );
 
 export const getSpaceLocations = createSelector(
   getOrdersReducer,
-  ordersReducer => ordersReducer.spaceLocations
+  (ordersReducer) => ordersReducer.spaceLocations
 );
 
 export const getErrors = createSelector(
   getOrdersReducer,
-  ordersReducer => ordersReducer.errors
+  (ordersReducer) => ordersReducer.errors
 );
 
 export const getShowAddModal = createSelector(
   getOrdersReducer,
-  ordersReducer => ordersReducer.showAddModal
+  (ordersReducer) => ordersReducer.showAddModal
 );
 
 export const getShowEditModal = createSelector(
   getOrdersReducer,
-  ordersReducer => ordersReducer.showEditModal
+  (ordersReducer) => ordersReducer.showEditModal
 );
 
 export const getShowDeleteModal = createSelector(
   getOrdersReducer,
-  ordersReducer => ordersReducer.showDeleteModal
+  (ordersReducer) => ordersReducer.showDeleteModal
 );
 
 export const getLoadingOrders = createSelector(
   getOrdersReducer,
-  ordersReducer => ordersReducer.loadingOrders
+  (ordersReducer) => ordersReducer.loadingOrders
 );
 
 export const getLoadingProducts = createSelector(
   getOrdersReducer,
-  ordersReducer => ordersReducer.loadingProducts
+  (ordersReducer) => ordersReducer.loadingProducts
 );
 
 export const getLoadingEditionsFilter = createSelector(
   getOrdersReducer,
-  ordersReducer => ordersReducer.loadingEditionsFilter
+  (ordersReducer) => ordersReducer.loadingEditionsFilter
 );
 
 export const getLoadingSalesmens = createSelector(
   getOrdersReducer,
-  ordersReducer => ordersReducer.loadingSalesmens
+  (ordersReducer) => ordersReducer.loadingSalesmens
 );
 
 export const getLoadingAllClients = createSelector(
   getOrdersReducer,
-  ordersReducer => ordersReducer.loadingAllClients
+  (ordersReducer) => ordersReducer.loadingAllClients
 );
 
 export const getLoadingEditions = createSelector(
   getOrdersReducer,
-  ordersReducer => ordersReducer.loadingEidtions
+  (ordersReducer) => ordersReducer.loadingEidtions
 );
 
 export const getLoadingClientsWithBalance = createSelector(
   getOrdersReducer,
-  ordersReducer => ordersReducer.loadingClientsWithBalance
+  (ordersReducer) => ordersReducer.loadingClientsWithBalance
 );
 
 export const getLoadingContracts = createSelector(
   getOrdersReducer,
-  ordersReducer => ordersReducer.loadingContracts
+  (ordersReducer) => ordersReducer.loadingContracts
 );
 
 export const getLoadingSpaceTypes = createSelector(
   getOrdersReducer,
-  ordersReducer => ordersReducer.loadingSpaceTypes
+  (ordersReducer) => ordersReducer.loadingSpaceTypes
 );
 
 export const getLoadingSpaceLocations = createSelector(
   getOrdersReducer,
-  ordersReducer => ordersReducer.loadingSpaceLocations
+  (ordersReducer) => ordersReducer.loadingSpaceLocations
 );

@@ -1,9 +1,10 @@
-import axios from "axios";
-import { getHeaders } from "shared/services/utils";
-import { sortAlphabetically } from "shared/utils";
-import { dissoc } from "ramda";
+import axios from 'axios';
+import { sortAlphabetically } from 'shared/utils';
+import { dissoc } from 'ramda';
 
-const setEndDateToEuroParity = start => {
+import { getHeaders } from 'shared/services/utils';
+
+const setEndDateToEuroParity = (start) => {
   const endYear = new Date(start).getFullYear() + 30;
   return new Date(endYear, 11, 31);
 };
@@ -18,16 +19,15 @@ export default {
           headers: getHeaders(),
         }
       )
-      .then(response => {
-        console.log(response);
+      .then((response) => {
         return response.data.data;
       }),
-  addEuroParity: payload =>
+  addEuroParity: (payload) =>
     axios
       .post(
         `EuroParity/Post`,
         {
-          ...dissoc("id", {
+          ...dissoc('id', {
             ...payload,
             end: setEndDateToEuroParity(payload.start),
           }),
@@ -36,11 +36,11 @@ export default {
           headers: getHeaders(),
         }
       )
-      .then(response => response.data.data),
-  deleteEuroParity: payload =>
+      .then((response) => response.data.data),
+  deleteEuroParity: (payload) =>
     axios
       .delete(`EuroParity/Delete/${payload.id}`, {
         headers: getHeaders(),
       })
-      .then(response => response.data.data),
+      .then((response) => response.data.data),
 };

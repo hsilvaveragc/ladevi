@@ -1,5 +1,7 @@
-import { put, all, takeLatest, call } from "redux-saga/effects";
-import { toast } from "react-toastify";
+import { put, all, takeLatest, call } from 'redux-saga/effects';
+import { toast } from 'react-toastify';
+
+import { appDataService } from 'shared/services';
 
 import {
   INITIAL_LOAD_INIT,
@@ -19,10 +21,8 @@ import {
   FILTER_ACCOUNTING_FIELDS_INIT,
   FILTER_ACCOUNTING_FIELDS_SUCCESS,
   FILTER_ACCOUNTING_FIELDS_FAILURE,
-} from "./actionTypes.js";
-
-import accountingFieldsService from "./service";
-import { appDataService } from "shared/services";
+} from './actionTypes.js';
+import accountingFieldsService from './service';
 
 export function* initialLoad() {
   try {
@@ -43,7 +43,7 @@ export function* initialLoad() {
         type: INITIAL_LOAD_FAILURE,
         errors: { ...error.response.data.errors },
       }),
-      call(toast.error, "Hubo un error :("),
+      call(toast.error, 'Hubo un error :('),
     ]);
   }
 }
@@ -64,7 +64,7 @@ export function* getAllAccountingFields({ payload }) {
         type: GET_ALL_ACCOUNTING_FIELDS_FAILURE,
         errors: { ...error.response.data.errors },
       }),
-      call(toast.error, "Hubo un error :("),
+      call(toast.error, 'Hubo un error :('),
     ]);
   }
 }
@@ -85,7 +85,7 @@ export function* filterAccountingFields({ payload }) {
         type: FILTER_ACCOUNTING_FIELDS_FAILURE,
         errors: { ...error.response.data.errors },
       }),
-      call(toast.error, "Hubo un error :("),
+      call(toast.error, 'Hubo un error :('),
     ]);
   }
 }
@@ -94,7 +94,7 @@ export function* addAccountingField({ payload }) {
   try {
     yield call(accountingFieldsService.addAccountingField, payload);
     yield all([
-      call(toast.success, "Campo contable guardado con exito!"),
+      call(toast.success, 'Campo contable guardado con exito!'),
       put({
         type: ADD_ACCOUNTING_FIELD_SUCCESS,
       }),
@@ -109,7 +109,7 @@ export function* addAccountingField({ payload }) {
         type: ADD_ACCOUNTING_FIELD_FAILURE,
         errors: { ...error.response.data.errors },
       }),
-      call(toast.error, "Hubo un error :("),
+      call(toast.error, 'Hubo un error :('),
     ]);
   }
 }
@@ -118,7 +118,7 @@ export function* editAccountingField({ payload }) {
   try {
     yield call(accountingFieldsService.editAccountingField, payload);
     yield all([
-      call(toast.success, "Campo contable editado con exito!"),
+      call(toast.success, 'Campo contable editado con exito!'),
       put({
         type: EDIT_ACCOUNTING_FIELD_SUCCESS,
       }),
@@ -133,7 +133,7 @@ export function* editAccountingField({ payload }) {
         type: EDIT_ACCOUNTING_FIELD_FAILURE,
         errors: { ...error.response.data.errors },
       }),
-      call(toast.error, "Hubo un error :("),
+      call(toast.error, 'Hubo un error :('),
     ]);
   }
 }
@@ -142,7 +142,7 @@ export function* deleteAccountingField({ payload }) {
   try {
     yield call(accountingFieldsService.deleteAccountingField, payload);
     yield all([
-      call(toast.success, "Campo contable borrado con exito!"),
+      call(toast.success, 'Campo contable borrado con exito!'),
       put({
         type: DELETE_ACCOUNTING_FIELD_SUCCESS,
       }),
@@ -157,7 +157,7 @@ export function* deleteAccountingField({ payload }) {
         type: EDIT_ACCOUNTING_FIELD_FAILURE,
         errors: { ...error.response.data.errors },
       }),
-      call(toast.error, "Hubo un error :("),
+      call(toast.error, 'Hubo un error :('),
     ]);
   }
 }

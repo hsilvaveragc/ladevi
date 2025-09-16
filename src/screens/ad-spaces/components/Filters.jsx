@@ -1,10 +1,8 @@
-import React from "react";
-import styled from "styled-components";
-import { Formik, Form } from "formik";
-
-import InputTextField from "shared/components/InputTextField";
-import InputSelectField from "shared/components/InputSelectField";
-import { SaveButton, DangerButton } from "shared/components/Buttons";
+import styled from 'styled-components';
+import { Formik, Form } from 'formik';
+import InputTextField from 'shared/components/InputTextField';
+import InputSelectField from 'shared/components/InputSelectField';
+import { SaveButton, DangerButton } from 'shared/components/Buttons';
 
 const FiltersContainer = styled.div`
   width: 70vw;
@@ -29,7 +27,7 @@ export default function Filters({
 }) {
   const defaultOption = {
     id: -1,
-    name: "Todos",
+    name: 'Todos',
   };
 
   return (
@@ -37,32 +35,32 @@ export default function Filters({
       validateOnChange={false}
       validateOnBlur={false}
       initialValues={{
-        name: "",
+        name: '',
         productId: -1,
       }}
-      onSubmit={values => {
+      onSubmit={(values) => {
         handleFilter(values);
         handleChangeParams(values);
       }}
       enableReinitialize={true}
     >
-      {formikProps => {
+      {(formikProps) => {
         return (
           <FiltersContainer>
             <Form>
-              <div className="form-row">
-                <div className="col-4">
-                  <InputTextField labelText="Nombre" name="name" />
+              <div className='form-row'>
+                <div className='col-4'>
+                  <InputTextField labelText='Nombre' name='name' />
                 </div>
-                <div className="col-4">
+                <div className='col-4'>
                   <InputSelectField
-                    labelText="Producto"
-                    name="productId"
+                    labelText='Producto'
+                    name='productId'
                     options={[defaultOption, ...availableProducts]}
                   />
                 </div>
-                <div className="col-3">
-                  <div className="buttons-container">
+                <div className='col-3'>
+                  <div className='buttons-container'>
                     <DangerButton
                       onClickHandler={() => {
                         formikProps.resetForm();
@@ -71,7 +69,7 @@ export default function Filters({
                     >
                       Limpiar
                     </DangerButton>
-                    <SaveButton type="submit">Buscar</SaveButton>
+                    <SaveButton type='submit'>Buscar</SaveButton>
                   </div>
                 </div>
               </div>

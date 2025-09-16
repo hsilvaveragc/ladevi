@@ -1,5 +1,7 @@
-import { put, all, takeLatest, call } from "redux-saga/effects";
-import { toast } from "react-toastify";
+import { put, all, takeLatest, call } from 'redux-saga/effects';
+import { toast } from 'react-toastify';
+
+import usersService from '../users/service';
 
 import {
   SEARCH_CLIENTS_INIT,
@@ -41,10 +43,8 @@ import {
   SHOW_DUPLICATE_CUIT_MODAL,
   HIDE_DUPLICATE_CUIT_MODAL,
   CONFIRM_DUPLICATE_CUIT_ASSOCIATION,
-} from "./actionTypes.js";
-
-import clientsService from "./service";
-import usersService from "../users/service";
+} from './actionTypes.js';
+import clientsService from './service';
 
 export function* initialLoad() {
   try {
@@ -62,7 +62,6 @@ export function* initialLoad() {
       },
     });
   } catch (err) {
-    console.log(err);
     yield put({
       type: INITIAL_LOAD_FAILURE,
       errors: { ...err.response.data.errors },
@@ -80,7 +79,6 @@ export function* searchClients() {
       },
     });
   } catch (err) {
-    console.log(err);
     yield put({
       type: SEARCH_CLIENTS_FAILURE,
       errors: { ...err.response.data.errors },
@@ -116,8 +114,6 @@ export function* filterClients({ payload }) {
       },
     });
   } catch (err) {
-    console.log(err);
-    console.log(filterPayload);
     yield put({
       type: FILTER_CLIENTS_FAILURE,
       errors: { ...err.response.data.errors },
@@ -131,7 +127,7 @@ export function* addClient({ payload }) {
     const addClientPayload = yield call(clientsService.addClient, payload);
     yield all([
       put({ type: ADD_CLIENT_SUCCESS, payload: addClientPayload }),
-      call(toast.success, "Cliente creado con éxito!"),
+      call(toast.success, 'Cliente creado con éxito!'),
       put({ type: FILTER_CLIENTS_INIT, payload: payload.params || {} }),
     ]);
   } catch (err) {
@@ -145,10 +141,10 @@ export function* addClient({ payload }) {
       if (
         auxError.identificationValue &&
         auxError.identificationValue[0] &&
-        auxError.identificationValue[0].startsWith("DUPLICATE_CUIT|")
+        auxError.identificationValue[0].startsWith('DUPLICATE_CUIT|')
       ) {
         const errorMsg = auxError.identificationValue[0];
-        const [, xubioId, existingClientName, cuit] = errorMsg.split("|");
+        const [, xubioId, existingClientName, cuit] = errorMsg.split('|');
 
         yield put({
           type: SHOW_DUPLICATE_CUIT_MODAL,
@@ -167,33 +163,32 @@ export function* addClient({ payload }) {
       if (
         auxError.brandName &&
         auxError.brandName[0] &&
-        auxError.brandName[0].includes("Unicidad")
+        auxError.brandName[0].includes('Unicidad')
       ) {
-        auxError.brandName = "La marca ya se encuentra en uso";
+        auxError.brandName = 'La marca ya se encuentra en uso';
       }
 
       if (
         auxError.legalName &&
         auxError.legalName[0] &&
-        auxError.legalName[0].includes("Unicidad")
+        auxError.legalName[0].includes('Unicidad')
       ) {
         // AGREGAR esta verificación ANTES de los otros manejos:
-        auxError.legalName = "La razón social ya se encuentra en uso";
+        auxError.legalName = 'La razón social ya se encuentra en uso';
       }
 
       // Manejar el caso especial cuando hay una clave vacía en el objeto de errores
-      if (auxError[""] && auxError[""].length > 0) {
+      if (auxError[''] && auxError[''].length > 0) {
         // Mostrar el primer mensaje de error en la clave vacía
-        yield call(toast.error, auxError[""][0]);
+        yield call(toast.error, auxError[''][0]);
 
         // Si solo hay errores en la clave vacía, también podemos crear un error general
         if (Object.keys(auxError).length === 1) {
-          auxError.general = auxError[""][0];
+          auxError.general = auxError[''][0];
         }
       }
     }
 
-    console.log(auxError);
     yield put({
       type: ADD_CLIENT_FAILURE,
       errors: auxError,
@@ -201,7 +196,7 @@ export function* addClient({ payload }) {
 
     // Si no hay errores específicos o si auxError está vacío, mostrar mensaje genérico
     if (Object.keys(auxError).length === 0) {
-      yield call(toast.error, "Hubo un error");
+      yield call(toast.error, 'Hubo un error');
     }
   }
 }
@@ -211,12 +206,10 @@ export function* editClient({ payload }) {
     const editClientPayload = yield call(clientsService.editClient, payload);
     yield all([
       put({ type: EDIT_CLIENT_SUCCESS, payload: editClientPayload }),
-      call(toast.success, "Cliente editado con éxito!"),
+      call(toast.success, 'Cliente editado con éxito!'),
       put({ type: FILTER_CLIENTS_INIT, payload: payload.params || {} }),
     ]);
   } catch (err) {
-    console.log(err);
-
     // Verificar si es error de CUIT duplicado
     if (err.response && err.response.data && err.response.data.errors) {
       const auxError = err.response.data.errors;
@@ -224,10 +217,10 @@ export function* editClient({ payload }) {
       if (
         auxError.identificationValue &&
         auxError.identificationValue[0] &&
-        auxError.identificationValue[0].startsWith("DUPLICATE_CUIT|")
+        auxError.identificationValue[0].startsWith('DUPLICATE_CUIT|')
       ) {
         const errorMsg = auxError.identificationValue[0];
-        const [, xubioId, existingClientName, cuit] = errorMsg.split("|");
+        const [, xubioId, existingClientName, cuit] = errorMsg.split('|');
 
         yield put({
           type: SHOW_DUPLICATE_CUIT_MODAL,
@@ -250,24 +243,20 @@ export function* editClient({ payload }) {
       errors: { ...err.response.data.errors },
     });
     if (!err.response.data.errors) {
-      yield call(toast.error, "Hubo un error");
+      yield call(toast.error, 'Hubo un error');
     }
   }
 }
 
 export function* locationData({ payload }) {
   try {
-    const [
-      countriesPayload,
-      statesPayload,
-      districtsPayload,
-      citiesPayload,
-    ] = yield all([
-      call(clientsService.fetchCountries),
-      call(clientsService.fetchStates, payload.countryId),
-      call(clientsService.fetchDistricts, payload.stateId),
-      call(clientsService.getAllCities, payload.districtId),
-    ]);
+    const [countriesPayload, statesPayload, districtsPayload, citiesPayload] =
+      yield all([
+        call(clientsService.fetchCountries),
+        call(clientsService.fetchStates, payload.countryId),
+        call(clientsService.fetchDistricts, payload.stateId),
+        call(clientsService.getAllCities, payload.districtId),
+      ]);
     yield put({
       type: GET_LOCATION_DATA_SUCCESS,
       payload: {
@@ -278,14 +267,13 @@ export function* locationData({ payload }) {
       },
     });
   } catch (err) {
-    console.log(err);
     yield put({
       type: GET_LOCATION_DATA_FAILURE,
       errors: { ...err.response.data.errors },
     });
     yield call(
       toast.error,
-      "Hubo un error al obtener los datos de paises. Por favor recargue la página e intente nuevamente"
+      'Hubo un error al obtener los datos de paises. Por favor recargue la página e intente nuevamente'
     );
   }
 }
@@ -340,7 +328,7 @@ export function* deleteClient({ payload }) {
     const deletePayload = yield call(clientsService.deleteClient, payload);
     yield all([
       put({ type: DELETE_CLIENT_SUCCESS, payload: deletePayload }),
-      call(toast.success, "Cliente borrado con éxito!"),
+      call(toast.success, 'Cliente borrado con éxito!'),
       put({ type: FILTER_CLIENTS_INIT, payload: payload.params }),
     ]);
   } catch (err) {
@@ -348,7 +336,7 @@ export function* deleteClient({ payload }) {
       type: DELETE_CLIENT_FAILURE,
       error: err.response.data.message,
     });
-    yield call(toast.error, "Hubo un error");
+    yield call(toast.error, 'Hubo un error');
   }
 }
 
@@ -376,18 +364,17 @@ export function* confirmDuplicateCuitAssociation({ payload }) {
     const { xubioId, clientId, isEdit, originalPayload } = payload;
 
     if (isEdit) {
-      debugger;
       // Para edición: cliente ya existe, solo asociar
       const confirmResponse = yield call(
         clientsService.editAndAssociate,
         originalPayload,
         xubioId
       );
-      debugger;
+
       yield all([
         put({ type: EDIT_CLIENT_SUCCESS, payload: confirmResponse }),
         put({ type: HIDE_DUPLICATE_CUIT_MODAL }),
-        call(toast.success, "Cliente editado con éxito"),
+        call(toast.success, 'Cliente editado con éxito'),
         put({
           type: FILTER_CLIENTS_INIT,
           payload: originalPayload.params || {},
@@ -404,7 +391,7 @@ export function* confirmDuplicateCuitAssociation({ payload }) {
       yield all([
         put({ type: ADD_CLIENT_SUCCESS, payload: createResponse }),
         put({ type: HIDE_DUPLICATE_CUIT_MODAL }),
-        call(toast.success, "Cliente creado con éxito"),
+        call(toast.success, 'Cliente creado con éxito'),
         put({
           type: FILTER_CLIENTS_INIT,
           payload: originalPayload.params || {},
@@ -412,10 +399,9 @@ export function* confirmDuplicateCuitAssociation({ payload }) {
       ]);
     }
   } catch (error) {
-    debugger;
     yield all([
       put({ type: HIDE_DUPLICATE_CUIT_MODAL }),
-      call(toast.error, "Error al asociar cliente"),
+      call(toast.error, 'Error al asociar cliente'),
     ]);
   }
 }
