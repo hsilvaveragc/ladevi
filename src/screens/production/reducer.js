@@ -1,8 +1,6 @@
 import { createSelector } from 'reselect';
 
 import {
-  SET_CLIENT_TYPE,
-  SET_SELECTED_CURRENCY,
   FETCH_PRODUCTS_INIT,
   FETCH_PRODUCTS_SUCCESS,
   FETCH_PRODUCTS_FAILURE,
@@ -49,15 +47,10 @@ const initialState = {
   errors: {},
 
   // Filtros
-  clientType: null,
-  selectedCurrency: '',
   products: [],
   selectedProduct: null,
   editions: [],
   selectedEdition: null,
-  availableClientsForEdition: [],
-  // orders: [],
-  // selectedOrder: null,
 
   productionItems: [],
   currentEditionId: null,
@@ -88,60 +81,58 @@ export default function (state = initialState, action) {
         loading: true,
         errors: {},
       };
-    case SET_CLIENT_TYPE:
-      return {
-        ...state,
-        clientType: action.payload,
-        // Reset completo de todas las selecciones
-        selectedProduct: null,
-        selectedEdition: null,
-        selectedCurrency: '',
-        // Reset de datos cargados
-        products: [],
-        editions: [],
-      };
-    case FETCH_PRODUCTS_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        products: action.payload.products,
-      };
 
     case SET_SELECTED_PRODUCT:
       return {
         ...state,
         selectedProduct: action.payload,
-        // Reset data dependiente del producto
         selectedEdition: null,
         editions: [],
-        selectedCurrency: '',
+        productionItems: [],
+        currentEditionId: null,
       };
 
+    // Products
+    case FETCH_PRODUCTS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        products: action.payload.products || [],
+        errors: {},
+      };
+
+    // Editions
     case FETCH_EDITIONS_SUCCESS:
       return {
         ...state,
         loading: false,
-        editions: action.payload.editions,
+        editions: action.payload.editions || [],
+        errors: {},
       };
 
     case SET_SELECTED_EDITION:
       return {
         ...state,
         selectedEdition: action.payload,
-        // Reset data dependiente de la edición
-        selectedCurrency: '',
+        productionItems: [],
+        currentEditionId: action.payload?.id || null,
       };
-    case SET_SELECTED_CURRENCY:
-      return {
-        ...state,
-        selectedCurrency: action.payload,
-      };
+
+    // Production Items - Estructura real del backend
     case FETCH_PRODUCTION_ITEMS_SUCCESS:
+      const productionData = action.payload;
+      // Calcular total de páginas desde los items recibidos
+      const maxPageNumber =
+        productionData && productionData.length > 0
+          ? Math.max(...productionData.map((item) => item.PageNumber))
+          : 0;
+
       return {
         ...state,
         loading: false,
-        productionItems: action.payload.items,
-        totalPages: action.payload.totalPages,
+        productionItems: productionData || [],
+        totalPages: maxPageNumber,
+        currentEditionId: state.selectedEdition?.id || state.currentEditionId,
         errors: {},
       };
 
@@ -151,8 +142,12 @@ export default function (state = initialState, action) {
         ...state,
         loading: false,
         productionItems: state.productionItems.map((item) =>
-          item.id === action.payload.itemId
-            ? { ...item, pageNumber: action.payload.newPageNumber }
+          item.Id === action.payload.itemId
+            ? {
+                ...item,
+                PageNumber: action.payload.targetPageNumber,
+                Slot: action.payload.targetSlot,
+              }
             : item
         ),
         errors: {},
@@ -173,7 +168,7 @@ export default function (state = initialState, action) {
         ...state,
         loading: false,
         productionItems: state.productionItems.filter(
-          (item) => item.id !== action.payload.itemId
+          (item) => item.Id !== action.payload.itemId
         ),
         errors: {},
       };
@@ -182,9 +177,10 @@ export default function (state = initialState, action) {
     case UPDATE_OBSERVATION_SUCCESS:
       return {
         ...state,
+        loading: false,
         productionItems: state.productionItems.map((item) =>
-          item.id === action.payload.itemId
-            ? { ...item, observacion: action.payload.observacion }
+          item.Id === action.payload.itemId
+            ? { ...item, Observations: action.payload.observations }
             : item
         ),
         errors: {},
@@ -194,9 +190,10 @@ export default function (state = initialState, action) {
     case MARK_AS_EDITORIAL_SUCCESS:
       return {
         ...state,
+        loading: false,
         productionItems: state.productionItems.map((item) =>
-          item.id === action.payload.itemId
-            ? { ...item, isEditorial: action.payload.isEditorial, isCA: false }
+          item.Id === action.payload.itemId
+            ? { ...item, IsEditorial: action.payload.isEditorial, IsCA: false }
             : item
         ),
         errors: {},
@@ -206,9 +203,10 @@ export default function (state = initialState, action) {
     case MARK_AS_CA_SUCCESS:
       return {
         ...state,
+        loading: false,
         productionItems: state.productionItems.map((item) =>
-          item.id === action.payload.itemId
-            ? { ...item, isCA: action.payload.isCA, isEditorial: false }
+          item.Id === action.payload.itemId
+            ? { ...item, IsCA: action.payload.isCA, IsEditorial: false }
             : item
         ),
         errors: {},
@@ -286,10 +284,15 @@ export const getErrors = createSelector(
   (productionReducer) => productionReducer.errors
 );
 
-// Selectores de selección
-export const getClientType = createSelector(
+// Selectores de datos
+export const getProducts = createSelector(
   getProductionReducer,
-  (productionReducer) => productionReducer.clientType
+  (productionReducer) => productionReducer.products
+);
+
+export const getEditions = createSelector(
+  getProductionReducer,
+  (productionReducer) => productionReducer.editions
 );
 
 export const getSelectedProduct = createSelector(
@@ -302,24 +305,55 @@ export const getSelectedEdition = createSelector(
   (productionReducer) => productionReducer.selectedEdition
 );
 
-export const getSelectedCurrency = createSelector(
+export const getProductionItems = createSelector(
   getProductionReducer,
-  (productionReducer) => productionReducer.selectedCurrency
+  (productionReducer) => productionReducer.productionItems
 );
 
-export const getProducts = createSelector(
+export const getCurrentEditionId = createSelector(
   getProductionReducer,
-  (productionReducer) => productionReducer.products
+  (productionReducer) => productionReducer.currentEditionId
 );
 
-export const getEditions = createSelector(
+export const getTotalPages = createSelector(
   getProductionReducer,
-  (productionReducer) => productionReducer.editions
+  (productionReducer) => productionReducer.totalPages
 );
 
-// Selectors
-export const getProductionItems = (state) => state.production.productionItems;
-export const getCurrentEditionId = (state) => state.production.currentEditionId;
-export const getTotalPages = (state) => state.production.totalPages;
-export const getValidationResults = (state) =>
-  state.production.validationResults;
+export const getValidationResults = createSelector(
+  getProductionReducer,
+  (productionReducer) => productionReducer.validationResults
+);
+
+// Selector para agrupar items por página (helper para el componente)
+export const getProductionItemsByPage = createSelector(
+  [getProductionItems],
+  (items) => {
+    const itemsByPage = {};
+
+    items.forEach((item) => {
+      const pageNumber = item.PageNumber;
+      if (!itemsByPage[pageNumber]) {
+        itemsByPage[pageNumber] = [];
+      }
+      itemsByPage[pageNumber].push(item);
+    });
+
+    // Ordenar items dentro de cada página por Slot
+    Object.keys(itemsByPage).forEach((pageNumber) => {
+      itemsByPage[pageNumber].sort((a, b) => a.Slot - b.Slot);
+    });
+
+    return itemsByPage;
+  }
+);
+
+// Selector para verificar si un item está asignado (tiene PublishingOrderId)
+export const getAssignedItems = createSelector([getProductionItems], (items) =>
+  items.filter((item) => item.PublishingOrderId > 0)
+);
+
+// Selector para obtener items disponibles (sin asignar)
+export const getAvailableItems = createSelector([getProductionItems], (items) =>
+  items.filter((item) => item.Id === 0 || item.PublishingOrderId === 0)
+);

@@ -41,7 +41,8 @@ import {
   VALIDATE_INVENTORY_REDUCTION_FAILURE,
 } from './actionTypes';
 
-export function* fetchProducts({ payload }) {
+// Fetch products
+export function* fetchProducts() {
   try {
     const products = yield call(productionService.getProductsForEditions);
     yield put({
@@ -63,11 +64,12 @@ export function* fetchProducts({ payload }) {
   }
 }
 
+// Fetch editions
 export function* fetchEditions({ payload }) {
   try {
     const editions = yield call(
       productionService.getEditionsByProduct,
-      payload
+      payload.productId
     );
     yield put({
       type: FETCH_EDITIONS_SUCCESS,
@@ -88,17 +90,20 @@ export function* fetchEditions({ payload }) {
   }
 }
 
-// Fetch production items
+// Fetch production items - Conecta con el endpoint real del backend
 export function* fetchProductionItems({ payload }) {
   try {
     const response = yield call(
-      productionService.getProductionItems,
-      payload.editionId
+      productionService.getProductionInventory,
+      payload.productEditionId
     );
+
     yield put({
       type: FETCH_PRODUCTION_ITEMS_SUCCESS,
-      payload: response,
+      payload: response, // response ya es el array de ProductionItemDto
     });
+
+    yield call(toast.success, 'Elementos de producción cargados correctamente');
   } catch (err) {
     yield put({
       type: FETCH_PRODUCTION_ITEMS_FAILURE,
@@ -115,15 +120,23 @@ export function* fetchProductionItems({ payload }) {
 // Move item
 export function* moveItem({ payload }) {
   try {
-    yield call(
+    const response = yield call(
       productionService.moveItem,
       payload.itemId,
-      payload.newPageNumber
+      payload.sourcePageNumber,
+      payload.sourceSlot,
+      payload.targetPageNumber,
+      payload.targetSlot
     );
+
     yield put({
       type: MOVE_ITEM_SUCCESS,
-      payload,
+      payload: {
+        ...payload,
+        updatedItem: response,
+      },
     });
+
     yield call(toast.success, 'Elemento movido correctamente');
   } catch (err) {
     yield put({
@@ -143,19 +156,24 @@ export function* addSlot({ payload }) {
   try {
     const newItem = yield call(
       productionService.addSlot,
-      payload.editionId,
-      payload.pageNumber
+      payload.productEditionId,
+      payload.pageNumber,
+      payload.inventoryProductAdvertisingSpaceId
     );
+
     yield put({
       type: ADD_SLOT_SUCCESS,
       payload: { newItem },
     });
+
     yield call(toast.success, 'Slot agregado correctamente');
   } catch (err) {
     yield put({
       type: ADD_SLOT_FAILURE,
       errors: {
-        ...(err.response?.data?.errors || { general: 'Error al agregar slot' }),
+        ...(err.response?.data?.errors || {
+          general: 'Error al agregar slot',
+        }),
       },
     });
     yield call(toast.error, 'Error al agregar slot');
@@ -166,10 +184,12 @@ export function* addSlot({ payload }) {
 export function* removeSlot({ payload }) {
   try {
     yield call(productionService.removeSlot, payload.itemId);
+
     yield put({
       type: REMOVE_SLOT_SUCCESS,
       payload,
     });
+
     yield call(toast.success, 'Slot eliminado correctamente');
   } catch (err) {
     yield put({
@@ -187,16 +207,21 @@ export function* removeSlot({ payload }) {
 // Update observation
 export function* updateObservation({ payload }) {
   try {
-    yield call(
+    const response = yield call(
       productionService.updateObservation,
       payload.itemId,
-      payload.observacion
+      payload.observations
     );
+
     yield put({
       type: UPDATE_OBSERVATION_SUCCESS,
-      payload,
+      payload: {
+        ...payload,
+        updatedItem: response,
+      },
     });
-    // No mostramos toast para esta acción para no ser intrusivos
+
+    yield call(toast.success, 'Observación actualizada correctamente');
   } catch (err) {
     yield put({
       type: UPDATE_OBSERVATION_FAILURE,
@@ -213,54 +238,70 @@ export function* updateObservation({ payload }) {
 // Mark as editorial
 export function* markAsEditorial({ payload }) {
   try {
-    yield call(
+    const response = yield call(
       productionService.markAsEditorial,
       payload.itemId,
       payload.isEditorial
     );
+
     yield put({
       type: MARK_AS_EDITORIAL_SUCCESS,
-      payload,
+      payload: {
+        ...payload,
+        updatedItem: response,
+      },
     });
+
     yield call(
       toast.success,
-      `Marcado como ${payload.isEditorial ? 'Editorial' : 'Publicidad'}`
+      payload.isEditorial
+        ? 'Marcado como editorial'
+        : 'Desmarcado como editorial'
     );
   } catch (err) {
     yield put({
       type: MARK_AS_EDITORIAL_FAILURE,
       errors: {
         ...(err.response?.data?.errors || {
-          general: 'Error al actualizar tipo',
+          general: 'Error al marcar como editorial',
         }),
       },
     });
-    yield call(toast.error, 'Error al actualizar el tipo');
+    yield call(toast.error, 'Error al marcar como editorial');
   }
 }
 
 // Mark as CA
 export function* markAsCA({ payload }) {
   try {
-    yield call(productionService.markAsCA, payload.itemId, payload.isCA);
+    const response = yield call(
+      productionService.markAsCA,
+      payload.itemId,
+      payload.isCA
+    );
+
     yield put({
       type: MARK_AS_CA_SUCCESS,
-      payload,
+      payload: {
+        ...payload,
+        updatedItem: response,
+      },
     });
+
     yield call(
       toast.success,
-      `Marcado como ${payload.isCA ? 'CA' : 'Publicidad'}`
+      payload.isCA ? 'Marcado como CA' : 'Desmarcado como CA'
     );
   } catch (err) {
     yield put({
       type: MARK_AS_CA_FAILURE,
       errors: {
         ...(err.response?.data?.errors || {
-          general: 'Error al actualizar tipo',
+          general: 'Error al marcar como CA',
         }),
       },
     });
-    yield call(toast.error, 'Error al actualizar el tipo');
+    yield call(toast.error, 'Error al marcar como CA');
   }
 }
 
@@ -269,12 +310,14 @@ export function* generateAutoLayout({ payload }) {
   try {
     const response = yield call(
       productionService.generateAutoLayout,
-      payload.editionId
+      payload.productEditionId
     );
+
     yield put({
       type: GENERATE_AUTO_LAYOUT_SUCCESS,
       payload: response,
     });
+
     yield call(toast.success, 'Layout automático generado correctamente');
   } catch (err) {
     yield put({
@@ -294,9 +337,10 @@ export function* validatePageReduction({ payload }) {
   try {
     const response = yield call(
       productionService.validatePageReduction,
-      payload.editionId,
+      payload.productEditionId,
       payload.newPageCount
     );
+
     yield put({
       type: VALIDATE_PAGE_REDUCTION_SUCCESS,
       payload: response,
@@ -310,6 +354,7 @@ export function* validatePageReduction({ payload }) {
         }),
       },
     });
+    yield call(toast.error, 'Error al validar reducción de páginas');
   }
 }
 
@@ -318,9 +363,10 @@ export function* validateInventoryReduction({ payload }) {
   try {
     const response = yield call(
       productionService.validateInventoryReduction,
-      payload.editionId,
-      payload.newInventory
+      payload.productEditionId,
+      payload.inventoryChanges
     );
+
     yield put({
       type: VALIDATE_INVENTORY_REDUCTION_SUCCESS,
       payload: response,
@@ -334,30 +380,11 @@ export function* validateInventoryReduction({ payload }) {
         }),
       },
     });
+    yield call(toast.error, 'Error al validar reducción de inventario');
   }
 }
 
-// Watchers
-export function* watchFetchProductionItems() {}
-
-export function* watchMoveItem() {}
-
-export function* watchAddSlot() {}
-
-export function* watchRemoveSlot() {}
-
-export function* watchUpdateObservation() {}
-
-export function* watchMarkAsEditorial() {}
-
-export function* watchMarkAsCA() {}
-
-export function* watchGenerateAutoLayout() {}
-
-export function* watchValidatePageReduction() {}
-
-export function* watchValidateInventoryReduction() {}
-
+// Root saga
 export default function* productionSaga() {
   yield all([
     takeLatest(FETCH_PRODUCTS_INIT, fetchProducts),

@@ -3,7 +3,6 @@ export const INITIAL_LOAD_INIT = '@billing/INITIAL_LOAD_INIT';
 export const INITIAL_LOAD_SUCCESS = '@billing/INITIAL_LOAD_SUCCESS';
 export const INITIAL_LOAD_FAILURE = '@billing/INITIAL_LOAD_FAILURE';
 
-export const SET_CLIENT_TYPE = '@billing/SET_CLIENT_TYPE';
 export const SET_ENTITY_TYPE = '@billing/SET_ENTITY_TYPE';
 
 // Gestión de clientes
@@ -17,7 +16,6 @@ export const FETCH_CONTRACTS_SUCCESS = '@billing/FETCH_CONTRACTS_SUCCESS';
 export const FETCH_CONTRACTS_FAILURE = '@billing/FETCH_CONTRACTS_FAILURE';
 
 export const SELECT_CLIENT = '@billing/SELECT_CLIENT';
-export const SET_SELECTED_CURRENCY = '@billing/SET_SELECTED_CURRENCY';
 
 // Gestión de órdenes
 export const FETCH_ORDERS_INIT = '@billing/FETCH_ORDERS_INIT';

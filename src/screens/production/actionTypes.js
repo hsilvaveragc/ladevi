@@ -1,4 +1,3 @@
-export const SET_CLIENT_TYPE = '@production/SET_CLIENT_TYPE';
 export const SET_ENTITY_TYPE = '@production/SET_ENTITY_TYPE';
 
 // Gestión de clientes

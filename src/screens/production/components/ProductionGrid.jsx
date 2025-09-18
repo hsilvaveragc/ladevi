@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -9,6 +10,7 @@ import {
   faSave,
   faTimes,
 } from '@fortawesome/free-solid-svg-icons';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 import {
   fetchProductionItems,
@@ -21,6 +23,7 @@ import {
 } from '../actionCreators';
 import {
   getProductionItems,
+  getProductionItemsByPage,
   getLoading,
   getErrors,
   getTotalPages,
@@ -106,7 +109,7 @@ const ProductionGridContainer = styled.div`
     border-radius: 6px;
     background-color: #f8f9fa;
     padding: 8px;
-    position: relative;
+    transition: all 0.2s ease;
 
     &.drag-over {
       border-color: #28a745;
@@ -131,25 +134,30 @@ const ProductionGridContainer = styled.div`
     border-radius: 4px;
     padding: 8px 12px;
     margin-bottom: 6px;
-    cursor: grab;
     transition: all 0.2s ease;
-
-    &:hover {
-      border-color: #007bff;
-      box-shadow: 0 2px 4px rgba(0, 123, 255, 0.25);
-    }
-
-    &:active {
-      cursor: grabbing;
-    }
 
     &:last-child {
       margin-bottom: 0;
     }
 
-    &.dragging {
-      opacity: 0.5;
-      transform: rotate(2deg);
+    &.assigned {
+      border-color: #28a745;
+      background-color: #f8fff9;
+    }
+
+    &.template {
+      border-color: #ffc107;
+      border-style: dashed;
+    }
+
+    /* Estilos específicos de @hello-pangea/dnd */
+    .drag-handle {
+      color: #6c757d;
+      cursor: grab;
+
+      &:active {
+        cursor: grabbing;
+      }
     }
 
     .item-content {
@@ -159,21 +167,30 @@ const ProductionGridContainer = styled.div`
       align-items: center;
       font-size: 13px;
 
-      .drag-handle {
-        color: #6c757d;
-        cursor: grab;
-      }
-
-      .anunciante {
+      .client-info {
         font-weight: 600;
         color: #495057;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+
+        .client-name {
+          font-size: 12px;
+        }
+
+        .contract-name {
+          font-size: 11px;
+          color: #6c757d;
+          font-weight: normal;
+        }
       }
 
-      .vendedor {
+      .seller-name {
         color: #6c757d;
+        font-size: 12px;
       }
 
-      .medida {
+      .space-type {
         background-color: #e9ecef;
         padding: 2px 6px;
         border-radius: 3px;
@@ -190,17 +207,33 @@ const ProductionGridContainer = styled.div`
           background-color: #fff3cd;
           color: #856404;
         }
+
+        &.assigned {
+          background-color: #d4edda;
+          color: #155724;
+        }
+
+        &.template {
+          background-color: #fff3cd;
+          color: #856404;
+        }
       }
 
-      .ubicacion {
+      .slot-info {
         color: #6c757d;
-        text-transform: capitalize;
+        font-size: 11px;
+        text-align: center;
+
+        .slot-number {
+          display: block;
+          font-weight: 600;
+        }
       }
 
-      .observacion {
+      .observation {
         min-width: 150px;
 
-        .observacion-display {
+        .observation-display {
           color: #6c757d;
           font-style: italic;
           cursor: pointer;
@@ -216,7 +249,7 @@ const ProductionGridContainer = styled.div`
           }
         }
 
-        .observacion-input {
+        .observation-input {
           padding: 2px 4px;
           border: 1px solid #ced4da;
           border-radius: 3px;
@@ -293,58 +326,72 @@ const ProductionGridContainer = styled.div`
   }
 `;
 
-const ProductionGrid = () => {
+const ProductionGrid = ({ match }) => {
   const dispatch = useDispatch();
-  const { editionId } = 1; //useParams();
+  const productEditionId = match?.params?.productEditionId;
 
-  // Estado local para drag & drop y edición
+  // Estado local para edición de observaciones
   const [editingObservation, setEditingObservation] = useState(null);
-  const [draggedItem, setDraggedItem] = useState(null);
-  const [dragOverPage, setDragOverPage] = useState(null);
   const observationInputRef = useRef(null);
 
-  // Selectores del estado
+  // Selectores del estado con estructura real del backend
   const productionItems = useSelector(getProductionItems);
+  const itemsByPage = useSelector(getProductionItemsByPage);
   const loading = useSelector(getLoading);
   const errors = useSelector(getErrors);
   const totalPages = useSelector(getTotalPages);
 
-  // Para demo, usar un ID fijo si no está disponible en la URL
-  const currentEditionId = editionId || 'edition-1';
-
   // Cargar elementos al montar el componente
   useEffect(() => {
-    if (currentEditionId) {
-      dispatch(fetchProductionItems(currentEditionId));
+    if (productEditionId) {
+      dispatch(fetchProductionItems(parseInt(productEditionId)));
     }
-  }, [dispatch, currentEditionId]);
+  }, [dispatch, productEditionId]);
 
-  // Handlers para drag & drop
-  const handleDragStart = (e, item) => {
-    setDraggedItem(item);
-    e.dataTransfer.effectAllowed = 'move';
-  };
+  // Handler principal de drag and drop
+  const handleDragEnd = (result) => {
+    const { destination, source, draggableId } = result;
 
-  const handleDragOver = (e, pageNumber) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    setDragOverPage(pageNumber);
-  };
-
-  const handleDragLeave = (e) => {
-    if (!e.currentTarget.contains(e.relatedTarget)) {
-      setDragOverPage(null);
+    // Si no hay destino válido, no hacer nada
+    if (!destination) {
+      return;
     }
-  };
 
-  const handleDrop = (e, pageNumber) => {
-    e.preventDefault();
-    setDragOverPage(null);
-
-    if (draggedItem && draggedItem.pageNumber !== pageNumber) {
-      dispatch(moveItem(draggedItem.id, pageNumber));
+    // Si se soltó en la misma posición, no hacer nada
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return;
     }
-    setDraggedItem(null);
+
+    // Extraer información de los IDs
+    const sourcePageNumber = parseInt(source.droppableId.replace('page-', ''));
+    const destinationPageNumber = parseInt(
+      destination.droppableId.replace('page-', '')
+    );
+
+    // Encontrar el item que se está moviendo
+    const draggedItem = productionItems.find(
+      (item) =>
+        `item-${item.Id}-${item.PageNumber}-${item.Slot}` === draggableId
+    );
+
+    if (draggedItem) {
+      // Calcular nuevo slot basado en la posición de destino
+      const destinationPageItems = itemsByPage[destinationPageNumber] || [];
+      const newSlot = destination.index + 1;
+
+      dispatch(
+        moveItem(
+          draggedItem.Id,
+          sourcePageNumber,
+          draggedItem.Slot,
+          destinationPageNumber,
+          newSlot
+        )
+      );
+    }
   };
 
   // Handlers para observaciones
@@ -393,157 +440,232 @@ const ProductionGrid = () => {
 
   // Handlers para slots
   const handleAddSlot = (pageNumber) => {
-    dispatch(addSlot(currentEditionId, pageNumber));
+    // console.log('Agregar slot en página', pageNumber);
   };
 
   const handleRemoveSlot = (itemId) => {
-    dispatch(removeSlot(itemId));
+    const item = productionItems.find((i) => i.Id === itemId);
+    if (item && item.Id === 0) {
+      dispatch(removeSlot(itemId));
+    }
+  };
+
+  // Determinar el tipo visual del item
+  const getItemType = (item) => {
+    if (item.IsEditorial) return 'editorial';
+    if (item.IsCA) return 'ca';
+    if (item.PublishingOrderId > 0) return 'assigned';
+    return 'template';
+  };
+
+  // Determinar el tipo de select
+  const getSelectValue = (item) => {
+    if (item.IsEditorial) return 'editorial';
+    if (item.IsCA) return 'ca';
+    return 'publicidad';
+  };
+
+  // Renderizar un item individual
+  const renderProductionItem = (item, index) => {
+    const itemType = getItemType(item);
+    const selectValue = getSelectValue(item);
+    const isTemplate = item.Id === 0;
+    const isAssigned = item.PublishingOrderId > 0;
+    const draggableId = `item-${item.Id}-${item.PageNumber}-${item.Slot}`;
+
+    return (
+      <Draggable
+        key={draggableId}
+        draggableId={draggableId}
+        index={index}
+        isDragDisabled={isAssigned} // No permitir drag de items asignados
+      >
+        {(provided, snapshot) => (
+          <div
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            className={`production-item ${itemType} ${snapshot.isDragging ? 'dragging' : ''}`}
+            style={{
+              ...provided.draggableProps.style,
+              transform: snapshot.isDragging
+                ? `${provided.draggableProps.style?.transform} rotate(2deg)`
+                : provided.draggableProps.style?.transform,
+            }}
+          >
+            <div className='item-content'>
+              <div className='drag-handle' {...provided.dragHandleProps}>
+                <FontAwesomeIcon icon={faGripVertical} />
+              </div>
+
+              <div className='client-info'>
+                <div className='client-name'>
+                  {item.ClientName ||
+                    (isAssigned ? 'Sin cliente' : 'Disponible')}
+                </div>
+                {item.ContractName && (
+                  <div className='contract-name'>{item.ContractName}</div>
+                )}
+              </div>
+
+              <div className='seller-name'>
+                {item.SellerName || (isAssigned ? '-' : '')}
+              </div>
+
+              <div className={`space-type ${itemType}`}>
+                {item.IsEditorial
+                  ? 'EDITORIAL'
+                  : item.IsCA
+                    ? 'CA'
+                    : item.ProductAdvertisingSpaceName || '-'}
+              </div>
+
+              <div className='slot-info'>
+                <span className='slot-number'>#{item.Slot}</span>
+              </div>
+
+              <div className='observation'>
+                {editingObservation?.itemId === item.Id ? (
+                  <div style={{ display: 'flex', gap: '2px' }}>
+                    <input
+                      ref={observationInputRef}
+                      type='text'
+                      className='observation-input'
+                      value={editingObservation.value}
+                      onChange={(e) =>
+                        setEditingObservation({
+                          ...editingObservation,
+                          value: e.target.value,
+                        })
+                      }
+                      onKeyDown={handleObservationKeyPress}
+                      onBlur={handleObservationSave}
+                      placeholder='Observación...'
+                    />
+                    <button
+                      type='button'
+                      className='btn-sm btn-success'
+                      onClick={handleObservationSave}
+                    >
+                      <FontAwesomeIcon icon={faSave} />
+                    </button>
+                    <button
+                      type='button'
+                      className='btn-sm btn-danger'
+                      onClick={handleObservationCancel}
+                    >
+                      <FontAwesomeIcon icon={faTimes} />
+                    </button>
+                  </div>
+                ) : (
+                  <div
+                    className={`observation-display ${
+                      !item.Observations ? 'empty' : ''
+                    }`}
+                    onClick={() =>
+                      handleObservationClick(item.Id, item.Observations)
+                    }
+                  >
+                    {item.Observations || 'Agregar observación...'}
+                  </div>
+                )}
+              </div>
+
+              <div className='actions'>
+                <select
+                  className='type-select'
+                  value={selectValue}
+                  onChange={(e) => handleTypeChange(item.Id, e.target.value)}
+                  disabled={isAssigned}
+                >
+                  <option value='publicidad'>Publicidad</option>
+                  <option value='editorial'>Editorial</option>
+                  <option value='ca'>CA</option>
+                </select>
+
+                {isTemplate && (
+                  <button
+                    type='button'
+                    className='btn-sm btn-danger'
+                    onClick={() => {
+                      if (window.confirm('¿Eliminar este slot?')) {
+                        handleRemoveSlot(item.Id);
+                      }
+                    }}
+                    title='Solo se pueden eliminar slots de template'
+                  >
+                    <FontAwesomeIcon icon={faTrash} />
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </Draggable>
+    );
   };
 
   // Renderizar elementos de una página
   const renderPageItems = (pageNumber) => {
-    const pageItems = productionItems.filter(
-      (item) => item.pageNumber === pageNumber
-    );
+    const pageItems = itemsByPage[pageNumber] || [];
+    const droppableId = `page-${pageNumber}`;
 
     return (
-      <div
-        className={`page-items-container ${
-          dragOverPage === pageNumber ? 'drag-over' : ''
-        }`}
-        onDragOver={(e) => handleDragOver(e, pageNumber)}
-        onDragLeave={handleDragLeave}
-        onDrop={(e) => handleDrop(e, pageNumber)}
-      >
-        {pageItems.length === 0 ? (
-          <div className='empty-page-message'>Arrastrar elementos aquí</div>
-        ) : (
-          pageItems.map((item) => {
-            const isDragging = draggedItem?.id === item.id;
-            const itemType = item.isEditorial
-              ? 'editorial'
-              : item.isCA
-                ? 'ca'
-                : 'publicidad';
-
-            return (
-              <div
-                key={item.id}
-                className={`production-item ${isDragging ? 'dragging' : ''}`}
-                draggable
-                onDragStart={(e) => handleDragStart(e, item)}
-              >
-                <div className='item-content'>
-                  <div className='drag-handle'>
-                    <FontAwesomeIcon icon={faGripVertical} />
-                  </div>
-
-                  <div className='anunciante'>{item.anunciante || '-'}</div>
-
-                  <div className='vendedor'>{item.vendedor || '-'}</div>
-
-                  <div className={`medida ${itemType}`}>
-                    {item.isEditorial
-                      ? 'EDITORIAL'
-                      : item.isCA
-                        ? 'CA'
-                        : item.medida || '-'}
-                  </div>
-
-                  <div className='ubicacion'>{item.ubicacion || '-'}</div>
-
-                  <div className='observacion'>
-                    {editingObservation?.itemId === item.id ? (
-                      <div style={{ display: 'flex', gap: '2px' }}>
-                        <input
-                          ref={observationInputRef}
-                          type='text'
-                          className='observacion-input'
-                          value={editingObservation.value}
-                          onChange={(e) =>
-                            setEditingObservation({
-                              ...editingObservation,
-                              value: e.target.value,
-                            })
-                          }
-                          onKeyDown={handleObservationKeyPress}
-                          onBlur={handleObservationSave}
-                          placeholder='Observación...'
-                        />
-                        <button
-                          type='button'
-                          className='btn-sm btn-success'
-                          onClick={handleObservationSave}
-                        >
-                          <FontAwesomeIcon icon={faSave} />
-                        </button>
-                        <button
-                          type='button'
-                          className='btn-sm btn-danger'
-                          onClick={handleObservationCancel}
-                        >
-                          <FontAwesomeIcon icon={faTimes} />
-                        </button>
-                      </div>
-                    ) : (
-                      <div
-                        className={`observacion-display ${
-                          !item.observacion ? 'empty' : ''
-                        }`}
-                        onClick={() =>
-                          handleObservationClick(item.id, item.observacion)
-                        }
-                      >
-                        {item.observacion || 'Agregar observación...'}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className='actions'>
-                    <select
-                      className='type-select'
-                      value={itemType}
-                      onChange={(e) =>
-                        handleTypeChange(item.id, e.target.value)
-                      }
-                    >
-                      <option value='publicidad'>Publicidad</option>
-                      <option value='editorial'>Editorial</option>
-                      <option value='ca'>CA</option>
-                    </select>
-
-                    {!item.isOriginalSlot && (
-                      <button
-                        type='button'
-                        className='btn-sm btn-danger'
-                        onClick={() => {
-                          if (window.confirm('¿Eliminar este slot?')) {
-                            handleRemoveSlot(item.id);
-                          }
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faTrash} />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            );
-          })
-        )}
-
-        {pageNumber > 1 && (
-          <button
-            type='button'
-            className='add-slot-btn'
-            onClick={() => handleAddSlot(pageNumber)}
+      <Droppable droppableId={droppableId}>
+        {(provided, snapshot) => (
+          <div
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+            className={`page-items-container ${
+              snapshot.isDraggingOver ? 'drag-over' : ''
+            }`}
           >
-            <FontAwesomeIcon icon={faPlus} /> Agregar slot
-          </button>
+            {pageItems.length === 0 ? (
+              <div className='empty-page-message'>Página sin elementos</div>
+            ) : (
+              pageItems.map((item, index) => renderProductionItem(item, index))
+            )}
+
+            {provided.placeholder}
+
+            {pageNumber > 1 && (
+              <button
+                type='button'
+                className='add-slot-btn'
+                onClick={() => handleAddSlot(pageNumber)}
+                disabled
+              >
+                <FontAwesomeIcon icon={faPlus} /> Agregar slot
+              </button>
+            )}
+          </div>
         )}
-      </div>
+      </Droppable>
     );
   };
+
+  // Mostrar loading o errores
+  if (loading) {
+    return (
+      <ProductionGridContainer>
+        <div className='page-header'>
+          <h2>Cargando elementos de producción...</h2>
+        </div>
+      </ProductionGridContainer>
+    );
+  }
+
+  if (errors && Object.keys(errors).length > 0) {
+    return (
+      <ProductionGridContainer>
+        <div className='page-header'>
+          <h2>Error al cargar elementos</h2>
+          <p style={{ color: 'red' }}>
+            {errors.general || 'Error desconocido'}
+          </p>
+        </div>
+      </ProductionGridContainer>
+    );
+  }
 
   // Generar las filas de páginas
   const pageRows = [];
@@ -552,28 +674,36 @@ const ProductionGrid = () => {
   }
 
   return (
-    <ProductionGridContainer>
-      <div className='page-header'>
-        <h2> Organización de Páginas</h2>
-      </div>
-
-      <div className='production-table'>
-        <div className='table-header'>
-          <div className='header-row'>
-            <div className='page-col'>Página</div>
-            <div className='content-col'>Contenido</div>
-          </div>
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <ProductionGridContainer>
+        <div className='page-header'>
+          <h2>Organización de Páginas</h2>
+          <p
+            style={{ color: '#6c757d', fontSize: '14px', margin: '8px 0 0 0' }}
+          >
+            Total de páginas: {totalPages} | Total de elementos:{' '}
+            {productionItems.length}
+          </p>
         </div>
 
-        {pageRows.map((pageNumber) => (
-          <div key={pageNumber} className='page-row'>
-            <div className='page-number'>{pageNumber}</div>
-            <div className='page-content'>{renderPageItems(pageNumber)}</div>
+        <div className='production-table'>
+          <div className='table-header'>
+            <div className='header-row'>
+              <div className='page-col'>Página</div>
+              <div className='content-col'>Contenido</div>
+            </div>
           </div>
-        ))}
-      </div>
-    </ProductionGridContainer>
+
+          {pageRows.map((pageNumber) => (
+            <div key={pageNumber} className='page-row'>
+              <div className='page-number'>{pageNumber}</div>
+              <div className='page-content'>{renderPageItems(pageNumber)}</div>
+            </div>
+          ))}
+        </div>
+      </ProductionGridContainer>
+    </DragDropContext>
   );
 };
 
-export default ProductionGrid;
+export default withRouter(ProductionGrid);
