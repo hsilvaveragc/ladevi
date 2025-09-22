@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { SaveButton, DangerButton } from 'shared/components/Buttons';
 import InputSelectFieldSimple from 'shared/components/InputSelectFieldSimple';
 import InputTextAreaFieldSimple from 'shared/components/InputTextAreaFieldSimple';
 import { formatCurrency } from 'shared/utils/index';
-
 import { CONSTANTS } from '../constants';
 import { hideInvoiceDialog, sendToXubioInit } from '../actionCreators';
 import {
@@ -123,7 +122,7 @@ const InvoiceContractDialog = () => {
 
     const effectiveMode = totalItemsCount === 1 ? 'separate' : invoiceMode;
 
-    const invoiceData = {
+    let invoiceData = {
       clientId: selectedClient.id,
       globalObservations,
       entityType: CONSTANTS.CONTRACT_CODE,
@@ -169,7 +168,11 @@ const InvoiceContractDialog = () => {
           cartItem.entityItems.forEach((entityItem) => {
             items.push({
               id: entityItem.id,
-              xubioProductCode: entityItem.xubioProductCode,
+              xubioProductCode:
+                cartItem.entityItems.length === 1 &&
+                !entityItem.xubioProductCode
+                  ? xubioGenericProduct.code
+                  : entityItem.xubioProductCode,
               amount: entityItem.total,
               totalTaxes: entityItem.totalTaxes || 0,
               observations: `${
@@ -231,9 +234,12 @@ const InvoiceContractDialog = () => {
       cartItems.forEach((cartItem) => {
         if (cartItem.entityItems) {
           cartItem.entityItems.forEach((entityItem) => {
-            const xubioProduct = xubioProducts.find(
-              (p) => (p.code || p.Code) === entityItem.xubioProductCode
-            );
+            const xubioProduct =
+              cartItem.entityItems.length === 1 && !entityItem.xubioProductCode
+                ? xubioGenericProduct
+                : xubioProducts.find(
+                    (p) => (p.code || p.Code) === entityItem.xubioProductCode
+                  );
             items.push({
               article:
                 xubioProduct?.name ||

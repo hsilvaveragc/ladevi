@@ -3,16 +3,6 @@ import { toast } from 'react-toastify';
 import { getErrorMessage } from 'shared/utils';
 
 import {
-  UPDATE_ORDERS_CONTRACT,
-  UPDATE_CONTRACT_HISTORIAL,
-} from '../contracts/actionTypes.js';
-import contractsService from '../contracts/service';
-import usersService from '../users/service';
-import productsService from '../products/service';
-import clientsService from '../clients/service';
-
-import ordersService from './service';
-import {
   INITIAL_LOAD_INIT,
   INITIAL_LOAD_SUCCESS,
   INITIAL_LOAD_FAILURE,
@@ -48,6 +38,16 @@ import {
   GETEDITIONSFILTER_SUCCESS,
   GETEDITIONSFILTER_FAILURE,
 } from './actionTypes.js';
+import {
+  UPDATE_ORDERS_CONTRACT,
+  UPDATE_CONTRACT_HISTORIAL,
+} from '../contracts/actionTypes.js';
+
+import ordersService from './service';
+import contractsService from '../contracts/service';
+import usersService from '../users/service';
+import productsService from '../products/service';
+import clientsService from '../clients/service';
 
 export function* initialLoad() {
   try {
@@ -65,6 +65,7 @@ export function* initialLoad() {
       },
     });
   } catch (error) {
+    console.log(error);
     yield all([
       put({
         type: INITIAL_LOAD_FAILURE,
@@ -118,7 +119,6 @@ export function* addOrder({ payload }) {
     }
   } catch (err) {
     let auxError = {};
-
     // Verificar si existe la respuesta y los datos de error
     if (err.response && err.response.data && err.response.data.errors) {
       auxError = {
@@ -136,6 +136,7 @@ export function* addOrder({ payload }) {
       }
     }
 
+    console.log(auxError);
     yield put({
       type: ADD_ORDER_FAILURE,
       errors: auxError,
@@ -168,6 +169,7 @@ export function* editOrder({ payload }) {
       });
     }
   } catch (err) {
+    console.log(err);
     yield all([
       put({
         type: EDIT_ORDER_FAILURE,
@@ -190,6 +192,7 @@ export function* deleteOrder({ payload }) {
         ...payload,
       });
     }
+    console.log('Parametros: ', payload.params);
 
     if (!payload.isFromContract) {
       yield put({
@@ -198,6 +201,7 @@ export function* deleteOrder({ payload }) {
       });
     }
   } catch (err) {
+    console.log(err);
     yield all([
       put({
         type: DELETE_ORDER_FAILURE,
@@ -218,6 +222,7 @@ export function* filterOrders({ payload }) {
       },
     });
   } catch (err) {
+    console.log(err);
     yield put({
       type: FILTER_ORDERS_FAILURE,
       errors: { ...err.response.data.errors },
@@ -236,6 +241,7 @@ export function* getEditionsFilter({ payload }) {
       payload: [...productEditionsPayload],
     });
   } catch (err) {
+    console.log(err);
     yield put({
       type: GETEDITIONSFILTER_FAILURE,
       error: err.response.data.message,
@@ -254,6 +260,7 @@ export function* getAllProductEditions({ payload }) {
       payload: [...productEditionsPayload],
     });
   } catch (err) {
+    console.log(err);
     yield put({
       type: GET_ALL_PRODUCTEDITIONS_FAILURE,
       error: err.response.data.message,
@@ -272,6 +279,7 @@ export function* getEditionsForOP({ payload }) {
       payload: [...productEditionsPayload],
     });
   } catch (err) {
+    console.log(err);
     yield put({
       type: GET_ALL_PRODUCTEDITIONS_FAILURE,
       error: err.response.data.message,
@@ -290,6 +298,7 @@ export function* getContractsAvailable({ payload }) {
       payload: [...contractPayload],
     });
   } catch (err) {
+    console.log(err);
     yield put({
       type: GET_ALL_CONTRACTS_FAILURE,
       error: err.response.data.message,
@@ -308,6 +317,7 @@ export function* getSpaceTypesAvailable({ payload }) {
       payload: [...spaceTypePayload],
     });
   } catch (err) {
+    console.log(err);
     yield put({
       type: GET_ALL_SPACETYPES_FAILURE,
       error: err.response.data.message,
@@ -326,6 +336,7 @@ export function* getSpaceLocationsAvailable({ payload }) {
       payload: [...spaceLocationPayload],
     });
   } catch (err) {
+    console.log(err);
     yield put({
       type: GET_ALL_SPACELOCATIONS_FAILURE,
       error: err.response.data.message,
@@ -335,6 +346,7 @@ export function* getSpaceLocationsAvailable({ payload }) {
 
 export function* getClientsWithBalance({ payload }) {
   try {
+    console.log(payload);
     const clientsWithBalancePayload = yield call(
       ordersService.getClientsWithBalance,
       payload
@@ -344,6 +356,7 @@ export function* getClientsWithBalance({ payload }) {
       payload: [...clientsWithBalancePayload],
     });
   } catch (err) {
+    console.log(err);
     yield put({
       type: GET_CLIENTSWITHBALANCE_FAILURE,
       error: err.response.data.message,

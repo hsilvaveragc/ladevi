@@ -2,10 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import 'shared/utils/extensionsMethods.js';
 import { getHeaderStyleTable, getAllItem } from 'shared/utils/index';
-import Table from 'shared/components/Table';
-import InputSelectFieldSimple from 'shared/components/InputSelectFieldSimple';
-import { SaveButton } from 'shared/components/Buttons';
-
 import { CONSTANTS } from '../constants';
 import { addToCart } from '../actionCreators';
 import {
@@ -13,7 +9,11 @@ import {
   getLoading,
   getCartItems,
   getSelectedCurrency,
+  getSelectedEdition,
 } from '../reducer';
+import Table from 'shared/components/Table';
+import InputSelectFieldSimple from 'shared/components/InputSelectFieldSimple';
+import { SaveButton } from 'shared/components/Buttons';
 
 const OrdersTable = () => {
   const dispatch = useDispatch();
@@ -21,6 +21,7 @@ const OrdersTable = () => {
   const loading = useSelector(getLoading);
   const orders = useSelector(getOrders);
   const cartItems = useSelector(getCartItems);
+  const selectedEdition = useSelector(getSelectedEdition);
   const selectedCurrency = useSelector(getSelectedCurrency);
 
   const [filters, setFilters] = useState({
@@ -319,7 +320,7 @@ const OrdersTable = () => {
 
         {visibleOrders.length === 0 ? (
           <div className='alert alert-info'>
-            {selectedCurrency
+            {(selectedEdition && orders.length == 0) || selectedCurrency
               ? 'No hay ordenes de publiación disponibles con los filtros aplicados'
               : 'Selecciona una moneda para ver las ordenes de publiación disponibles'}
           </div>

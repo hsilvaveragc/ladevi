@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { SaveButton, DangerButton } from 'shared/components/Buttons';
 import InputSelectFieldSimple from 'shared/components/InputSelectFieldSimple';
 import InputTextAreaFieldSimple from 'shared/components/InputTextAreaFieldSimple';
 import { formatCurrency } from 'shared/utils/index';
-
 import { CONSTANTS } from '../constants';
 import { hideInvoiceDialog, sendMultipleToXubioInit } from '../actionCreators';
 import {
@@ -35,9 +34,12 @@ const InvoiceOrderDialog = () => {
       const grouped = {};
       cartItems.forEach((item) => {
         const clientKey = `${item.clientId}_${item.clientName}`;
-        const xubioProduct = xubioProducts.find(
-          (p) => (p.code || p.Code) === item.xubioProductCode
-        );
+        const xubioProduct = !item.xubioProductCode
+          ? xubioGenericProduct
+          : xubioProducts.find(
+              (p) => (p.code || p.Code) === item.xubioProductCode
+            );
+
         if (!grouped[clientKey]) {
           grouped[clientKey] = {
             clientId: item.clientId,
@@ -48,7 +50,10 @@ const InvoiceOrderDialog = () => {
           };
         }
         item = {
-          article: xubioProduct.name,
+          article:
+            xubioProduct?.name ||
+            xubioProduct?.Name ||
+            'Producto no especificado',
           ...item,
         };
         grouped[clientKey].items.push(item);
@@ -57,7 +62,7 @@ const InvoiceOrderDialog = () => {
       });
       setGroupedByClient(grouped);
     }
-  }, [cartItems]);
+  }, [cartItems, xubioProducts, xubioGenericProduct]);
 
   // Generar opciones para consolidación
   const getConsolidationOptions = () => {
@@ -132,7 +137,9 @@ const InvoiceOrderDialog = () => {
     const invoicesData = Object.values(groupedByClient).map((clientGroup) => {
       const items = clientGroup.items.map((item) => ({
         id: item.id,
-        xubioProductCode: item.xubioProductCode,
+        xubioProductCode: !item.xubioProductCode
+          ? xubioGenericProduct?.code || xubioGenericProduct?.Code
+          : item.xubioProductCode,
         amount: item.amount || item.total,
         totalTaxes: item.totalTaxes || 0,
         observations: item.observations || item.description,
@@ -160,11 +167,11 @@ const InvoiceOrderDialog = () => {
     if (effectiveMode === 'consolidated') {
       // Para órdenes consolidadas por cliente
       return Object.values(groupedByClient).map((clientGroup) => {
-        const xubioProduct = xubioProducts.find(
+        let xubioProduct = xubioProducts.find(
           (p) => p.code === consolidatedXubioProductCode
         );
 
-        const amount = getConsolidatedAmountForClient(clientGroup);
+        let amount = getConsolidatedAmountForClient(clientGroup);
 
         return {
           clientId: clientGroup.clientId,

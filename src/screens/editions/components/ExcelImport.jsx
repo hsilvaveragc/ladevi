@@ -20,7 +20,7 @@ export default function ExcelImport() {
   const editions = useSelector(getEditions);
 
   // onchange states
-  const [open, setOpen] = useState(null);
+  const [open, setOpen] = useState(false);
   const [excelFile, setExcelFile] = useState(null);
   const [typeError, setTypeError] = useState(null);
 
@@ -173,39 +173,41 @@ export default function ExcelImport() {
         closeHandler={() => setOpen(false)}
         isOpen={open}
       >
-        <strong> Seleccione el archivo a importar</strong>
-        <br />
-        <br />
-        <input type='file' onChange={handleFile} />
-        <br />
-        <br />
-        <button className='btn btn-info'>
-          <a
-            href={exampleImportEditions}
-            download='Ejemplo de archivo de importacion de ediciones'
-            style={{ color: 'white' }}
-          >
-            <FontAwesomeIcon icon={faDownload}></FontAwesomeIcon> &nbsp; Archivo
-            de ejemplo
-          </a>
-        </button>
-        &nbsp;
-        <button className='btn btn-success btn-md' onClick={handleFileSubmit}>
-          Importar ediciones
-        </button>
-        &nbsp;
-        <DangerButton onClickHandler={() => setOpen(false)}>
-          Volver
-        </DangerButton>
-        <br />
-        {typeError && (
-          <>
-            <br />
-            <div className='alert alert-danger' role='alert'>
-              {typeError}
-            </div>
-          </>
-        )}
+        <>
+          <strong> Seleccione el archivo a importar</strong>
+          <br />
+          <br />
+          <input type='file' onChange={handleFile} />
+          <br />
+          <br />
+          <button className='btn btn-info'>
+            <a
+              href={exampleImportEditions}
+              download='Ejemplo de archivo de importacion de ediciones'
+              style={{ color: 'white' }}
+            >
+              <FontAwesomeIcon icon={faDownload}></FontAwesomeIcon> &nbsp;
+              Archivo de ejemplo
+            </a>
+          </button>
+          &nbsp;
+          <button className='btn btn-success btn-md' onClick={handleFileSubmit}>
+            Importar ediciones
+          </button>
+          &nbsp;
+          <DangerButton onClickHandler={() => setOpen(false)}>
+            Volver
+          </DangerButton>
+          <br />
+          {typeError && (
+            <>
+              <br />
+              <div className='alert alert-danger' role='alert'>
+                {typeError}
+              </div>
+            </>
+          )}
+        </>
       </Modal>
     </>
   );

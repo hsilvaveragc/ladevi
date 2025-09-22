@@ -1,8 +1,6 @@
 import { put, all, takeLatest, call } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
 
-import usersService from '../users/service';
-
 import {
   SEARCH_CLIENTS_INIT,
   SEARCH_CLIENTS_SUCCESS,
@@ -44,7 +42,9 @@ import {
   HIDE_DUPLICATE_CUIT_MODAL,
   CONFIRM_DUPLICATE_CUIT_ASSOCIATION,
 } from './actionTypes.js';
+
 import clientsService from './service';
+import usersService from '../users/service';
 
 export function* initialLoad() {
   try {
@@ -62,6 +62,7 @@ export function* initialLoad() {
       },
     });
   } catch (err) {
+    console.log(err);
     yield put({
       type: INITIAL_LOAD_FAILURE,
       errors: { ...err.response.data.errors },
@@ -79,6 +80,7 @@ export function* searchClients() {
       },
     });
   } catch (err) {
+    console.log(err);
     yield put({
       type: SEARCH_CLIENTS_FAILURE,
       errors: { ...err.response.data.errors },
@@ -114,6 +116,8 @@ export function* filterClients({ payload }) {
       },
     });
   } catch (err) {
+    console.log(err);
+    console.log(filterPayload);
     yield put({
       type: FILTER_CLIENTS_FAILURE,
       errors: { ...err.response.data.errors },
@@ -189,6 +193,7 @@ export function* addClient({ payload }) {
       }
     }
 
+    console.log(auxError);
     yield put({
       type: ADD_CLIENT_FAILURE,
       errors: auxError,
@@ -210,6 +215,8 @@ export function* editClient({ payload }) {
       put({ type: FILTER_CLIENTS_INIT, payload: payload.params || {} }),
     ]);
   } catch (err) {
+    console.log(err);
+
     // Verificar si es error de CUIT duplicado
     if (err.response && err.response.data && err.response.data.errors) {
       const auxError = err.response.data.errors;
@@ -267,6 +274,7 @@ export function* locationData({ payload }) {
       },
     });
   } catch (err) {
+    console.log(err);
     yield put({
       type: GET_LOCATION_DATA_FAILURE,
       errors: { ...err.response.data.errors },
@@ -370,7 +378,6 @@ export function* confirmDuplicateCuitAssociation({ payload }) {
         originalPayload,
         xubioId
       );
-
       yield all([
         put({ type: EDIT_CLIENT_SUCCESS, payload: confirmResponse }),
         put({ type: HIDE_DUPLICATE_CUIT_MODAL }),

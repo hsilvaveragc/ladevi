@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import InputSelectFieldSimple from 'shared/components/InputSelectFieldSimple';
-
 import { CONSTANTS } from '../constants';
 import {
   setClientType,
@@ -30,6 +28,7 @@ import {
   getSelectedProduct,
   getSelectedEdition,
 } from '../reducer';
+import InputSelectFieldSimple from 'shared/components/InputSelectFieldSimple';
 
 const SelectorsContainer = () => {
   const dispatch = useDispatch();
@@ -69,7 +68,7 @@ const SelectorsContainer = () => {
     }
   }, [dispatch, selectedClient, entityType]);
 
-  // Cargar productos cuando se selecciona tipo de cliente
+  // Cargar productos cuando se selecciona tipo ediciones
   useEffect(() => {
     if (entityType === CONSTANTS.ORDERS_CODE && clientType) {
       dispatch(fetchProductsInit(clientType));
@@ -91,6 +90,7 @@ const SelectorsContainer = () => {
   // Cargar órdenes inmediatamente al seleccionar edición
   useEffect(() => {
     if (selectedEdition && entityType === CONSTANTS.ORDERS_CODE) {
+      console.log('Cargando órdenes para edición:', selectedEdition);
       dispatch(
         fetchOrdersInit({
           editionId: selectedEdition,
@@ -101,7 +101,7 @@ const SelectorsContainer = () => {
 
   // Extraer opciones de moneda únicas cuando se cargan contratos u órdenes
   useEffect(() => {
-    let entityDocuments = [];
+    var entityDocuments = [];
 
     if (entityType === CONSTANTS.CONTRACTS_CODE) {
       entityDocuments = contracts;
@@ -301,7 +301,11 @@ const SelectorsContainer = () => {
                   options={currencyOptions}
                   value={selectedCurrency || ''}
                   onChangeHandler={handleCurrencyChange}
-                  disabled={loading || !selectedClient}
+                  disabled={
+                    loading ||
+                    !selectedClient ||
+                    (selectedClient && contracts.length === 0)
+                  }
                   getOptionLabel={(option) => option.name}
                   getOptionValue={(option) => option.id}
                 />
@@ -345,7 +349,11 @@ const SelectorsContainer = () => {
                   options={currencyOptions}
                   value={selectedCurrency || ''}
                   onChangeHandler={handleCurrencyChange}
-                  disabled={loading || !selectedEdition}
+                  disabled={
+                    loading ||
+                    !selectedEdition ||
+                    (selectedEdition && orders.length === 0)
+                  }
                   getOptionLabel={(option) => option.name}
                   getOptionValue={(option) => option.id}
                 />

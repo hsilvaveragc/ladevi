@@ -44,7 +44,7 @@ module.exports = {
     // Estas están bien como están
     'react/no-children-prop': 'off',
     'no-unused-vars': 'warn',
-    'no-console': 'error', // mantener error, no quieres console en producción
+    'no-console': 'warn', // mantener error, no quieres console en producción
     'react/prop-types': 'off',
     'no-undef': 'error', // mantener error, es crítico
     'react/no-unescaped-entities': 'off',

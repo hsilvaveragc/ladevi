@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getHeaderStyleTable, getAllItem } from 'shared/utils/index';
-import Table from 'shared/components/Table';
-import InputTextFieldSimple from 'shared/components/InputTextFieldSimple';
-import InputSelectFieldSimple from 'shared/components/InputSelectFieldSimple';
-import { SaveButton } from 'shared/components/Buttons';
-
+import { CONSTANTS } from '../constants';
+import { addToCart } from '../actionCreators';
 import {
   getContracts,
   getLoading,
   getCartItems,
   getSelectedCurrency,
+  getSelectedClient,
 } from '../reducer';
-import { addToCart } from '../actionCreators';
-import { CONSTANTS } from '../constants';
+import Table from 'shared/components/Table';
+import InputTextFieldSimple from 'shared/components/InputTextFieldSimple';
+import InputSelectFieldSimple from 'shared/components/InputSelectFieldSimple';
+import { SaveButton } from 'shared/components/Buttons';
 
 const ContractsTable = () => {
   const dispatch = useDispatch();
@@ -21,6 +21,7 @@ const ContractsTable = () => {
   const loading = useSelector(getLoading);
   const contracts = useSelector(getContracts);
   const cartItems = useSelector(getCartItems);
+  const selectedClient = useSelector(getSelectedClient);
   const selectedCurrency = useSelector(getSelectedCurrency);
 
   const [filters, setFilters] = useState({
@@ -372,7 +373,7 @@ const ContractsTable = () => {
 
         {visibleContracts.length === 0 ? (
           <div className='alert alert-info'>
-            {selectedCurrency
+            {(selectedClient && contracts.length == 0) || selectedCurrency
               ? 'No hay contratos disponibles con los filtros aplicados'
               : 'Selecciona una moneda para ver los contratos disponibles'}
           </div>
