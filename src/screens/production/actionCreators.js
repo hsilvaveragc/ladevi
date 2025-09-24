@@ -49,7 +49,7 @@ export const fetchEditions = (productId) => ({
 // Cargar elementos de producción desde backend
 export const fetchProductionItems = (productEditionId) => ({
   type: FETCH_PRODUCTION_ITEMS_INIT,
-  payload: { productEditionId },
+  payload: productEditionId,
 });
 
 // Mover elemento de una página a otra

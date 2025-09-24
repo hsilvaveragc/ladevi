@@ -69,7 +69,7 @@ export function* fetchEditions({ payload }) {
   try {
     const editions = yield call(
       productionService.getEditionsByProduct,
-      payload.productId
+      payload
     );
     yield put({
       type: FETCH_EDITIONS_SUCCESS,
@@ -92,10 +92,11 @@ export function* fetchEditions({ payload }) {
 
 // Fetch production items - Conecta con el endpoint real del backend
 export function* fetchProductionItems({ payload }) {
+  debugger;
   try {
     const response = yield call(
       productionService.getProductionInventory,
-      payload.productEditionId
+      payload
     );
 
     yield put({

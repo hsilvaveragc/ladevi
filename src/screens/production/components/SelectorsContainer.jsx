@@ -47,11 +47,8 @@ const SelectorsContainer = () => {
   // Cargar órdenes inmediatamente al seleccionar edición
   useEffect(() => {
     if (selectedEdition) {
-      dispatch(
-        fetchProductionItems({
-          editionId: selectedEdition,
-        })
-      );
+      debugger;
+      dispatch(fetchProductionItems(selectedEdition));
     }
   }, [dispatch, selectedEdition]);
 
