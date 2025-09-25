@@ -14,12 +14,12 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 import {
   fetchProductionTemplates,
-  moveSlot,
   addSlot,
   removeSlot,
   updateSlotObservation,
   markSlotAsEditorial,
   markSlotAsCA,
+  movePublishingOrderBetweenSlots,
 } from '../actionCreators';
 import {
   getProductionTemplates,
@@ -28,6 +28,8 @@ import {
   getTotalPages,
   getTotalSlots,
   getSelectedEdition,
+  getAssignedSlots,
+  getAvailableSlots,
 } from '../reducer';
 
 const ProductionGridContainer = styled.div`
@@ -125,26 +127,10 @@ const ProductionGridContainer = styled.div`
   }
 
   .slots-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     min-height: 80px;
-    border: 2px dashed #ced4da;
-    border-radius: 6px;
-    background-color: #f8f9fa;
-    padding: 8px;
-
-    &.drag-over {
-      border-color: #007bff;
-      background-color: #e7f3ff;
-    }
-
-    .empty-message {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 64px;
-      color: #6c757d;
-      font-style: italic;
-      font-size: 14px;
-    }
   }
 
   .production-slot {
@@ -152,15 +138,15 @@ const ProductionGridContainer = styled.div`
     border: 1px solid #dee2e6;
     border-radius: 6px;
     padding: 8px;
-    margin-bottom: 6px;
-    cursor: grab;
+    position: relative;
 
-    &:active {
-      cursor: grabbing;
+    &.has-order {
+      border-left: 4px solid #007bff;
     }
 
-    &.is-dragging {
-      opacity: 0.5;
+    &.empty {
+      border: 2px dashed #ced4da;
+      background-color: #f8f9fa;
     }
 
     .slot-header {
@@ -169,12 +155,7 @@ const ProductionGridContainer = styled.div`
       justify-content: space-between;
       margin-bottom: 6px;
 
-      .drag-handle {
-        color: #6c757d;
-        cursor: grab;
-      }
-
-      .slot-number {
+      .slot-info {
         font-weight: 600;
         color: #495057;
         font-size: 12px;
@@ -187,54 +168,125 @@ const ProductionGridContainer = styled.div`
     }
 
     .slot-content {
-      display: grid;
-      grid-template-columns: 1fr auto auto;
-      gap: 8px;
-      align-items: center;
-      font-size: 12px;
+      min-height: 60px;
+      border-radius: 4px;
+      padding: 8px;
 
-      .space-name {
-        font-weight: 600;
-        color: #495057;
-      }
-
-      .assignment-info {
-        color: #28a745;
-        font-size: 11px;
+      &.empty {
+        border: 2px dashed #adb5bd;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
         font-style: italic;
+        font-size: 12px;
+      }
 
-        &.empty {
-          color: #6c757d;
+      &.drag-over {
+        border-color: #007bff;
+        background-color: #e7f3ff;
+      }
+    }
+
+    .publishing-order {
+      background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+      color: white;
+      padding: 8px;
+      border-radius: 4px;
+      cursor: grab;
+      user-select: none;
+      transition: all 0.2s;
+
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+      }
+
+      &:active {
+        cursor: grabbing;
+      }
+
+      &.is-dragging {
+        opacity: 0.5;
+        transform: rotate(5deg);
+      }
+
+      .order-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 4px;
+
+        .order-number {
+          font-weight: 600;
+          font-size: 12px;
+        }
+
+        .drag-handle {
+          cursor: grab;
+          color: rgba(255, 255, 255, 0.8);
+
+          &:hover {
+            color: white;
+          }
         }
       }
 
-      .type-badge {
-        padding: 2px 6px;
-        border-radius: 3px;
-        font-size: 10px;
-        font-weight: 600;
-        text-transform: uppercase;
+      .order-details {
+        font-size: 11px;
+        opacity: 0.9;
+        line-height: 1.3;
 
-        &.publicidad {
-          background-color: #007bff;
-          color: white;
+        .client-name {
+          font-weight: 500;
+          margin-bottom: 2px;
         }
 
-        &.editorial {
-          background-color: #28a745;
-          color: white;
+        .contract-info {
+          color: rgba(255, 255, 255, 0.8);
         }
 
-        &.ca {
-          background-color: #ffc107;
-          color: #212529;
+        .space-type {
+          font-size: 10px;
+          background-color: rgba(255, 255, 255, 0.2);
+          padding: 2px 6px;
+          border-radius: 3px;
+          margin-top: 4px;
+          display: inline-block;
         }
       }
     }
 
+    .type-badge {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+
+      &.publicidad {
+        background-color: #007bff;
+        color: white;
+      }
+
+      &.editorial {
+        background-color: #28a745;
+        color: white;
+      }
+
+      &.ca {
+        background-color: #ffc107;
+        color: #212529;
+      }
+    }
+
     .slot-observation {
-      margin-top: 6px;
-      padding-top: 6px;
+      margin-top: 8px;
+      padding-top: 8px;
       border-top: 1px solid #f1f3f4;
 
       .observation-display {
@@ -264,35 +316,26 @@ const ProductionGridContainer = styled.div`
     }
   }
 
-  .add-slot-btn {
-    width: 100%;
-    padding: 8px;
-    border: 2px dashed #6c757d;
-    background: transparent;
-    border-radius: 4px;
-    color: #6c757d;
-    cursor: pointer;
-    font-size: 12px;
-    margin-top: 8px;
-
-    &:hover {
-      border-color: #007bff;
-      color: #007bff;
-      background-color: #f8f9fa;
-    }
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-  }
-
+  .add-slot-btn,
   .btn-sm {
-    padding: 2px 6px;
-    font-size: 10px;
+    padding: 4px 8px;
+    font-size: 11px;
     border: none;
     border-radius: 3px;
     cursor: pointer;
+
+    &.add-slot-btn {
+      width: 100%;
+      border: 1px dashed #6c757d;
+      background: transparent;
+      color: #6c757d;
+
+      &:hover {
+        border-color: #007bff;
+        color: #007bff;
+        background-color: #f8f9fa;
+      }
+    }
 
     &.btn-danger {
       background-color: #dc3545;
@@ -329,6 +372,12 @@ const ProductionGridContainer = styled.div`
     border-radius: 6px;
     border: 1px solid #dee2e6;
 
+    .summary-title {
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 12px;
+    }
+
     .summary-stats {
       display: flex;
       gap: 24px;
@@ -352,11 +401,6 @@ const ProductionGridContainer = styled.div`
   }
 
   @media (max-width: 768px) {
-    .production-slot .slot-content {
-      grid-template-columns: 1fr;
-      gap: 4px;
-    }
-
     .page-summary .summary-stats {
       flex-direction: column;
       gap: 12px;
@@ -371,13 +415,15 @@ const ProductionGrid = ({ match }) => {
   const [editingObservation, setEditingObservation] = useState(null);
   const observationInputRef = useRef(null);
 
-  // Selectors
+  // Selectors - usando los del reducer
   const loading = useSelector(getLoading);
   const errors = useSelector(getErrors);
   const productionTemplates = useSelector(getProductionTemplates);
   const totalPages = useSelector(getTotalPages);
   const totalSlots = useSelector(getTotalSlots);
   const selectedEdition = useSelector(getSelectedEdition);
+  const assignedSlots = useSelector(getAssignedSlots);
+  const availableSlots = useSelector(getAvailableSlots);
 
   // Cargar datos cuando hay una edición seleccionada
   useEffect(() => {
@@ -386,16 +432,12 @@ const ProductionGrid = ({ match }) => {
     }
   }, [dispatch, selectedEdition]);
 
-  // Manejar drag and drop
+  // Manejar drag and drop de órdenes entre slots
   const handleDragEnd = (result) => {
     const { destination, source, draggableId } = result;
 
-    // No hacer nada si no hay destino
-    if (!destination) {
-      return;
-    }
+    if (!destination) return;
 
-    // No hacer nada si se soltó en la misma posición
     if (
       destination.droppableId === source.droppableId &&
       destination.index === source.index
@@ -403,41 +445,41 @@ const ProductionGrid = ({ match }) => {
       return;
     }
 
-    // Extraer información de los IDs
-    const sourceTemplateId = parseInt(source.droppableId.split('-')[1]);
-    const targetTemplateId = parseInt(destination.droppableId.split('-')[1]);
-    const slotId = parseInt(draggableId.split('-')[1]);
+    // Solo permitir movimiento entre slots
+    if (
+      source.droppableId.startsWith('slot-') &&
+      destination.droppableId.startsWith('slot-')
+    ) {
+      const sourceSlotId = parseInt(source.droppableId.split('-')[1]);
+      const targetSlotId = parseInt(destination.droppableId.split('-')[1]);
+      const publishingOrderId = parseInt(draggableId.split('-')[1]);
 
-    // Dispatch de la acción de mover slot
-    dispatch(
-      moveSlot(
-        slotId,
-        sourceTemplateId,
-        source.index + 1, // slotNumber empieza en 1
-        targetTemplateId,
-        destination.index + 1
-      )
-    );
+      if (sourceSlotId !== targetSlotId) {
+        dispatch(
+          movePublishingOrderBetweenSlots(
+            publishingOrderId,
+            sourceSlotId,
+            targetSlotId
+          )
+        );
+      }
+    }
   };
 
-  // Manejar agregar slot
+  // Métodos helper para gestión de slots
   const handleAddSlot = (templateId, inventorySpaceId = 1) => {
     dispatch(addSlot(templateId, inventorySpaceId));
   };
 
-  // Manejar remover slot
   const handleRemoveSlot = (slotId) => {
     if (window.confirm('¿Está seguro de que desea eliminar este slot?')) {
       dispatch(removeSlot(slotId));
     }
   };
 
-  // Manejar edición de observación
+  // Métodos para edición de observaciones
   const handleEditObservation = (slotId, currentObservation) => {
-    setEditingObservation({
-      slotId,
-      value: currentObservation || '',
-    });
+    setEditingObservation({ slotId, value: currentObservation || '' });
   };
 
   const handleSaveObservation = () => {
@@ -456,7 +498,7 @@ const ProductionGrid = ({ match }) => {
     setEditingObservation(null);
   };
 
-  // Manejar cambio de tipo
+  // Métodos para cambio de tipos
   const handleTypeChange = (slotId, type) => {
     switch (type) {
       case 'editorial':
@@ -475,160 +517,181 @@ const ProductionGrid = ({ match }) => {
     }
   };
 
-  // Obtener tipo de slot
   const getSlotType = (slot) => {
     if (slot.isEditorial) return 'editorial';
     if (slot.isCA) return 'ca';
     return 'publicidad';
   };
 
-  // Renderizar un slot individual
-  const renderSlot = (slot, index) => {
-    const slotType = getSlotType(slot);
-    const isEditingThis = editingObservation?.slotId === slot.id;
-
-    return (
-      <Draggable
-        key={`slot-${slot.id}`}
-        draggableId={`slot-${slot.id}`}
-        index={index}
-      >
-        {(provided, snapshot) => (
-          <div
-            ref={provided.innerRef}
-            {...provided.draggableProps}
-            className={`production-slot ${snapshot.isDragging ? 'is-dragging' : ''}`}
-          >
-            <div className='slot-header'>
-              <div {...provided.dragHandleProps} className='drag-handle'>
-                <FontAwesomeIcon icon={faGripVertical} />
-              </div>
-              <div className='slot-number'>Slot #{slot.slotNumber}</div>
-              <div className='slot-actions'>
-                <select
-                  value={slotType}
-                  onChange={(e) => handleTypeChange(slot.id, e.target.value)}
-                  className='type-select'
-                >
-                  <option value='publicidad'>Publicidad</option>
-                  <option value='editorial'>Editorial</option>
-                  <option value='ca'>CA</option>
-                </select>
-                <button
-                  type='button'
-                  onClick={() => handleRemoveSlot(slot.id)}
-                  className='btn-sm btn-danger'
-                  title='Eliminar slot'
-                >
-                  <FontAwesomeIcon icon={faTrash} />
-                </button>
-              </div>
-            </div>
-
-            <div className='slot-content'>
-              <div className='space-name'>
-                {slot.productAdvertisingSpaceName || 'Espacio no definido'}
-              </div>
-              <div
-                className={`assignment-info ${!slot.publishingOrderId ? 'empty' : ''}`}
-              >
-                {slot.publishingOrderId
-                  ? `Orden: ${slot.publishingOrder?.orderNumber || slot.publishingOrderId}`
-                  : 'Sin asignar'}
-              </div>
-              <div className={`type-badge ${slotType}`}>{slotType}</div>
-            </div>
-
-            <div className='slot-observation'>
-              {isEditingThis ? (
-                <div
-                  style={{ display: 'flex', gap: '4px', alignItems: 'center' }}
-                >
-                  <input
-                    ref={observationInputRef}
-                    type='text'
-                    value={editingObservation.value}
-                    onChange={(e) =>
-                      setEditingObservation({
-                        ...editingObservation,
-                        value: e.target.value,
-                      })
-                    }
-                    className='observation-input'
-                    placeholder='Agregar observación...'
-                    autoFocus
-                  />
-                  <button
-                    type='button'
-                    onClick={handleSaveObservation}
-                    className='btn-sm btn-success'
-                    title='Guardar'
-                  >
-                    <FontAwesomeIcon icon={faSave} />
-                  </button>
-                  <button
-                    type='button'
-                    onClick={handleCancelObservation}
-                    className='btn-sm btn-secondary'
-                    title='Cancelar'
-                  >
-                    <FontAwesomeIcon icon={faTimes} />
-                  </button>
-                </div>
-              ) : (
-                <div
-                  className={`observation-display ${!slot.observations ? 'empty' : ''}`}
-                  onClick={() =>
-                    handleEditObservation(slot.id, slot.observations)
-                  }
-                  title='Clic para editar'
-                >
-                  {slot.observations || 'Clic para agregar observación...'}
-                </div>
-              )}
+  // Renderizar una orden de publicación individual
+  const renderPublishingOrder = (order, slot) => (
+    <Draggable
+      key={`order-${order.id}`}
+      draggableId={`order-${order.id}`}
+      index={0}
+    >
+      {(provided, snapshot) => (
+        <div
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          className={`publishing-order ${snapshot.isDragging ? 'is-dragging' : ''}`}
+        >
+          <div className='order-header'>
+            <div className='order-number'>Orden #{order.id}</div>
+            <div {...provided.dragHandleProps} className='drag-handle'>
+              <FontAwesomeIcon icon={faGripVertical} />
             </div>
           </div>
-        )}
-      </Draggable>
+          <div className='order-details'>
+            <div className='client-name'>
+              {order.clientName || 'Cliente no definido'}
+            </div>
+            <div className='contract-info'>
+              {order.contractName || 'Contrato no definido'}
+            </div>
+            <div className='space-type'>
+              {slot.productAdvertisingSpaceName || 'Espacio no definido'}
+            </div>
+          </div>
+        </div>
+      )}
+    </Draggable>
+  );
+
+  // Renderizar un slot individual
+  const renderSlot = (slot, templateId) => {
+    const slotType = getSlotType(slot);
+    const isEditingThis = editingObservation?.slotId === slot.id;
+    const hasOrder = slot.order !== null;
+
+    return (
+      <div
+        key={slot.id}
+        className={`production-slot ${hasOrder ? 'has-order' : 'empty'}`}
+      >
+        <div className='slot-header'>
+          <div className='slot-info'>
+            Slot #{slot.slotNumber} -{' '}
+            {slot.productAdvertisingSpaceName || 'Espacio no definido'}
+          </div>
+          <div className='slot-actions'>
+            <select
+              value={slotType}
+              onChange={(e) => handleTypeChange(slot.id, e.target.value)}
+              style={{ fontSize: '10px', padding: '2px 4px' }}
+            >
+              <option value='publicidad'>Publicidad</option>
+              <option value='editorial'>Editorial</option>
+              <option value='ca'>CA</option>
+            </select>
+            <button
+              type='button'
+              onClick={() => handleRemoveSlot(slot.id)}
+              className='btn-sm btn-danger'
+              title='Eliminar slot'
+            >
+              <FontAwesomeIcon icon={faTrash} />
+            </button>
+          </div>
+        </div>
+
+        <Droppable droppableId={`slot-${slot.id}`}>
+          {(provided, snapshot) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              className={`slot-content ${!hasOrder ? 'empty' : ''} ${snapshot.isDraggingOver ? 'drag-over' : ''}`}
+            >
+              {hasOrder
+                ? renderPublishingOrder(slot.order, slot)
+                : 'Slot vacío - Arrastrar orden aquí'}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+
+        <div className={`type-badge ${slotType}`}>{slotType}</div>
+
+        {/* Observaciones */}
+        <div className='slot-observation'>
+          {isEditingThis ? (
+            <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+              <input
+                ref={observationInputRef}
+                type='text'
+                value={editingObservation.value}
+                onChange={(e) =>
+                  setEditingObservation({
+                    ...editingObservation,
+                    value: e.target.value,
+                  })
+                }
+                className='observation-input'
+                placeholder='Agregar observación...'
+                autoFocus
+              />
+              <button
+                type='button'
+                onClick={handleSaveObservation}
+                className='btn-sm btn-success'
+                title='Guardar'
+              >
+                <FontAwesomeIcon icon={faSave} />
+              </button>
+              <button
+                type='button'
+                onClick={handleCancelObservation}
+                className='btn-sm btn-secondary'
+                title='Cancelar'
+              >
+                <FontAwesomeIcon icon={faTimes} />
+              </button>
+            </div>
+          ) : (
+            <div
+              className={`observation-display ${!slot.observations ? 'empty' : ''}`}
+              onClick={() => handleEditObservation(slot.id, slot.observations)}
+              title='Clic para editar'
+            >
+              {slot.observations || 'Clic para agregar observación...'}
+            </div>
+          )}
+        </div>
+      </div>
     );
   };
 
   // Renderizar slots de una página/template
-  const renderTemplateSlots = (template) => {
+  const renderTemplateSlots = (template) => (
+    <div className='slots-container'>
+      {template.productionSlots && template.productionSlots.length > 0 ? (
+        template.productionSlots.map((slot) => renderSlot(slot, template.id))
+      ) : (
+        <div
+          style={{
+            color: '#6c757d',
+            fontStyle: 'italic',
+            padding: '20px',
+            textAlign: 'center',
+          }}
+        >
+          No hay slots en esta página
+        </div>
+      )}
+    </div>
+  );
+
+  // Mostrar loading, errores, o mensaje si no hay edición
+  if (loading) {
     return (
-      <Droppable droppableId={`template-${template.id}`}>
-        {(provided, snapshot) => (
-          <div
-            ref={provided.innerRef}
-            {...provided.droppableProps}
-            className={`slots-container ${snapshot.isDraggingOver ? 'drag-over' : ''}`}
-          >
-            {template.productionSlots && template.productionSlots.length > 0 ? (
-              template.productionSlots.map((slot, index) =>
-                renderSlot(slot, index)
-              )
-            ) : (
-              <div className='empty-message'>No hay slots en esta página</div>
-            )}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
+      <ProductionGridContainer>
+        <div className='page-header'>
+          <h2>Cargando plantillas de producción...</h2>
+        </div>
+      </ProductionGridContainer>
     );
-  };
+  }
 
-  // Mostrar loading
-  // if (loading) {
-  //   return (
-  //     <ProductionGridContainer>
-  //       <div className='page-header'>
-  //         <h2>Cargando plantillas de producción...</h2>
-  //       </div>
-  //     </ProductionGridContainer>
-  //   );
-  // }
-
-  // Mostrar errores
   if (errors && Object.keys(errors).length > 0) {
     return (
       <ProductionGridContainer>
@@ -642,7 +705,6 @@ const ProductionGrid = ({ match }) => {
     );
   }
 
-  // Mostrar mensaje si no hay edición seleccionada
   if (!selectedEdition) {
     return (
       <ProductionGridContainer>
@@ -663,10 +725,12 @@ const ProductionGrid = ({ match }) => {
           <h2>Organización de Producción</h2>
           <div className='stats'>
             Edición: {selectedEdition.name} | Total de páginas: {totalPages} |
-            Total de slots: {totalSlots}
+            Total de slots: {totalSlots} | Slots asignados:{' '}
+            {assignedSlots.length}
           </div>
         </div>
 
+        {/* Tabla principal de producción */}
         <div className='production-table'>
           <div className='table-header'>
             <div className='header-row'>
@@ -689,15 +753,16 @@ const ProductionGrid = ({ match }) => {
                   onClick={() => handleAddSlot(template.id)}
                   title='Agregar nuevo slot'
                 >
-                  <FontAwesomeIcon icon={faPlus} /> Agregar Slot
+                  <FontAwesomeIcon icon={faPlus} /> Slot
                 </button>
               </div>
             </div>
           ))}
         </div>
 
+        {/* Resumen usando selectores del reducer */}
         <div className='page-summary'>
-          <div>Resumen de Producción</div>
+          <div className='summary-title'>Resumen de Producción</div>
           <div className='summary-stats'>
             <div className='stat'>
               <div className='stat-value'>{totalPages}</div>
@@ -708,14 +773,12 @@ const ProductionGrid = ({ match }) => {
               <div className='stat-label'>Slots Total</div>
             </div>
             <div className='stat'>
-              <div className='stat-value'>
-                {
-                  productionTemplates.filter((t) =>
-                    t.productionSlots.some((s) => s.publishingOrderId)
-                  ).length
-                }
-              </div>
-              <div className='stat-label'>Páginas con Asignaciones</div>
+              <div className='stat-value'>{assignedSlots.length}</div>
+              <div className='stat-label'>Slots Asignados</div>
+            </div>
+            <div className='stat'>
+              <div className='stat-value'>{availableSlots.length}</div>
+              <div className='stat-label'>Slots Vacíos</div>
             </div>
           </div>
         </div>

@@ -28,23 +28,19 @@ export default {
       })
       .then((response) => response.data),
 
-  // Mover slot de una posición a otra
-  moveSlot: (
-    slotId,
-    sourceTemplateId,
-    sourceSlotNumber,
-    targetTemplateId,
-    targetSlotNumber
+  // Mover orden de publicación entre slots
+  movePublishingOrderBetweenSlots: (
+    publishingOrderId,
+    sourceSlotId,
+    targetSlotId
   ) =>
     axios
       .put(
-        `Production/MoveSlot`,
+        `Production/MovePublishingOrderBetweenSlots`,
         {
-          slotId,
-          sourceTemplateId,
-          sourceSlotNumber,
-          targetTemplateId,
-          targetSlotNumber,
+          publishingOrderId,
+          sourceSlotId,
+          targetSlotId,
         },
         {
           headers: getHeaders(),
@@ -120,18 +116,6 @@ export default {
       )
       .then((response) => response.data),
 
-  // Generar layout automático para una edición
-  generateAutoLayout: (productEditionId) =>
-    axios
-      .post(
-        `Production/GenerateAutoLayout`,
-        { productEditionId },
-        {
-          headers: getHeaders(),
-        }
-      )
-      .then((response) => response.data),
-
   // Validar reducción de páginas
   validatePageReduction: (productEditionId, newPageCount) =>
     axios
@@ -156,33 +140,6 @@ export default {
           productEditionId,
           inventoryChanges,
         },
-        {
-          headers: getHeaders(),
-        }
-      )
-      .then((response) => response.data),
-
-  // Asignar orden de publicación a slot
-  assignPublishingOrderToSlot: (slotId, publishingOrderId) =>
-    axios
-      .put(
-        `Production/AssignPublishingOrderToSlot`,
-        {
-          slotId,
-          publishingOrderId,
-        },
-        {
-          headers: getHeaders(),
-        }
-      )
-      .then((response) => response.data),
-
-  // Desasignar orden de publicación
-  unassignPublishingOrderFromSlot: (slotId) =>
-    axios
-      .put(
-        `Production/UnassignPublishingOrderFromSlot`,
-        { slotId },
         {
           headers: getHeaders(),
         }

@@ -12,9 +12,6 @@ import {
   FETCH_PRODUCTION_TEMPLATES_INIT,
   FETCH_PRODUCTION_TEMPLATES_SUCCESS,
   FETCH_PRODUCTION_TEMPLATES_FAILURE,
-  MOVE_ITEM_INIT,
-  MOVE_ITEM_SUCCESS,
-  MOVE_ITEM_FAILURE,
   ADD_SLOT_INIT,
   ADD_SLOT_SUCCESS,
   ADD_SLOT_FAILURE,
@@ -30,9 +27,6 @@ import {
   MARK_AS_CA_INIT,
   MARK_AS_CA_SUCCESS,
   MARK_AS_CA_FAILURE,
-  GENERATE_AUTO_LAYOUT_INIT,
-  GENERATE_AUTO_LAYOUT_SUCCESS,
-  GENERATE_AUTO_LAYOUT_FAILURE,
   VALIDATE_PAGE_REDUCTION_INIT,
   VALIDATE_PAGE_REDUCTION_SUCCESS,
   VALIDATE_PAGE_REDUCTION_FAILURE,
@@ -111,37 +105,6 @@ export function* fetchProductionTemplates({ payload }) {
       },
     });
     yield call(toast.error, 'Error al cargar plantillas de producción');
-  }
-}
-
-// Move slot (anteriormente move item)
-export function* moveSlot(action) {
-  try {
-    const data = yield call(
-      productionService.moveSlot,
-      action.payload.slotId,
-      action.payload.sourceTemplateId,
-      action.payload.sourceSlotNumber,
-      action.payload.targetTemplateId,
-      action.payload.targetSlotNumber
-    );
-    yield put({
-      type: MOVE_ITEM_SUCCESS,
-      payload: {
-        productionTemplates: data.productionTemplates || data,
-      },
-    });
-    yield call(toast.success, 'Slot movido correctamente');
-  } catch (err) {
-    yield put({
-      type: MOVE_ITEM_FAILURE,
-      errors: {
-        ...(err.response?.data?.errors || {
-          general: 'Error al mover slot',
-        }),
-      },
-    });
-    yield call(toast.error, 'Error al mover slot');
   }
 }
 
@@ -292,33 +255,6 @@ export function* markSlotAsCA(action) {
   }
 }
 
-// Generate auto layout
-export function* generateAutoLayout(action) {
-  try {
-    const data = yield call(
-      productionService.generateAutoLayout,
-      action.payload.productEditionId
-    );
-    yield put({
-      type: GENERATE_AUTO_LAYOUT_SUCCESS,
-      payload: {
-        productionTemplates: data.productionTemplates || data,
-      },
-    });
-    yield call(toast.success, 'Layout automático generado');
-  } catch (err) {
-    yield put({
-      type: GENERATE_AUTO_LAYOUT_FAILURE,
-      errors: {
-        ...(err.response?.data?.errors || {
-          general: 'Error al generar layout automático',
-        }),
-      },
-    });
-    yield call(toast.error, 'Error al generar layout automático');
-  }
-}
-
 // Validate page reduction
 export function* validatePageReduction(action) {
   try {
@@ -379,13 +315,11 @@ export default function* productionSaga() {
     takeLatest(FETCH_PRODUCTS_INIT, fetchProducts),
     takeLatest(FETCH_EDITIONS_INIT, fetchEditions),
     takeLatest(FETCH_PRODUCTION_TEMPLATES_INIT, fetchProductionTemplates),
-    takeLatest(MOVE_ITEM_INIT, moveSlot),
     takeLatest(ADD_SLOT_INIT, addSlot),
     takeLatest(REMOVE_SLOT_INIT, removeSlot),
     takeLatest(UPDATE_OBSERVATION_INIT, updateSlotObservation),
     takeLatest(MARK_AS_EDITORIAL_INIT, markSlotAsEditorial),
     takeLatest(MARK_AS_CA_INIT, markSlotAsCA),
-    takeLatest(GENERATE_AUTO_LAYOUT_INIT, generateAutoLayout),
     takeLatest(VALIDATE_PAGE_REDUCTION_INIT, validatePageReduction),
     takeLatest(VALIDATE_INVENTORY_REDUCTION_INIT, validateInventoryReduction),
   ]);

@@ -1,18 +1,9 @@
-export const SET_ENTITY_TYPE = '@production/SET_ENTITY_TYPE';
-
-// Gestión de clientes
-export const FETCH_CLIENTS_INIT = '@production/FETCH_CLIENTS_INIT';
-export const FETCH_CLIENTS_SUCCESS = '@production/FETCH_CLIENTS_SUCCESS';
-export const FETCH_CLIENTS_FAILURE = '@production/FETCH_CLIENTS_FAILURE';
-
-export const SELECT_CLIENT = '@production/SELECT_CLIENT';
-export const SET_SELECTED_CURRENCY = '@production/SET_SELECTED_CURRENCY';
-
-// Gestión de productos para ediciones
+// Obtener productos
 export const FETCH_PRODUCTS_INIT = '@production/FETCH_PRODUCTS_INIT';
 export const FETCH_PRODUCTS_SUCCESS = '@production/FETCH_PRODUCTS_SUCCESS';
 export const FETCH_PRODUCTS_FAILURE = '@production/FETCH_PRODUCTS_FAILURE';
 
+// Obtener ediciones
 export const FETCH_EDITIONS_INIT = '@production/FETCH_EDITIONS_INIT';
 export const FETCH_EDITIONS_SUCCESS = '@production/FETCH_EDITIONS_SUCCESS';
 export const FETCH_EDITIONS_FAILURE = '@production/FETCH_EDITIONS_FAILURE';
@@ -20,18 +11,13 @@ export const FETCH_EDITIONS_FAILURE = '@production/FETCH_EDITIONS_FAILURE';
 export const SET_SELECTED_PRODUCT = '@production/SET_SELECTED_PRODUCT';
 export const SET_SELECTED_EDITION = '@production/SET_SELECTED_EDITION';
 
-// Carga inicial de elementos de producción
+// Obtener production templates
 export const FETCH_PRODUCTION_TEMPLATES_INIT =
   '@production/FETCH_PRODUCTION_TEMPLATES_INIT';
 export const FETCH_PRODUCTION_TEMPLATES_SUCCESS =
   '@production/FETCH_PRODUCTION_TEMPLATES_SUCCESS';
 export const FETCH_PRODUCTION_TEMPLATES_FAILURE =
   '@production/FETCH_PRODUCTION_TEMPLATES_FAILURE';
-
-// Mover elemento de página
-export const MOVE_ITEM_INIT = '@production/MOVE_ITEM_INIT';
-export const MOVE_ITEM_SUCCESS = '@production/MOVE_ITEM_SUCCESS';
-export const MOVE_ITEM_FAILURE = '@production/MOVE_ITEM_FAILURE';
 
 // Agregar slot
 export const ADD_SLOT_INIT = '@production/ADD_SLOT_INIT';
@@ -62,13 +48,13 @@ export const MARK_AS_CA_INIT = '@production/MARK_AS_CA_INIT';
 export const MARK_AS_CA_SUCCESS = '@production/MARK_AS_CA_SUCCESS';
 export const MARK_AS_CA_FAILURE = '@production/MARK_AS_CA_FAILURE';
 
-// Generar layout automático
-export const GENERATE_AUTO_LAYOUT_INIT =
-  '@production/GENERATE_AUTO_LAYOUT_INIT';
-export const GENERATE_AUTO_LAYOUT_SUCCESS =
-  '@production/GENERATE_AUTO_LAYOUT_SUCCESS';
-export const GENERATE_AUTO_LAYOUT_FAILURE =
-  '@production/GENERATE_AUTO_LAYOUT_FAILURE';
+// Mover publicaciones entre slots
+export const MOVE_PUBLISHING_ORDER_BETWEEN_SLOTS_INIT =
+  '@production/MOVE_PUBLISHING_ORDER_BETWEEN_SLOTS_INIT';
+export const MOVE_PUBLISHING_ORDER_BETWEEN_SLOTS_SUCCESS =
+  '@production/MOVE_PUBLISHING_ORDER_BETWEEN_SLOTS_SUCCESS';
+export const MOVE_PUBLISHING_ORDER_BETWEEN_SLOTS_FAILURE =
+  '@production/MOVE_PUBLISHING_ORDER_BETWEEN_SLOTS_FAILURE';
 
 // Validaciones
 export const VALIDATE_PAGE_REDUCTION_INIT =

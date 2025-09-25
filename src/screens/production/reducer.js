@@ -12,9 +12,6 @@ import {
   FETCH_PRODUCTION_TEMPLATES_INIT,
   FETCH_PRODUCTION_TEMPLATES_SUCCESS,
   FETCH_PRODUCTION_TEMPLATES_FAILURE,
-  MOVE_ITEM_INIT,
-  MOVE_ITEM_SUCCESS,
-  MOVE_ITEM_FAILURE,
   ADD_SLOT_INIT,
   ADD_SLOT_SUCCESS,
   ADD_SLOT_FAILURE,
@@ -30,15 +27,15 @@ import {
   MARK_AS_CA_INIT,
   MARK_AS_CA_SUCCESS,
   MARK_AS_CA_FAILURE,
-  GENERATE_AUTO_LAYOUT_INIT,
-  GENERATE_AUTO_LAYOUT_SUCCESS,
-  GENERATE_AUTO_LAYOUT_FAILURE,
   VALIDATE_PAGE_REDUCTION_INIT,
   VALIDATE_PAGE_REDUCTION_SUCCESS,
   VALIDATE_PAGE_REDUCTION_FAILURE,
   VALIDATE_INVENTORY_REDUCTION_INIT,
   VALIDATE_INVENTORY_REDUCTION_SUCCESS,
   VALIDATE_INVENTORY_REDUCTION_FAILURE,
+  MOVE_PUBLISHING_ORDER_BETWEEN_SLOTS_INIT,
+  MOVE_PUBLISHING_ORDER_BETWEEN_SLOTS_SUCCESS,
+  MOVE_PUBLISHING_ORDER_BETWEEN_SLOTS_FAILURE,
 } from './actionTypes';
 
 const initialState = {
@@ -53,7 +50,6 @@ const initialState = {
   selectedEdition: null,
 
   productionTemplates: [],
-  currentEditionId: null,
   totalPages: 0,
   validationResults: {
     pageReduction: null,
@@ -67,15 +63,14 @@ export default function (state = initialState, action) {
     case FETCH_PRODUCTS_INIT:
     case FETCH_EDITIONS_INIT:
     case FETCH_PRODUCTION_TEMPLATES_INIT:
-    case MOVE_ITEM_INIT:
     case ADD_SLOT_INIT:
     case REMOVE_SLOT_INIT:
     case UPDATE_OBSERVATION_INIT:
     case MARK_AS_EDITORIAL_INIT:
     case MARK_AS_CA_INIT:
-    case GENERATE_AUTO_LAYOUT_INIT:
     case VALIDATE_PAGE_REDUCTION_INIT:
     case VALIDATE_INVENTORY_REDUCTION_INIT:
+    case MOVE_PUBLISHING_ORDER_BETWEEN_SLOTS_INIT:
       return {
         ...state,
         loading: true,
@@ -117,65 +112,21 @@ export default function (state = initialState, action) {
       return {
         ...state,
         loading: false,
-        productionTemplates: action.payload.productionTemplates,
-        currentEditionId: action.payload.editionId,
-        totalPages: action.payload.productionTemplates.length,
-        errors: {},
-      };
-
-    case MOVE_ITEM_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        productionTemplates: action.payload.productionTemplates,
+        productionTemplates: action.payload.productionTemplates || [],
+        totalPages: action.payload.productionTemplates?.length ?? 0,
         errors: {},
       };
 
     case ADD_SLOT_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        productionTemplates: action.payload.productionTemplates,
-        errors: {},
-      };
-
     case REMOVE_SLOT_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        productionTemplates: action.payload.productionTemplates,
-        errors: {},
-      };
-
     case UPDATE_OBSERVATION_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        productionTemplates: action.payload.productionTemplates,
-        errors: {},
-      };
-
     case MARK_AS_EDITORIAL_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        productionTemplates: action.payload.productionTemplates,
-        errors: {},
-      };
-
     case MARK_AS_CA_SUCCESS:
+    case MOVE_PUBLISHING_ORDER_BETWEEN_SLOTS_SUCCESS:
       return {
         ...state,
         loading: false,
-        productionTemplates: action.payload.productionTemplates,
-        errors: {},
-      };
-
-    case GENERATE_AUTO_LAYOUT_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        productionTemplates: action.payload.productionTemplates,
+        productionTemplates: action.payload,
         errors: {},
       };
 
@@ -205,15 +156,14 @@ export default function (state = initialState, action) {
     case FETCH_PRODUCTS_FAILURE:
     case FETCH_EDITIONS_FAILURE:
     case FETCH_PRODUCTION_TEMPLATES_FAILURE:
-    case MOVE_ITEM_FAILURE:
     case ADD_SLOT_FAILURE:
     case REMOVE_SLOT_FAILURE:
     case UPDATE_OBSERVATION_FAILURE:
     case MARK_AS_EDITORIAL_FAILURE:
     case MARK_AS_CA_FAILURE:
-    case GENERATE_AUTO_LAYOUT_FAILURE:
     case VALIDATE_PAGE_REDUCTION_FAILURE:
     case VALIDATE_INVENTORY_REDUCTION_FAILURE:
+    case MOVE_PUBLISHING_ORDER_BETWEEN_SLOTS_FAILURE:
       return {
         ...state,
         loading: false,
@@ -263,11 +213,6 @@ export const getProductionTemplates = createSelector(
   (production) => production.productionTemplates
 );
 
-export const getCurrentEditionId = createSelector(
-  [getProductionState],
-  (production) => production.currentEditionId
-);
-
 export const getTotalPages = createSelector(
   [getProductionState],
   (production) => production.totalPages
@@ -278,12 +223,13 @@ export const getValidationResults = createSelector(
   (production) => production.validationResults
 );
 
-// Selectores avanzados
+// Selectores avanzados adaptados a la estructura real ProductionTemplateDto
 export const getProductionTemplatesByPage = createSelector(
   [getProductionTemplates],
-  (templates) => {
+  (productionTemplates) => {
+    // ✅ Corregido: productionTemplates es directamente el array
     const templatesByPage = {};
-    templates.forEach((template) => {
+    productionTemplates.forEach((template) => {
       templatesByPage[template.pageNumber] = template;
     });
     return templatesByPage;
@@ -292,23 +238,32 @@ export const getProductionTemplatesByPage = createSelector(
 
 export const getTotalSlots = createSelector(
   [getProductionTemplates],
-  (templates) => {
-    return templates.reduce((total, template) => {
-      return total + template.productionSlots.length;
-    }, 0);
+  (productionTemplates) => {
+    // ✅ Corregido: productionTemplates es directamente el array
+    return (
+      productionTemplates?.reduce((total, template) => {
+        return (
+          total +
+          (template.productionSlots ? template.productionSlots.length : 0)
+        );
+      }, 0) ?? 0
+    );
   }
 );
 
 export const getAssignedSlots = createSelector(
   [getProductionTemplates],
-  (templates) => {
+  (productionTemplates) => {
+    // ✅ Corregido: productionTemplates es directamente el array
     const assignedSlots = [];
-    templates.forEach((template) => {
-      template.productionSlots.forEach((slot) => {
-        if (slot.publishingOrderId) {
-          assignedSlots.push(slot);
-        }
-      });
+    productionTemplates.forEach((template) => {
+      if (template.productionSlots) {
+        template.productionSlots.forEach((slot) => {
+          if (slot.order && slot.order.id) {
+            assignedSlots.push(slot);
+          }
+        });
+      }
     });
     return assignedSlots;
   }
@@ -316,14 +271,17 @@ export const getAssignedSlots = createSelector(
 
 export const getAvailableSlots = createSelector(
   [getProductionTemplates],
-  (templates) => {
+  (productionTemplates) => {
+    // ✅ Corregido: productionTemplates es directamente el array
     const availableSlots = [];
-    templates.forEach((template) => {
-      template.productionSlots.forEach((slot) => {
-        if (!slot.publishingOrderId) {
-          availableSlots.push(slot);
-        }
-      });
+    productionTemplates.forEach((template) => {
+      if (template.productionSlots) {
+        template.productionSlots.forEach((slot) => {
+          if (!slot.order || !slot.order.id) {
+            availableSlots.push(slot);
+          }
+        });
+      }
     });
     return availableSlots;
   }
@@ -331,10 +289,11 @@ export const getAvailableSlots = createSelector(
 
 export const getSlotsByPage = createSelector(
   [getProductionTemplates],
-  (templates) => {
+  (productionTemplates) => {
+    // ✅ Corregido: productionTemplates es directamente el array
     const slotsByPage = {};
-    templates.forEach((template) => {
-      slotsByPage[template.pageNumber] = template.productionSlots;
+    productionTemplates.forEach((template) => {
+      slotsByPage[template.pageNumber] = template.productionSlots || [];
     });
     return slotsByPage;
   }

@@ -1,39 +1,38 @@
 import {
-  SET_SELECTED_CURRENCY,
   FETCH_PRODUCTS_INIT,
   FETCH_EDITIONS_INIT,
   SET_SELECTED_PRODUCT,
   SET_SELECTED_EDITION,
   FETCH_PRODUCTION_TEMPLATES_INIT,
-  MOVE_ITEM_INIT,
   ADD_SLOT_INIT,
   REMOVE_SLOT_INIT,
   UPDATE_OBSERVATION_INIT,
   MARK_AS_EDITORIAL_INIT,
   MARK_AS_CA_INIT,
-  GENERATE_AUTO_LAYOUT_INIT,
   VALIDATE_PAGE_REDUCTION_INIT,
   VALIDATE_INVENTORY_REDUCTION_INIT,
 } from './actionTypes';
 
-// Gestión de filtros y selección
+// Cargar productos
+export const fetchProducts = () => ({
+  type: FETCH_PRODUCTS_INIT,
+});
+
+// Guarda producto seleccionado
 export const setSelectedProduct = (payload) => ({
   type: SET_SELECTED_PRODUCT,
   payload,
 });
 
-export const setSelectedEdition = (payload) => ({
-  type: SET_SELECTED_EDITION,
+// Cargar ediciones
+export const fetchEditions = (payload) => ({
+  type: FETCH_EDITIONS_INIT,
   payload,
 });
 
-// Cargar productos y ediciones
-export const fetchProducts = () => ({
-  type: FETCH_PRODUCTS_INIT,
-});
-
-export const fetchEditions = (payload) => ({
-  type: FETCH_EDITIONS_INIT,
+// Guarda edicion seleccionada
+export const setSelectedEdition = (payload) => ({
+  type: SET_SELECTED_EDITION,
   payload,
 });
 
@@ -41,24 +40,6 @@ export const fetchEditions = (payload) => ({
 export const fetchProductionTemplates = (payload) => ({
   type: FETCH_PRODUCTION_TEMPLATES_INIT,
   payload,
-});
-
-// Mover slot de una página/posición a otra
-export const moveSlot = (
-  slotId,
-  sourceTemplateId,
-  sourceSlotNumber,
-  targetTemplateId,
-  targetSlotNumber
-) => ({
-  type: MOVE_ITEM_INIT,
-  payload: {
-    slotId,
-    sourceTemplateId,
-    sourceSlotNumber,
-    targetTemplateId,
-    targetSlotNumber,
-  },
 });
 
 // Agregar nuevo slot en una página (ProductionTemplate)
@@ -94,10 +75,14 @@ export const markSlotAsCA = (slotId, isCA) => ({
   payload: { slotId, isCA },
 });
 
-// Generar layout automático para una edición
-export const generateAutoLayout = (productEditionId) => ({
-  type: GENERATE_AUTO_LAYOUT_INIT,
-  payload: { productEditionId },
+// Mover orden de publicacion entre slots
+export const movePublishingOrderBetweenSlots = (
+  publishingOrderId,
+  sourceSlotId,
+  targetSlotId
+) => ({
+  type: 'MOVE_PUBLISHING_ORDER_BETWEEN_SLOTS_INIT',
+  payload: { publishingOrderId, sourceSlotId, targetSlotId },
 });
 
 // Validaciones
