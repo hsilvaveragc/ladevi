@@ -133,7 +133,7 @@ const EditionModal = () => {
     [addMode, productsAvailable, selectedItem.productAdvertisingSpaces]
   );
 
-  // Crear inventoryProductAdvertisingSpaces inicial basado en productAdvertisingSpaces
+  // Crear inventoryAdvertisingSpaces inicial basado en productAdvertisingSpaces
   const createInitialInventory = React.useCallback(
     (productId) => {
       const productAdvertisingSpaces = getProductAdvertisingSpaces(productId);
@@ -148,8 +148,7 @@ const EditionModal = () => {
         }));
       } else {
         // En modo edición/eliminación, usar valores existentes
-        const existingInventory =
-          selectedItem.inventoryProductAdvertisingSpaces || [];
+        const existingInventory = selectedItem.inventoryAdvertisingSpaces || [];
 
         return productAdvertisingSpaces.map((space) => {
           const existingItem = existingInventory.find(
@@ -178,7 +177,7 @@ const EditionModal = () => {
       closed: selectedItem.closed || false,
       end: selectedItem.end || '',
       pageCount: selectedItem.pageCount || '',
-      inventoryProductAdvertisingSpaces: createInitialInventory(
+      inventoryAdvertisingSpaces: createInitialInventory(
         selectedItem.productId || -1
       ),
     }),
@@ -194,7 +193,7 @@ const EditionModal = () => {
       .min(1, 'Debe seleccionar un producto'),
     end: Yup.string().required('La fecha de cierre es requerida'),
     pageCount: Yup.number(),
-    inventoryProductAdvertisingSpaces: Yup.array().of(
+    inventoryAdvertisingSpaces: Yup.array().of(
       Yup.object().shape({
         quantity: Yup.number().min(0, 'La cantidad debe ser mayor o igual a 0'),
       })
@@ -258,12 +257,12 @@ const EditionModal = () => {
                           'productId',
                           selectedProduct.id
                         );
-                        // Actualizar inventoryProductAdvertisingSpaces cuando cambie el producto
+                        // Actualizar inventoryAdvertisingSpaces cuando cambie el producto
                         const newInventory = createInitialInventory(
                           selectedProduct.id
                         );
                         formikProps.setFieldValue(
-                          'inventoryProductAdvertisingSpaces',
+                          'inventoryAdvertisingSpaces',
                           newInventory
                         );
                       }
@@ -303,7 +302,7 @@ const EditionModal = () => {
               <div className='inventory-container'>
                 <FormFieldset title='Configuración de inventario'>
                   <FieldArray
-                    name='inventoryProductAdvertisingSpaces'
+                    name='inventoryAdvertisingSpaces'
                     render={() => {
                       const currentProductAdvertisingSpaces =
                         getProductAdvertisingSpaces(
@@ -326,7 +325,7 @@ const EditionModal = () => {
                           {currentProductAdvertisingSpaces.map(
                             (space, index) => {
                               const inventoryIndex =
-                                formikProps.values.inventoryProductAdvertisingSpaces.findIndex(
+                                formikProps.values.inventoryAdvertisingSpaces.findIndex(
                                   (item) =>
                                     item.productAdvertisingSpaceId === space.id
                                 );
@@ -338,7 +337,7 @@ const EditionModal = () => {
                                   <div className='space-name'>{space.name}</div>
                                   <div className='quantity-input'>
                                     <InputTextField
-                                      name={`inventoryProductAdvertisingSpaces[${inventoryIndex}].quantity`}
+                                      name={`inventoryAdvertisingSpaces[${inventoryIndex}].quantity`}
                                       showLabel={false}
                                       disabled={deleteMode}
                                       type='number'

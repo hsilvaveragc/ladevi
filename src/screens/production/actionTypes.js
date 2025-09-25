@@ -21,12 +21,12 @@ export const SET_SELECTED_PRODUCT = '@production/SET_SELECTED_PRODUCT';
 export const SET_SELECTED_EDITION = '@production/SET_SELECTED_EDITION';
 
 // Carga inicial de elementos de producción
-export const FETCH_PRODUCTION_ITEMS_INIT =
-  '@production/FETCH_PRODUCTION_ITEMS_INIT';
-export const FETCH_PRODUCTION_ITEMS_SUCCESS =
-  '@production/FETCH_PRODUCTION_ITEMS_SUCCESS';
-export const FETCH_PRODUCTION_ITEMS_FAILURE =
-  '@production/FETCH_PRODUCTION_ITEMS_FAILURE';
+export const FETCH_PRODUCTION_TEMPLATES_INIT =
+  '@production/FETCH_PRODUCTION_TEMPLATES_INIT';
+export const FETCH_PRODUCTION_TEMPLATES_SUCCESS =
+  '@production/FETCH_PRODUCTION_TEMPLATES_SUCCESS';
+export const FETCH_PRODUCTION_TEMPLATES_FAILURE =
+  '@production/FETCH_PRODUCTION_TEMPLATES_FAILURE';
 
 // Mover elemento de página
 export const MOVE_ITEM_INIT = '@production/MOVE_ITEM_INIT';

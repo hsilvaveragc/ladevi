@@ -9,9 +9,9 @@ import {
   FETCH_EDITIONS_INIT,
   FETCH_EDITIONS_SUCCESS,
   FETCH_EDITIONS_FAILURE,
-  FETCH_PRODUCTION_ITEMS_INIT,
-  FETCH_PRODUCTION_ITEMS_SUCCESS,
-  FETCH_PRODUCTION_ITEMS_FAILURE,
+  FETCH_PRODUCTION_TEMPLATES_INIT,
+  FETCH_PRODUCTION_TEMPLATES_SUCCESS,
+  FETCH_PRODUCTION_TEMPLATES_FAILURE,
   MOVE_ITEM_INIT,
   MOVE_ITEM_SUCCESS,
   MOVE_ITEM_FAILURE,
@@ -60,7 +60,7 @@ export function* fetchProducts() {
         }),
       },
     });
-    yield call(toast.error, 'Hubo un error al cargar los productos');
+    yield call(toast.error, 'Error al cargar productos');
   }
 }
 
@@ -86,87 +86,79 @@ export function* fetchEditions({ payload }) {
         }),
       },
     });
-    yield call(toast.error, 'Hubo un error al cargar las ediciones');
+    yield call(toast.error, 'Error al cargar ediciones');
   }
 }
 
-// Fetch production items - Conecta con el endpoint real del backend
-export function* fetchProductionItems({ payload }) {
-  debugger;
+// Fetch production templates (anteriormente production items)
+export function* fetchProductionTemplates({ payload }) {
   try {
-    const response = yield call(
-      productionService.getProductionInventory,
-      payload
-    );
-
+    const data = yield call(productionService.getProductionTemplates, payload);
     yield put({
-      type: FETCH_PRODUCTION_ITEMS_SUCCESS,
-      payload: response, // response ya es el array de ProductionItemDto
+      type: FETCH_PRODUCTION_TEMPLATES_SUCCESS,
+      payload: {
+        productionTemplates: data,
+        editionId: payload,
+      },
     });
-
-    yield call(toast.success, 'Elementos de producción cargados correctamente');
   } catch (err) {
     yield put({
-      type: FETCH_PRODUCTION_ITEMS_FAILURE,
+      type: FETCH_PRODUCTION_TEMPLATES_FAILURE,
       errors: {
         ...(err.response?.data?.errors || {
-          general: 'Error al cargar elementos de producción',
+          general: 'Error al cargar plantillas de producción',
         }),
       },
     });
-    yield call(toast.error, 'Error al cargar los elementos de producción');
+    yield call(toast.error, 'Error al cargar plantillas de producción');
   }
 }
 
-// Move item
-export function* moveItem({ payload }) {
+// Move slot (anteriormente move item)
+export function* moveSlot(action) {
   try {
-    const response = yield call(
-      productionService.moveItem,
-      payload.itemId,
-      payload.sourcePageNumber,
-      payload.sourceSlot,
-      payload.targetPageNumber,
-      payload.targetSlot
+    const data = yield call(
+      productionService.moveSlot,
+      action.payload.slotId,
+      action.payload.sourceTemplateId,
+      action.payload.sourceSlotNumber,
+      action.payload.targetTemplateId,
+      action.payload.targetSlotNumber
     );
-
     yield put({
       type: MOVE_ITEM_SUCCESS,
       payload: {
-        ...payload,
-        updatedItem: response,
+        productionTemplates: data.productionTemplates || data,
       },
     });
-
-    yield call(toast.success, 'Elemento movido correctamente');
+    yield call(toast.success, 'Slot movido correctamente');
   } catch (err) {
     yield put({
       type: MOVE_ITEM_FAILURE,
       errors: {
         ...(err.response?.data?.errors || {
-          general: 'Error al mover el elemento',
+          general: 'Error al mover slot',
         }),
       },
     });
-    yield call(toast.error, 'Error al mover el elemento');
+    yield call(toast.error, 'Error al mover slot');
   }
 }
 
 // Add slot
-export function* addSlot({ payload }) {
+export function* addSlot(action) {
   try {
-    const newItem = yield call(
+    const data = yield call(
       productionService.addSlot,
-      payload.productEditionId,
-      payload.pageNumber,
-      payload.inventoryProductAdvertisingSpaceId
+      action.payload.productionTemplateId,
+      action.payload.inventoryAdvertisingSpaceId
     );
-
     yield put({
       type: ADD_SLOT_SUCCESS,
-      payload: { newItem },
+      payload: {
+        productionTemplates: data.productionTemplates || data,
+      },
     });
-
     yield call(toast.success, 'Slot agregado correctamente');
   } catch (err) {
     yield put({
@@ -182,15 +174,18 @@ export function* addSlot({ payload }) {
 }
 
 // Remove slot
-export function* removeSlot({ payload }) {
+export function* removeSlot(action) {
   try {
-    yield call(productionService.removeSlot, payload.itemId);
-
+    const data = yield call(
+      productionService.removeSlot,
+      action.payload.slotId
+    );
     yield put({
       type: REMOVE_SLOT_SUCCESS,
-      payload,
+      payload: {
+        productionTemplates: data.productionTemplates || data,
+      },
     });
-
     yield call(toast.success, 'Slot eliminado correctamente');
   } catch (err) {
     yield put({
@@ -205,24 +200,21 @@ export function* removeSlot({ payload }) {
   }
 }
 
-// Update observation
-export function* updateObservation({ payload }) {
+// Update slot observation (anteriormente update observation)
+export function* updateSlotObservation(action) {
   try {
-    const response = yield call(
-      productionService.updateObservation,
-      payload.itemId,
-      payload.observations
+    const data = yield call(
+      productionService.updateSlotObservation,
+      action.payload.slotId,
+      action.payload.observations
     );
-
     yield put({
       type: UPDATE_OBSERVATION_SUCCESS,
       payload: {
-        ...payload,
-        updatedItem: response,
+        productionTemplates: data.productionTemplates || data,
       },
     });
-
-    yield call(toast.success, 'Observación actualizada correctamente');
+    yield call(toast.success, 'Observación actualizada');
   } catch (err) {
     yield put({
       type: UPDATE_OBSERVATION_FAILURE,
@@ -236,26 +228,23 @@ export function* updateObservation({ payload }) {
   }
 }
 
-// Mark as editorial
-export function* markAsEditorial({ payload }) {
+// Mark slot as editorial (anteriormente mark as editorial)
+export function* markSlotAsEditorial(action) {
   try {
-    const response = yield call(
-      productionService.markAsEditorial,
-      payload.itemId,
-      payload.isEditorial
+    const data = yield call(
+      productionService.markSlotAsEditorial,
+      action.payload.slotId,
+      action.payload.isEditorial
     );
-
     yield put({
       type: MARK_AS_EDITORIAL_SUCCESS,
       payload: {
-        ...payload,
-        updatedItem: response,
+        productionTemplates: data.productionTemplates || data,
       },
     });
-
     yield call(
       toast.success,
-      payload.isEditorial
+      action.payload.isEditorial
         ? 'Marcado como editorial'
         : 'Desmarcado como editorial'
     );
@@ -272,26 +261,23 @@ export function* markAsEditorial({ payload }) {
   }
 }
 
-// Mark as CA
-export function* markAsCA({ payload }) {
+// Mark slot as CA (anteriormente mark as CA)
+export function* markSlotAsCA(action) {
   try {
-    const response = yield call(
-      productionService.markAsCA,
-      payload.itemId,
-      payload.isCA
+    const data = yield call(
+      productionService.markSlotAsCA,
+      action.payload.slotId,
+      action.payload.isCA
     );
-
     yield put({
       type: MARK_AS_CA_SUCCESS,
       payload: {
-        ...payload,
-        updatedItem: response,
+        productionTemplates: data.productionTemplates || data,
       },
     });
-
     yield call(
       toast.success,
-      payload.isCA ? 'Marcado como CA' : 'Desmarcado como CA'
+      action.payload.isCA ? 'Marcado como CA' : 'Desmarcado como CA'
     );
   } catch (err) {
     yield put({
@@ -307,19 +293,19 @@ export function* markAsCA({ payload }) {
 }
 
 // Generate auto layout
-export function* generateAutoLayout({ payload }) {
+export function* generateAutoLayout(action) {
   try {
-    const response = yield call(
+    const data = yield call(
       productionService.generateAutoLayout,
-      payload.productEditionId
+      action.payload.productEditionId
     );
-
     yield put({
       type: GENERATE_AUTO_LAYOUT_SUCCESS,
-      payload: response,
+      payload: {
+        productionTemplates: data.productionTemplates || data,
+      },
     });
-
-    yield call(toast.success, 'Layout automático generado correctamente');
+    yield call(toast.success, 'Layout automático generado');
   } catch (err) {
     yield put({
       type: GENERATE_AUTO_LAYOUT_FAILURE,
@@ -334,17 +320,18 @@ export function* generateAutoLayout({ payload }) {
 }
 
 // Validate page reduction
-export function* validatePageReduction({ payload }) {
+export function* validatePageReduction(action) {
   try {
-    const response = yield call(
+    const data = yield call(
       productionService.validatePageReduction,
-      payload.productEditionId,
-      payload.newPageCount
+      action.payload.productEditionId,
+      action.payload.newPageCount
     );
-
     yield put({
       type: VALIDATE_PAGE_REDUCTION_SUCCESS,
-      payload: response,
+      payload: {
+        validationResult: data,
+      },
     });
   } catch (err) {
     yield put({
@@ -360,17 +347,18 @@ export function* validatePageReduction({ payload }) {
 }
 
 // Validate inventory reduction
-export function* validateInventoryReduction({ payload }) {
+export function* validateInventoryReduction(action) {
   try {
-    const response = yield call(
+    const data = yield call(
       productionService.validateInventoryReduction,
-      payload.productEditionId,
-      payload.inventoryChanges
+      action.payload.productEditionId,
+      action.payload.inventoryChanges
     );
-
     yield put({
       type: VALIDATE_INVENTORY_REDUCTION_SUCCESS,
-      payload: response,
+      payload: {
+        validationResult: data,
+      },
     });
   } catch (err) {
     yield put({
@@ -390,13 +378,13 @@ export default function* productionSaga() {
   yield all([
     takeLatest(FETCH_PRODUCTS_INIT, fetchProducts),
     takeLatest(FETCH_EDITIONS_INIT, fetchEditions),
-    takeLatest(FETCH_PRODUCTION_ITEMS_INIT, fetchProductionItems),
-    takeLatest(MOVE_ITEM_INIT, moveItem),
+    takeLatest(FETCH_PRODUCTION_TEMPLATES_INIT, fetchProductionTemplates),
+    takeLatest(MOVE_ITEM_INIT, moveSlot),
     takeLatest(ADD_SLOT_INIT, addSlot),
     takeLatest(REMOVE_SLOT_INIT, removeSlot),
-    takeLatest(UPDATE_OBSERVATION_INIT, updateObservation),
-    takeLatest(MARK_AS_EDITORIAL_INIT, markAsEditorial),
-    takeLatest(MARK_AS_CA_INIT, markAsCA),
+    takeLatest(UPDATE_OBSERVATION_INIT, updateSlotObservation),
+    takeLatest(MARK_AS_EDITORIAL_INIT, markSlotAsEditorial),
+    takeLatest(MARK_AS_CA_INIT, markSlotAsCA),
     takeLatest(GENERATE_AUTO_LAYOUT_INIT, generateAutoLayout),
     takeLatest(VALIDATE_PAGE_REDUCTION_INIT, validatePageReduction),
     takeLatest(VALIDATE_INVENTORY_REDUCTION_INIT, validateInventoryReduction),

@@ -13,20 +13,21 @@ import {
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 import {
-  fetchProductionItems,
-  moveItem,
+  fetchProductionTemplates,
+  moveSlot,
   addSlot,
   removeSlot,
-  updateObservation,
-  markAsEditorial,
-  markAsCA,
+  updateSlotObservation,
+  markSlotAsEditorial,
+  markSlotAsCA,
 } from '../actionCreators';
 import {
-  getProductionItems,
-  getProductionItemsByPage,
+  getProductionTemplates,
   getLoading,
   getErrors,
   getTotalPages,
+  getTotalSlots,
+  getSelectedEdition,
 } from '../reducer';
 
 const ProductionGridContainer = styled.div`
@@ -42,6 +43,12 @@ const ProductionGridContainer = styled.div`
       color: #343a40;
       font-size: 24px;
       font-weight: 600;
+    }
+
+    .stats {
+      margin-top: 8px;
+      color: #6c757d;
+      font-size: 14px;
     }
   }
 
@@ -72,6 +79,11 @@ const ProductionGridContainer = styled.div`
           flex: 1;
           text-align: center;
         }
+
+        .actions-col {
+          width: 120px;
+          text-align: center;
+        }
       }
     }
   }
@@ -79,7 +91,7 @@ const ProductionGridContainer = styled.div`
   .page-row {
     display: flex;
     border-bottom: 1px solid #dee2e6;
-    min-height: 80px;
+    min-height: 120px;
 
     &:hover {
       background-color: #f8f9fa;
@@ -99,202 +111,155 @@ const ProductionGridContainer = styled.div`
 
     .page-content {
       flex: 1;
-      padding: 8px 12px;
+      padding: 12px;
+    }
+
+    .page-actions {
+      width: 120px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 12px 8px;
+      border-left: 1px solid #dee2e6;
     }
   }
 
-  .page-items-container {
-    min-height: 60px;
+  .slots-container {
+    min-height: 80px;
     border: 2px dashed #ced4da;
     border-radius: 6px;
     background-color: #f8f9fa;
     padding: 8px;
-    transition: all 0.2s ease;
 
     &.drag-over {
-      border-color: #28a745;
-      background-color: #d4edda;
+      border-color: #007bff;
+      background-color: #e7f3ff;
     }
 
-    .empty-page-message {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+    .empty-message {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 64px;
       color: #6c757d;
       font-style: italic;
-      pointer-events: none;
-      font-size: 13px;
+      font-size: 14px;
     }
   }
 
-  .production-item {
+  .production-slot {
     background: white;
     border: 1px solid #dee2e6;
-    border-radius: 4px;
-    padding: 8px 12px;
+    border-radius: 6px;
+    padding: 8px;
     margin-bottom: 6px;
-    transition: all 0.2s ease;
+    cursor: grab;
 
-    &:last-child {
-      margin-bottom: 0;
+    &:active {
+      cursor: grabbing;
     }
 
-    &.assigned {
-      border-color: #28a745;
-      background-color: #f8fff9;
+    &.is-dragging {
+      opacity: 0.5;
     }
 
-    &.template {
-      border-color: #ffc107;
-      border-style: dashed;
-    }
-
-    /* Estilos específicos de @hello-pangea/dnd */
-    .drag-handle {
-      color: #6c757d;
-      cursor: grab;
-
-      &:active {
-        cursor: grabbing;
-      }
-    }
-
-    .item-content {
-      display: grid;
-      grid-template-columns: auto 1fr auto auto auto auto auto;
-      gap: 8px;
+    .slot-header {
+      display: flex;
       align-items: center;
-      font-size: 13px;
+      justify-content: space-between;
+      margin-bottom: 6px;
 
-      .client-info {
+      .drag-handle {
+        color: #6c757d;
+        cursor: grab;
+      }
+
+      .slot-number {
         font-weight: 600;
         color: #495057;
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-
-        .client-name {
-          font-size: 12px;
-        }
-
-        .contract-name {
-          font-size: 11px;
-          color: #6c757d;
-          font-weight: normal;
-        }
-      }
-
-      .seller-name {
-        color: #6c757d;
         font-size: 12px;
       }
 
-      .space-type {
-        background-color: #e9ecef;
+      .slot-actions {
+        display: flex;
+        gap: 4px;
+      }
+    }
+
+    .slot-content {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 8px;
+      align-items: center;
+      font-size: 12px;
+
+      .space-name {
+        font-weight: 600;
+        color: #495057;
+      }
+
+      .assignment-info {
+        color: #28a745;
+        font-size: 11px;
+        font-style: italic;
+
+        &.empty {
+          color: #6c757d;
+        }
+      }
+
+      .type-badge {
         padding: 2px 6px;
         border-radius: 3px;
-        font-size: 11px;
-        text-align: center;
-        font-weight: 500;
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+
+        &.publicidad {
+          background-color: #007bff;
+          color: white;
+        }
 
         &.editorial {
-          background-color: #f8d7da;
-          color: #721c24;
+          background-color: #28a745;
+          color: white;
         }
 
         &.ca {
-          background-color: #fff3cd;
-          color: #856404;
-        }
-
-        &.assigned {
-          background-color: #d4edda;
-          color: #155724;
-        }
-
-        &.template {
-          background-color: #fff3cd;
-          color: #856404;
+          background-color: #ffc107;
+          color: #212529;
         }
       }
+    }
 
-      .slot-info {
+    .slot-observation {
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px solid #f1f3f4;
+
+      .observation-display {
         color: #6c757d;
+        font-style: italic;
+        cursor: pointer;
         font-size: 11px;
-        text-align: center;
+        padding: 2px 4px;
+        border-radius: 3px;
 
-        .slot-number {
-          display: block;
-          font-weight: 600;
+        &:hover {
+          background-color: #e9ecef;
+        }
+
+        &.empty {
+          color: #adb5bd;
         }
       }
 
-      .observation {
-        min-width: 150px;
-
-        .observation-display {
-          color: #6c757d;
-          font-style: italic;
-          cursor: pointer;
-          padding: 2px 4px;
-          border-radius: 3px;
-
-          &:hover {
-            background-color: #e9ecef;
-          }
-
-          &.empty {
-            color: #adb5bd;
-          }
-        }
-
-        .observation-input {
-          padding: 2px 4px;
-          border: 1px solid #ced4da;
-          border-radius: 3px;
-          font-size: 12px;
-          width: 100%;
-        }
-      }
-
-      .actions {
-        display: flex;
-        gap: 4px;
-
-        .type-select {
-          font-size: 11px;
-          padding: 2px 4px;
-          border: 1px solid #ced4da;
-          border-radius: 3px;
-          background: white;
-        }
-
-        .btn-sm {
-          padding: 2px 6px;
-          font-size: 11px;
-          border: none;
-          border-radius: 3px;
-          cursor: pointer;
-
-          &.btn-danger {
-            background-color: #dc3545;
-            color: white;
-
-            &:hover {
-              background-color: #c82333;
-            }
-          }
-
-          &.btn-success {
-            background-color: #28a745;
-            color: white;
-
-            &:hover {
-              background-color: #218838;
-            }
-          }
-        }
+      .observation-input {
+        width: 100%;
+        padding: 2px 4px;
+        border: 1px solid #ced4da;
+        border-radius: 3px;
+        font-size: 11px;
       }
     }
   }
@@ -308,56 +273,129 @@ const ProductionGridContainer = styled.div`
     color: #6c757d;
     cursor: pointer;
     font-size: 12px;
-    margin-top: 4px;
+    margin-top: 8px;
 
     &:hover {
       border-color: #007bff;
       color: #007bff;
       background-color: #f8f9fa;
     }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  .btn-sm {
+    padding: 2px 6px;
+    font-size: 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+
+    &.btn-danger {
+      background-color: #dc3545;
+      color: white;
+
+      &:hover {
+        background-color: #c82333;
+      }
+    }
+
+    &.btn-success {
+      background-color: #28a745;
+      color: white;
+
+      &:hover {
+        background-color: #218838;
+      }
+    }
+
+    &.btn-secondary {
+      background-color: #6c757d;
+      color: white;
+
+      &:hover {
+        background-color: #5a6268;
+      }
+    }
+  }
+
+  .page-summary {
+    margin-top: 20px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+
+    .summary-stats {
+      display: flex;
+      gap: 24px;
+
+      .stat {
+        text-align: center;
+
+        .stat-value {
+          font-size: 24px;
+          font-weight: 600;
+          color: #495057;
+        }
+
+        .stat-label {
+          font-size: 12px;
+          color: #6c757d;
+          margin-top: 4px;
+        }
+      }
+    }
   }
 
   @media (max-width: 768px) {
-    .production-item .item-content {
+    .production-slot .slot-content {
       grid-template-columns: 1fr;
       gap: 4px;
-      text-align: left;
+    }
+
+    .page-summary .summary-stats {
+      flex-direction: column;
+      gap: 12px;
     }
   }
 `;
 
 const ProductionGrid = ({ match }) => {
   const dispatch = useDispatch();
-  const productEditionId = match?.params?.productEditionId;
 
   // Estado local para edición de observaciones
   const [editingObservation, setEditingObservation] = useState(null);
   const observationInputRef = useRef(null);
 
-  // Selectores del estado con estructura real del backend
-  const productionItems = useSelector(getProductionItems);
-  const itemsByPage = useSelector(getProductionItemsByPage);
+  // Selectors
   const loading = useSelector(getLoading);
   const errors = useSelector(getErrors);
+  const productionTemplates = useSelector(getProductionTemplates);
   const totalPages = useSelector(getTotalPages);
+  const totalSlots = useSelector(getTotalSlots);
+  const selectedEdition = useSelector(getSelectedEdition);
 
-  // Cargar elementos al montar el componente
+  // Cargar datos cuando hay una edición seleccionada
   useEffect(() => {
-    if (productEditionId) {
-      dispatch(fetchProductionItems(parseInt(productEditionId)));
+    if (selectedEdition?.id) {
+      dispatch(fetchProductionTemplates(selectedEdition.id));
     }
-  }, [dispatch, productEditionId]);
+  }, [dispatch, selectedEdition]);
 
-  // Handler principal de drag and drop
+  // Manejar drag and drop
   const handleDragEnd = (result) => {
     const { destination, source, draggableId } = result;
 
-    // Si no hay destino válido, no hacer nada
+    // No hacer nada si no hay destino
     if (!destination) {
       return;
     }
 
-    // Si se soltó en la misma posición, no hacer nada
+    // No hacer nada si se soltó en la misma posición
     if (
       destination.droppableId === source.droppableId &&
       destination.index === source.index
@@ -366,237 +404,188 @@ const ProductionGrid = ({ match }) => {
     }
 
     // Extraer información de los IDs
-    const sourcePageNumber = parseInt(source.droppableId.replace('page-', ''));
-    const destinationPageNumber = parseInt(
-      destination.droppableId.replace('page-', '')
+    const sourceTemplateId = parseInt(source.droppableId.split('-')[1]);
+    const targetTemplateId = parseInt(destination.droppableId.split('-')[1]);
+    const slotId = parseInt(draggableId.split('-')[1]);
+
+    // Dispatch de la acción de mover slot
+    dispatch(
+      moveSlot(
+        slotId,
+        sourceTemplateId,
+        source.index + 1, // slotNumber empieza en 1
+        targetTemplateId,
+        destination.index + 1
+      )
     );
+  };
 
-    // Encontrar el item que se está moviendo
-    const draggedItem = productionItems.find(
-      (item) =>
-        `item-${item.Id}-${item.PageNumber}-${item.Slot}` === draggableId
-    );
+  // Manejar agregar slot
+  const handleAddSlot = (templateId, inventorySpaceId = 1) => {
+    dispatch(addSlot(templateId, inventorySpaceId));
+  };
 
-    if (draggedItem) {
-      // Calcular nuevo slot basado en la posición de destino
-      const destinationPageItems = itemsByPage[destinationPageNumber] || [];
-      const newSlot = destination.index + 1;
-
-      dispatch(
-        moveItem(
-          draggedItem.Id,
-          sourcePageNumber,
-          draggedItem.Slot,
-          destinationPageNumber,
-          newSlot
-        )
-      );
+  // Manejar remover slot
+  const handleRemoveSlot = (slotId) => {
+    if (window.confirm('¿Está seguro de que desea eliminar este slot?')) {
+      dispatch(removeSlot(slotId));
     }
   };
 
-  // Handlers para observaciones
-  const handleObservationClick = (itemId, currentObservation) => {
-    setEditingObservation({ itemId, value: currentObservation || '' });
-    setTimeout(() => {
-      if (observationInputRef.current) {
-        observationInputRef.current.focus();
-        observationInputRef.current.select();
-      }
-    }, 0);
+  // Manejar edición de observación
+  const handleEditObservation = (slotId, currentObservation) => {
+    setEditingObservation({
+      slotId,
+      value: currentObservation || '',
+    });
   };
 
-  const handleObservationSave = () => {
+  const handleSaveObservation = () => {
     if (editingObservation) {
       dispatch(
-        updateObservation(editingObservation.itemId, editingObservation.value)
+        updateSlotObservation(
+          editingObservation.slotId,
+          editingObservation.value
+        )
       );
       setEditingObservation(null);
     }
   };
 
-  const handleObservationCancel = () => {
+  const handleCancelObservation = () => {
     setEditingObservation(null);
   };
 
-  const handleObservationKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleObservationSave();
-    } else if (e.key === 'Escape') {
-      handleObservationCancel();
+  // Manejar cambio de tipo
+  const handleTypeChange = (slotId, type) => {
+    switch (type) {
+      case 'editorial':
+        dispatch(markSlotAsEditorial(slotId, true));
+        dispatch(markSlotAsCA(slotId, false));
+        break;
+      case 'ca':
+        dispatch(markSlotAsCA(slotId, true));
+        dispatch(markSlotAsEditorial(slotId, false));
+        break;
+      case 'publicidad':
+      default:
+        dispatch(markSlotAsEditorial(slotId, false));
+        dispatch(markSlotAsCA(slotId, false));
+        break;
     }
   };
 
-  // Handler para cambio de tipo
-  const handleTypeChange = (itemId, newType) => {
-    if (newType === 'editorial') {
-      dispatch(markAsEditorial(itemId, true));
-    } else if (newType === 'ca') {
-      dispatch(markAsCA(itemId, true));
-    } else {
-      dispatch(markAsEditorial(itemId, false));
-      dispatch(markAsCA(itemId, false));
-    }
-  };
-
-  // Handlers para slots
-  const handleAddSlot = (pageNumber) => {
-    // console.log('Agregar slot en página', pageNumber);
-  };
-
-  const handleRemoveSlot = (itemId) => {
-    const item = productionItems.find((i) => i.Id === itemId);
-    if (item && item.Id === 0) {
-      dispatch(removeSlot(itemId));
-    }
-  };
-
-  // Determinar el tipo visual del item
-  const getItemType = (item) => {
-    if (item.IsEditorial) return 'editorial';
-    if (item.IsCA) return 'ca';
-    if (item.PublishingOrderId > 0) return 'assigned';
-    return 'template';
-  };
-
-  // Determinar el tipo de select
-  const getSelectValue = (item) => {
-    if (item.IsEditorial) return 'editorial';
-    if (item.IsCA) return 'ca';
+  // Obtener tipo de slot
+  const getSlotType = (slot) => {
+    if (slot.isEditorial) return 'editorial';
+    if (slot.isCA) return 'ca';
     return 'publicidad';
   };
 
-  // Renderizar un item individual
-  const renderProductionItem = (item, index) => {
-    const itemType = getItemType(item);
-    const selectValue = getSelectValue(item);
-    const isTemplate = item.Id === 0;
-    const isAssigned = item.PublishingOrderId > 0;
-    const draggableId = `item-${item.Id}-${item.PageNumber}-${item.Slot}`;
+  // Renderizar un slot individual
+  const renderSlot = (slot, index) => {
+    const slotType = getSlotType(slot);
+    const isEditingThis = editingObservation?.slotId === slot.id;
 
     return (
       <Draggable
-        key={draggableId}
-        draggableId={draggableId}
+        key={`slot-${slot.id}`}
+        draggableId={`slot-${slot.id}`}
         index={index}
-        isDragDisabled={isAssigned} // No permitir drag de items asignados
       >
         {(provided, snapshot) => (
           <div
             ref={provided.innerRef}
             {...provided.draggableProps}
-            className={`production-item ${itemType} ${snapshot.isDragging ? 'dragging' : ''}`}
-            style={{
-              ...provided.draggableProps.style,
-              transform: snapshot.isDragging
-                ? `${provided.draggableProps.style?.transform} rotate(2deg)`
-                : provided.draggableProps.style?.transform,
-            }}
+            className={`production-slot ${snapshot.isDragging ? 'is-dragging' : ''}`}
           >
-            <div className='item-content'>
-              <div className='drag-handle' {...provided.dragHandleProps}>
+            <div className='slot-header'>
+              <div {...provided.dragHandleProps} className='drag-handle'>
                 <FontAwesomeIcon icon={faGripVertical} />
               </div>
-
-              <div className='client-info'>
-                <div className='client-name'>
-                  {item.ClientName ||
-                    (isAssigned ? 'Sin cliente' : 'Disponible')}
-                </div>
-                {item.ContractName && (
-                  <div className='contract-name'>{item.ContractName}</div>
-                )}
-              </div>
-
-              <div className='seller-name'>
-                {item.SellerName || (isAssigned ? '-' : '')}
-              </div>
-
-              <div className={`space-type ${itemType}`}>
-                {item.IsEditorial
-                  ? 'EDITORIAL'
-                  : item.IsCA
-                    ? 'CA'
-                    : item.ProductAdvertisingSpaceName || '-'}
-              </div>
-
-              <div className='slot-info'>
-                <span className='slot-number'>#{item.Slot}</span>
-              </div>
-
-              <div className='observation'>
-                {editingObservation?.itemId === item.Id ? (
-                  <div style={{ display: 'flex', gap: '2px' }}>
-                    <input
-                      ref={observationInputRef}
-                      type='text'
-                      className='observation-input'
-                      value={editingObservation.value}
-                      onChange={(e) =>
-                        setEditingObservation({
-                          ...editingObservation,
-                          value: e.target.value,
-                        })
-                      }
-                      onKeyDown={handleObservationKeyPress}
-                      onBlur={handleObservationSave}
-                      placeholder='Observación...'
-                    />
-                    <button
-                      type='button'
-                      className='btn-sm btn-success'
-                      onClick={handleObservationSave}
-                    >
-                      <FontAwesomeIcon icon={faSave} />
-                    </button>
-                    <button
-                      type='button'
-                      className='btn-sm btn-danger'
-                      onClick={handleObservationCancel}
-                    >
-                      <FontAwesomeIcon icon={faTimes} />
-                    </button>
-                  </div>
-                ) : (
-                  <div
-                    className={`observation-display ${
-                      !item.Observations ? 'empty' : ''
-                    }`}
-                    onClick={() =>
-                      handleObservationClick(item.Id, item.Observations)
-                    }
-                  >
-                    {item.Observations || 'Agregar observación...'}
-                  </div>
-                )}
-              </div>
-
-              <div className='actions'>
+              <div className='slot-number'>Slot #{slot.slotNumber}</div>
+              <div className='slot-actions'>
                 <select
+                  value={slotType}
+                  onChange={(e) => handleTypeChange(slot.id, e.target.value)}
                   className='type-select'
-                  value={selectValue}
-                  onChange={(e) => handleTypeChange(item.Id, e.target.value)}
-                  disabled={isAssigned}
                 >
                   <option value='publicidad'>Publicidad</option>
                   <option value='editorial'>Editorial</option>
                   <option value='ca'>CA</option>
                 </select>
+                <button
+                  type='button'
+                  onClick={() => handleRemoveSlot(slot.id)}
+                  className='btn-sm btn-danger'
+                  title='Eliminar slot'
+                >
+                  <FontAwesomeIcon icon={faTrash} />
+                </button>
+              </div>
+            </div>
 
-                {isTemplate && (
+            <div className='slot-content'>
+              <div className='space-name'>
+                {slot.productAdvertisingSpaceName || 'Espacio no definido'}
+              </div>
+              <div
+                className={`assignment-info ${!slot.publishingOrderId ? 'empty' : ''}`}
+              >
+                {slot.publishingOrderId
+                  ? `Orden: ${slot.publishingOrder?.orderNumber || slot.publishingOrderId}`
+                  : 'Sin asignar'}
+              </div>
+              <div className={`type-badge ${slotType}`}>{slotType}</div>
+            </div>
+
+            <div className='slot-observation'>
+              {isEditingThis ? (
+                <div
+                  style={{ display: 'flex', gap: '4px', alignItems: 'center' }}
+                >
+                  <input
+                    ref={observationInputRef}
+                    type='text'
+                    value={editingObservation.value}
+                    onChange={(e) =>
+                      setEditingObservation({
+                        ...editingObservation,
+                        value: e.target.value,
+                      })
+                    }
+                    className='observation-input'
+                    placeholder='Agregar observación...'
+                    autoFocus
+                  />
                   <button
                     type='button'
-                    className='btn-sm btn-danger'
-                    onClick={() => {
-                      if (window.confirm('¿Eliminar este slot?')) {
-                        handleRemoveSlot(item.Id);
-                      }
-                    }}
-                    title='Solo se pueden eliminar slots de template'
+                    onClick={handleSaveObservation}
+                    className='btn-sm btn-success'
+                    title='Guardar'
                   >
-                    <FontAwesomeIcon icon={faTrash} />
+                    <FontAwesomeIcon icon={faSave} />
                   </button>
-                )}
-              </div>
+                  <button
+                    type='button'
+                    onClick={handleCancelObservation}
+                    className='btn-sm btn-secondary'
+                    title='Cancelar'
+                  >
+                    <FontAwesomeIcon icon={faTimes} />
+                  </button>
+                </div>
+              ) : (
+                <div
+                  className={`observation-display ${!slot.observations ? 'empty' : ''}`}
+                  onClick={() =>
+                    handleEditObservation(slot.id, slot.observations)
+                  }
+                  title='Clic para editar'
+                >
+                  {slot.observations || 'Clic para agregar observación...'}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -604,61 +593,47 @@ const ProductionGrid = ({ match }) => {
     );
   };
 
-  // Renderizar elementos de una página
-  const renderPageItems = (pageNumber) => {
-    const pageItems = itemsByPage[pageNumber] || [];
-    const droppableId = `page-${pageNumber}`;
-
+  // Renderizar slots de una página/template
+  const renderTemplateSlots = (template) => {
     return (
-      <Droppable droppableId={droppableId}>
+      <Droppable droppableId={`template-${template.id}`}>
         {(provided, snapshot) => (
           <div
             ref={provided.innerRef}
             {...provided.droppableProps}
-            className={`page-items-container ${
-              snapshot.isDraggingOver ? 'drag-over' : ''
-            }`}
+            className={`slots-container ${snapshot.isDraggingOver ? 'drag-over' : ''}`}
           >
-            {pageItems.length === 0 ? (
-              <div className='empty-page-message'>Página sin elementos</div>
+            {template.productionSlots && template.productionSlots.length > 0 ? (
+              template.productionSlots.map((slot, index) =>
+                renderSlot(slot, index)
+              )
             ) : (
-              pageItems.map((item, index) => renderProductionItem(item, index))
+              <div className='empty-message'>No hay slots en esta página</div>
             )}
-
             {provided.placeholder}
-
-            {pageNumber > 1 && (
-              <button
-                type='button'
-                className='add-slot-btn'
-                onClick={() => handleAddSlot(pageNumber)}
-                disabled
-              >
-                <FontAwesomeIcon icon={faPlus} /> Agregar slot
-              </button>
-            )}
           </div>
         )}
       </Droppable>
     );
   };
 
-  // Mostrar loading o errores
-  if (loading) {
-    return (
-      <ProductionGridContainer>
-        <div className='page-header'>
-          <h2>Cargando elementos de producción...</h2>
-        </div>
-      </ProductionGridContainer>
-    );
-  }
+  // Mostrar loading
+  // if (loading) {
+  //   return (
+  //     <ProductionGridContainer>
+  //       <div className='page-header'>
+  //         <h2>Cargando plantillas de producción...</h2>
+  //       </div>
+  //     </ProductionGridContainer>
+  //   );
+  // }
 
+  // Mostrar errores
   if (errors && Object.keys(errors).length > 0) {
     return (
       <ProductionGridContainer>
         <div className='page-header'>
-          <h2>Error al cargar elementos</h2>
+          <h2>Error al cargar plantillas</h2>
           <p style={{ color: 'red' }}>
             {errors.general || 'Error desconocido'}
           </p>
@@ -667,39 +642,82 @@ const ProductionGrid = ({ match }) => {
     );
   }
 
-  // Generar las filas de páginas
-  const pageRows = [];
-  for (let i = 1; i <= totalPages; i++) {
-    pageRows.push(i);
+  // Mostrar mensaje si no hay edición seleccionada
+  if (!selectedEdition) {
+    return (
+      <ProductionGridContainer>
+        <div className='page-header'>
+          <h2>Organización de Producción</h2>
+          <p style={{ color: '#6c757d' }}>
+            Selecciona un producto y edición para comenzar.
+          </p>
+        </div>
+      </ProductionGridContainer>
+    );
   }
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
       <ProductionGridContainer>
         <div className='page-header'>
-          <h2>Organización de Páginas</h2>
-          <p
-            style={{ color: '#6c757d', fontSize: '14px', margin: '8px 0 0 0' }}
-          >
-            Total de páginas: {totalPages} | Total de elementos:{' '}
-            {productionItems.length}
-          </p>
+          <h2>Organización de Producción</h2>
+          <div className='stats'>
+            Edición: {selectedEdition.name} | Total de páginas: {totalPages} |
+            Total de slots: {totalSlots}
+          </div>
         </div>
 
         <div className='production-table'>
           <div className='table-header'>
             <div className='header-row'>
               <div className='page-col'>Página</div>
-              <div className='content-col'>Contenido</div>
+              <div className='content-col'>Slots de Producción</div>
+              <div className='actions-col'>Acciones</div>
             </div>
           </div>
 
-          {pageRows.map((pageNumber) => (
-            <div key={pageNumber} className='page-row'>
-              <div className='page-number'>{pageNumber}</div>
-              <div className='page-content'>{renderPageItems(pageNumber)}</div>
+          {productionTemplates.map((template) => (
+            <div key={template.id} className='page-row'>
+              <div className='page-number'>{template.pageNumber}</div>
+              <div className='page-content'>
+                {renderTemplateSlots(template)}
+              </div>
+              <div className='page-actions'>
+                <button
+                  type='button'
+                  className='add-slot-btn'
+                  onClick={() => handleAddSlot(template.id)}
+                  title='Agregar nuevo slot'
+                >
+                  <FontAwesomeIcon icon={faPlus} /> Agregar Slot
+                </button>
+              </div>
             </div>
           ))}
+        </div>
+
+        <div className='page-summary'>
+          <div>Resumen de Producción</div>
+          <div className='summary-stats'>
+            <div className='stat'>
+              <div className='stat-value'>{totalPages}</div>
+              <div className='stat-label'>Páginas</div>
+            </div>
+            <div className='stat'>
+              <div className='stat-value'>{totalSlots}</div>
+              <div className='stat-label'>Slots Total</div>
+            </div>
+            <div className='stat'>
+              <div className='stat-value'>
+                {
+                  productionTemplates.filter((t) =>
+                    t.productionSlots.some((s) => s.publishingOrderId)
+                  ).length
+                }
+              </div>
+              <div className='stat-label'>Páginas con Asignaciones</div>
+            </div>
+          </div>
         </div>
       </ProductionGridContainer>
     </DragDropContext>

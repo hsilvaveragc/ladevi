@@ -9,9 +9,9 @@ import {
   FETCH_EDITIONS_FAILURE,
   SET_SELECTED_PRODUCT,
   SET_SELECTED_EDITION,
-  FETCH_PRODUCTION_ITEMS_INIT,
-  FETCH_PRODUCTION_ITEMS_SUCCESS,
-  FETCH_PRODUCTION_ITEMS_FAILURE,
+  FETCH_PRODUCTION_TEMPLATES_INIT,
+  FETCH_PRODUCTION_TEMPLATES_SUCCESS,
+  FETCH_PRODUCTION_TEMPLATES_FAILURE,
   MOVE_ITEM_INIT,
   MOVE_ITEM_SUCCESS,
   MOVE_ITEM_FAILURE,
@@ -52,7 +52,7 @@ const initialState = {
   editions: [],
   selectedEdition: null,
 
-  productionItems: [],
+  productionTemplates: [],
   currentEditionId: null,
   totalPages: 0,
   validationResults: {
@@ -66,7 +66,7 @@ export default function (state = initialState, action) {
     // Loading states
     case FETCH_PRODUCTS_INIT:
     case FETCH_EDITIONS_INIT:
-    case FETCH_PRODUCTION_ITEMS_INIT:
+    case FETCH_PRODUCTION_TEMPLATES_INIT:
     case MOVE_ITEM_INIT:
     case ADD_SLOT_INIT:
     case REMOVE_SLOT_INIT:
@@ -88,168 +88,123 @@ export default function (state = initialState, action) {
         selectedProduct: action.payload,
         selectedEdition: null,
         editions: [],
-        productionItems: [],
-        currentEditionId: null,
-      };
-
-    // Products
-    case FETCH_PRODUCTS_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        products: action.payload.products || [],
-        errors: {},
-      };
-
-    // Editions
-    case FETCH_EDITIONS_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        editions: action.payload.editions || [],
-        errors: {},
       };
 
     case SET_SELECTED_EDITION:
       return {
         ...state,
         selectedEdition: action.payload,
-        productionItems: [],
-        currentEditionId: action.payload?.id || null,
       };
 
-    // Production Items - Estructura real del backend
-    case FETCH_PRODUCTION_ITEMS_SUCCESS:
-      const productionData = action.payload;
-      // Calcular total de páginas desde los items recibidos
-      const maxPageNumber =
-        productionData && productionData.length > 0
-          ? Math.max(...productionData.map((item) => item.PageNumber))
-          : 0;
-
+    // Success states
+    case FETCH_PRODUCTS_SUCCESS:
       return {
         ...state,
         loading: false,
-        productionItems: productionData || [],
-        totalPages: maxPageNumber,
-        currentEditionId: state.selectedEdition?.id || state.currentEditionId,
+        products: action.payload.products,
         errors: {},
       };
 
-    // Move item
+    case FETCH_EDITIONS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        editions: action.payload.editions,
+        errors: {},
+      };
+
+    case FETCH_PRODUCTION_TEMPLATES_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        productionTemplates: action.payload.productionTemplates,
+        currentEditionId: action.payload.editionId,
+        totalPages: action.payload.productionTemplates.length,
+        errors: {},
+      };
+
     case MOVE_ITEM_SUCCESS:
       return {
         ...state,
         loading: false,
-        productionItems: state.productionItems.map((item) =>
-          item.Id === action.payload.itemId
-            ? {
-                ...item,
-                PageNumber: action.payload.targetPageNumber,
-                Slot: action.payload.targetSlot,
-              }
-            : item
-        ),
+        productionTemplates: action.payload.productionTemplates,
         errors: {},
       };
 
-    // Add slot
     case ADD_SLOT_SUCCESS:
       return {
         ...state,
         loading: false,
-        productionItems: [...state.productionItems, action.payload.newItem],
+        productionTemplates: action.payload.productionTemplates,
         errors: {},
       };
 
-    // Remove slot
     case REMOVE_SLOT_SUCCESS:
       return {
         ...state,
         loading: false,
-        productionItems: state.productionItems.filter(
-          (item) => item.Id !== action.payload.itemId
-        ),
+        productionTemplates: action.payload.productionTemplates,
         errors: {},
       };
 
-    // Update observation
     case UPDATE_OBSERVATION_SUCCESS:
       return {
         ...state,
         loading: false,
-        productionItems: state.productionItems.map((item) =>
-          item.Id === action.payload.itemId
-            ? { ...item, Observations: action.payload.observations }
-            : item
-        ),
+        productionTemplates: action.payload.productionTemplates,
         errors: {},
       };
 
-    // Mark as editorial
     case MARK_AS_EDITORIAL_SUCCESS:
       return {
         ...state,
         loading: false,
-        productionItems: state.productionItems.map((item) =>
-          item.Id === action.payload.itemId
-            ? { ...item, IsEditorial: action.payload.isEditorial, IsCA: false }
-            : item
-        ),
+        productionTemplates: action.payload.productionTemplates,
         errors: {},
       };
 
-    // Mark as CA
     case MARK_AS_CA_SUCCESS:
       return {
         ...state,
         loading: false,
-        productionItems: state.productionItems.map((item) =>
-          item.Id === action.payload.itemId
-            ? { ...item, IsCA: action.payload.isCA, IsEditorial: false }
-            : item
-        ),
+        productionTemplates: action.payload.productionTemplates,
         errors: {},
       };
 
-    // Generate auto layout
     case GENERATE_AUTO_LAYOUT_SUCCESS:
       return {
         ...state,
         loading: false,
-        productionItems: action.payload.items || action.payload,
-        totalPages: action.payload.totalPages || state.totalPages,
+        productionTemplates: action.payload.productionTemplates,
         errors: {},
       };
 
-    // Validate page reduction
     case VALIDATE_PAGE_REDUCTION_SUCCESS:
       return {
         ...state,
         loading: false,
         validationResults: {
           ...state.validationResults,
-          pageReduction: action.payload,
+          pageReduction: action.payload.validationResult,
         },
         errors: {},
       };
 
-    // Validate inventory reduction
     case VALIDATE_INVENTORY_REDUCTION_SUCCESS:
       return {
         ...state,
         loading: false,
         validationResults: {
           ...state.validationResults,
-          inventoryReduction: action.payload,
+          inventoryReduction: action.payload.validationResult,
         },
         errors: {},
       };
 
-    // Error states
+    // Failure states
     case FETCH_PRODUCTS_FAILURE:
     case FETCH_EDITIONS_FAILURE:
-    case FETCH_PRODUCTION_ITEMS_FAILURE:
+    case FETCH_PRODUCTION_TEMPLATES_FAILURE:
     case MOVE_ITEM_FAILURE:
     case ADD_SLOT_FAILURE:
     case REMOVE_SLOT_FAILURE:
@@ -262,7 +217,7 @@ export default function (state = initialState, action) {
       return {
         ...state,
         loading: false,
-        errors: { ...action.errors },
+        errors: action.errors,
       };
 
     default:
@@ -270,90 +225,117 @@ export default function (state = initialState, action) {
   }
 }
 
-// Selectores
-const getProductionReducer = (state) => state.production;
-
 // Selectores básicos
+const getProductionState = (state) => state.production;
+
 export const getLoading = createSelector(
-  getProductionReducer,
-  (productionReducer) => productionReducer.loading
+  [getProductionState],
+  (production) => production.loading
 );
 
 export const getErrors = createSelector(
-  getProductionReducer,
-  (productionReducer) => productionReducer.errors
+  [getProductionState],
+  (production) => production.errors
 );
 
-// Selectores de datos
 export const getProducts = createSelector(
-  getProductionReducer,
-  (productionReducer) => productionReducer.products
-);
-
-export const getEditions = createSelector(
-  getProductionReducer,
-  (productionReducer) => productionReducer.editions
+  [getProductionState],
+  (production) => production.products
 );
 
 export const getSelectedProduct = createSelector(
-  getProductionReducer,
-  (productionReducer) => productionReducer.selectedProduct
+  [getProductionState],
+  (production) => production.selectedProduct
+);
+
+export const getEditions = createSelector(
+  [getProductionState],
+  (production) => production.editions
 );
 
 export const getSelectedEdition = createSelector(
-  getProductionReducer,
-  (productionReducer) => productionReducer.selectedEdition
+  [getProductionState],
+  (production) => production.selectedEdition
 );
 
-export const getProductionItems = createSelector(
-  getProductionReducer,
-  (productionReducer) => productionReducer.productionItems
+export const getProductionTemplates = createSelector(
+  [getProductionState],
+  (production) => production.productionTemplates
 );
 
 export const getCurrentEditionId = createSelector(
-  getProductionReducer,
-  (productionReducer) => productionReducer.currentEditionId
+  [getProductionState],
+  (production) => production.currentEditionId
 );
 
 export const getTotalPages = createSelector(
-  getProductionReducer,
-  (productionReducer) => productionReducer.totalPages
+  [getProductionState],
+  (production) => production.totalPages
 );
 
 export const getValidationResults = createSelector(
-  getProductionReducer,
-  (productionReducer) => productionReducer.validationResults
+  [getProductionState],
+  (production) => production.validationResults
 );
 
-// Selector para agrupar items por página (helper para el componente)
-export const getProductionItemsByPage = createSelector(
-  [getProductionItems],
-  (items) => {
-    const itemsByPage = {};
-
-    items.forEach((item) => {
-      const pageNumber = item.PageNumber;
-      if (!itemsByPage[pageNumber]) {
-        itemsByPage[pageNumber] = [];
-      }
-      itemsByPage[pageNumber].push(item);
+// Selectores avanzados
+export const getProductionTemplatesByPage = createSelector(
+  [getProductionTemplates],
+  (templates) => {
+    const templatesByPage = {};
+    templates.forEach((template) => {
+      templatesByPage[template.pageNumber] = template;
     });
-
-    // Ordenar items dentro de cada página por Slot
-    Object.keys(itemsByPage).forEach((pageNumber) => {
-      itemsByPage[pageNumber].sort((a, b) => a.Slot - b.Slot);
-    });
-
-    return itemsByPage;
+    return templatesByPage;
   }
 );
 
-// Selector para verificar si un item está asignado (tiene PublishingOrderId)
-export const getAssignedItems = createSelector([getProductionItems], (items) =>
-  items.filter((item) => item.PublishingOrderId > 0)
+export const getTotalSlots = createSelector(
+  [getProductionTemplates],
+  (templates) => {
+    return templates.reduce((total, template) => {
+      return total + template.productionSlots.length;
+    }, 0);
+  }
 );
 
-// Selector para obtener items disponibles (sin asignar)
-export const getAvailableItems = createSelector([getProductionItems], (items) =>
-  items.filter((item) => item.Id === 0 || item.PublishingOrderId === 0)
+export const getAssignedSlots = createSelector(
+  [getProductionTemplates],
+  (templates) => {
+    const assignedSlots = [];
+    templates.forEach((template) => {
+      template.productionSlots.forEach((slot) => {
+        if (slot.publishingOrderId) {
+          assignedSlots.push(slot);
+        }
+      });
+    });
+    return assignedSlots;
+  }
+);
+
+export const getAvailableSlots = createSelector(
+  [getProductionTemplates],
+  (templates) => {
+    const availableSlots = [];
+    templates.forEach((template) => {
+      template.productionSlots.forEach((slot) => {
+        if (!slot.publishingOrderId) {
+          availableSlots.push(slot);
+        }
+      });
+    });
+    return availableSlots;
+  }
+);
+
+export const getSlotsByPage = createSelector(
+  [getProductionTemplates],
+  (templates) => {
+    const slotsByPage = {};
+    templates.forEach((template) => {
+      slotsByPage[template.pageNumber] = template.productionSlots;
+    });
+    return slotsByPage;
+  }
 );

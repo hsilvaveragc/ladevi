@@ -7,12 +7,14 @@ import { getLoading } from './reducer';
 import SelectorsContainer from './components/SelectorsContainer';
 import ProductionGrid from './components/ProductionGrid';
 
-const BillingPage = () => {
+const ProductionPage = () => {
   const dispatch = useDispatch();
 
   const loading = useSelector(getLoading);
 
-  useEffect(() => {}, [dispatch]);
+  useEffect(() => {
+    // Inicialización si es necesaria
+  }, [dispatch]);
 
   return (
     <>
@@ -34,4 +36,4 @@ const BillingPage = () => {
   );
 };
 
-export default BillingPage;
+export default ProductionPage;

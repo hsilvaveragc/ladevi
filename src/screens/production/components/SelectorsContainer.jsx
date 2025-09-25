@@ -1,14 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import InputSelectFieldSimple from 'shared/components/InputSelectFieldSimple';
 
-import { CONSTANTS } from '../constants';
 import {
-  fetchProductsInit,
-  fetchEditionsInit,
+  fetchProducts,
+  fetchEditions,
   setSelectedProduct,
   setSelectedEdition,
-  fetchProductionItems,
+  fetchProductionTemplates,
 } from '../actionCreators';
 import {
   getLoading,
@@ -16,7 +15,6 @@ import {
   getEditions,
   getSelectedProduct,
   getSelectedEdition,
-  getProductionItems,
 } from '../reducer';
 
 const SelectorsContainer = () => {
@@ -25,30 +23,28 @@ const SelectorsContainer = () => {
   /* Estados globales */
   const loading = useSelector(getLoading);
 
-  /* Estados para el manejo de ordenes*/
+  /* Estados para el manejo de productos y ediciones */
   const products = useSelector(getProducts);
   const editions = useSelector(getEditions);
   const selectedProduct = useSelector(getSelectedProduct);
   const selectedEdition = useSelector(getSelectedEdition);
-  const productionItems = useSelector(getProductionItems);
 
-  // Cargar productos cuando carga la pagina
+  // Cargar productos cuando carga la página
   useEffect(() => {
-    dispatch(fetchProductsInit());
-  }, []);
+    dispatch(fetchProducts());
+  }, [dispatch]);
 
   // Cargar ediciones cuando se selecciona un producto
   useEffect(() => {
     if (selectedProduct) {
-      dispatch(fetchEditionsInit(selectedProduct));
+      dispatch(fetchEditions(selectedProduct));
     }
   }, [dispatch, selectedProduct]);
 
-  // Cargar órdenes inmediatamente al seleccionar edición
+  // Cargar production templates inmediatamente al seleccionar edición
   useEffect(() => {
     if (selectedEdition) {
-      debugger;
-      dispatch(fetchProductionItems(selectedEdition));
+      dispatch(fetchProductionTemplates(selectedEdition));
     }
   }, [dispatch, selectedEdition]);
 
@@ -64,11 +60,14 @@ const SelectorsContainer = () => {
   return (
     <div className='card mb-4'>
       <div className='card-header'>
-        <h5 className='mb-0'>Filtro de ediciones</h5>
+        <h5 className='mb-0'>Selección de Producto y Edición</h5>
+        <small className='text-muted'>
+          Selecciona el producto y edición para gestionar la producción
+        </small>
       </div>
       <div className='card-body'>
         <div className='row'>
-          <div className='col-md-3 mb-3'>
+          <div className='col-md-4 mb-3'>
             <InputSelectFieldSimple
               labelText='Producto *'
               name='product'
@@ -78,10 +77,11 @@ const SelectorsContainer = () => {
               disabled={loading}
               getOptionLabel={(option) => option.name}
               getOptionValue={(option) => option.id}
+              placeholderText='Seleccionar producto...'
             />
           </div>
 
-          <div className='col-md-3 mb-3'>
+          <div className='col-md-4 mb-3'>
             <InputSelectFieldSimple
               labelText='Edición *'
               name='edition'
@@ -91,9 +91,26 @@ const SelectorsContainer = () => {
               disabled={loading || !selectedProduct}
               getOptionLabel={(option) => `${option.name} (${option.code})`}
               getOptionValue={(option) => option.id}
+              placeholderText='Seleccionar edición...'
             />
           </div>
         </div>
+
+        {/* {selectedEdition && (
+          <div className='row'>
+            <div className='col-md-12'>
+              <div className='alert alert-info mb-0'>
+                <strong>Edición seleccionada:</strong> {selectedEdition.name}
+                {selectedEdition.description && (
+                  <>
+                    <br />
+                    <small>{selectedEdition.description}</small>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )} */}
       </div>
     </div>
   );

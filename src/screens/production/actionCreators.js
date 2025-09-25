@@ -4,7 +4,7 @@ import {
   FETCH_EDITIONS_INIT,
   SET_SELECTED_PRODUCT,
   SET_SELECTED_EDITION,
-  FETCH_PRODUCTION_ITEMS_INIT,
+  FETCH_PRODUCTION_TEMPLATES_INIT,
   MOVE_ITEM_INIT,
   ADD_SLOT_INIT,
   REMOVE_SLOT_INIT,
@@ -16,24 +16,15 @@ import {
   VALIDATE_INVENTORY_REDUCTION_INIT,
 } from './actionTypes';
 
-// Gestión de filtros
-export const fetchProductsInit = () => ({
-  type: FETCH_PRODUCTS_INIT,
-});
-
-export const fetchEditionsInit = (productId) => ({
-  type: FETCH_EDITIONS_INIT,
-  payload: productId,
-});
-
-export const setSelectedProduct = (product) => ({
+// Gestión de filtros y selección
+export const setSelectedProduct = (payload) => ({
   type: SET_SELECTED_PRODUCT,
-  payload: product,
+  payload,
 });
 
-export const setSelectedEdition = (edition) => ({
+export const setSelectedEdition = (payload) => ({
   type: SET_SELECTED_EDITION,
-  payload: edition,
+  payload,
 });
 
 // Cargar productos y ediciones
@@ -41,74 +32,69 @@ export const fetchProducts = () => ({
   type: FETCH_PRODUCTS_INIT,
 });
 
-export const fetchEditions = (productId) => ({
+export const fetchEditions = (payload) => ({
   type: FETCH_EDITIONS_INIT,
-  payload: { productId },
+  payload,
 });
 
-// Cargar elementos de producción desde backend
-export const fetchProductionItems = (productEditionId) => ({
-  type: FETCH_PRODUCTION_ITEMS_INIT,
-  payload: productEditionId,
+// Cargar ProductionTemplates desde backend
+export const fetchProductionTemplates = (payload) => ({
+  type: FETCH_PRODUCTION_TEMPLATES_INIT,
+  payload,
 });
 
-// Mover elemento de una página a otra
-export const moveItem = (
-  itemId,
-  sourcePageNumber,
-  sourceSlot,
-  targetPageNumber,
-  targetSlot
+// Mover slot de una página/posición a otra
+export const moveSlot = (
+  slotId,
+  sourceTemplateId,
+  sourceSlotNumber,
+  targetTemplateId,
+  targetSlotNumber
 ) => ({
   type: MOVE_ITEM_INIT,
   payload: {
-    itemId,
-    sourcePageNumber,
-    sourceSlot,
-    targetPageNumber,
-    targetSlot,
+    slotId,
+    sourceTemplateId,
+    sourceSlotNumber,
+    targetTemplateId,
+    targetSlotNumber,
   },
 });
 
-// Agregar nuevo slot en una página
-export const addSlot = (
-  productEditionId,
-  pageNumber,
-  inventoryProductAdvertisingSpaceId
-) => ({
+// Agregar nuevo slot en una página (ProductionTemplate)
+export const addSlot = (productionTemplateId, inventoryAdvertisingSpaceId) => ({
   type: ADD_SLOT_INIT,
   payload: {
-    productEditionId,
-    pageNumber,
-    inventoryProductAdvertisingSpaceId,
+    productionTemplateId,
+    inventoryAdvertisingSpaceId,
   },
 });
 
 // Remover slot
-export const removeSlot = (itemId) => ({
+export const removeSlot = (slotId) => ({
   type: REMOVE_SLOT_INIT,
-  payload: { itemId },
+  payload: { slotId },
 });
 
-// Actualizar observación de un item
-export const updateObservation = (itemId, observations) => ({
+// Actualizar observación de un slot
+export const updateSlotObservation = (slotId, observations) => ({
   type: UPDATE_OBSERVATION_INIT,
-  payload: { itemId, observations },
+  payload: { slotId, observations },
 });
 
-// Marcar como editorial
-export const markAsEditorial = (itemId, isEditorial) => ({
+// Marcar slot como editorial
+export const markSlotAsEditorial = (slotId, isEditorial) => ({
   type: MARK_AS_EDITORIAL_INIT,
-  payload: { itemId, isEditorial },
+  payload: { slotId, isEditorial },
 });
 
-// Marcar como CA (Cuenta Ajena)
-export const markAsCA = (itemId, isCA) => ({
+// Marcar slot como CA (Cuenta Ajena)
+export const markSlotAsCA = (slotId, isCA) => ({
   type: MARK_AS_CA_INIT,
-  payload: { itemId, isCA },
+  payload: { slotId, isCA },
 });
 
-// Generar layout automático
+// Generar layout automático para una edición
 export const generateAutoLayout = (productEditionId) => ({
   type: GENERATE_AUTO_LAYOUT_INIT,
   payload: { productEditionId },

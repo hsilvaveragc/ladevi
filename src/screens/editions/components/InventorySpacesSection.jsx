@@ -230,9 +230,7 @@ const InventorySpacesSection = ({
     }
 
     // Crear una copia del inventario para manipular
-    let updatedInventory = [
-      ...formikProps.values.inventoryProductAdvertisingSpaces,
-    ];
+    let updatedInventory = [...formikProps.values.inventoryAdvertisingSpaces];
 
     if (sourceDroppableId === 'available-spaces') {
       // Mover desde espacios disponibles a una zona
@@ -315,17 +313,14 @@ const InventorySpacesSection = ({
     }
 
     // Actualizar el estado
-    formikProps.setFieldValue(
-      'inventoryProductAdvertisingSpaces',
-      updatedInventory
-    );
+    formikProps.setFieldValue('inventoryAdvertisingSpaces', updatedInventory);
   };
 
   return (
     <InventoryContainer>
       <FormFieldset title='Inventario de tipos de espacios'>
         <FieldArray
-          name='inventoryProductAdvertisingSpaces'
+          name='inventoryAdvertisingSpaces'
           render={() => {
             const currentProductAdvertisingSpaces = getProductAdvertisingSpaces(
               formikProps.values.productId
@@ -347,7 +342,7 @@ const InventorySpacesSection = ({
 
             // Espacios que ya están asignados a alguna zona
             const assignedSpaceIds =
-              formikProps.values.inventoryProductAdvertisingSpaces
+              formikProps.values.inventoryAdvertisingSpaces
                 .filter((item) => item.zone && item.zone !== null)
                 .map((item) => item.productAdvertisingSpaceId);
 
@@ -358,7 +353,7 @@ const InventorySpacesSection = ({
 
             // Obtener espacios por zona
             const getSpacesByZone = (zone) => {
-              return formikProps.values.inventoryProductAdvertisingSpaces
+              return formikProps.values.inventoryAdvertisingSpaces
                 .filter((item) => item.zone === zone)
                 .sort((a, b) => a.order - b.order)
                 .map((item) => {
@@ -455,7 +450,7 @@ const InventorySpacesSection = ({
                               {getSpacesByZone(zone).map((space, index) => {
                                 const inventoryItem = space.inventoryItem;
                                 const inventoryIndex =
-                                  formikProps.values.inventoryProductAdvertisingSpaces.findIndex(
+                                  formikProps.values.inventoryAdvertisingSpaces.findIndex(
                                     (item) =>
                                       item.productAdvertisingSpaceId ===
                                       space.id
@@ -501,7 +496,7 @@ const InventorySpacesSection = ({
                                                 Cantidad
                                               </span>
                                               <InputTextField
-                                                name={`inventoryProductAdvertisingSpaces[${inventoryIndex}].quantity`}
+                                                name={`inventoryAdvertisingSpaces[${inventoryIndex}].quantity`}
                                                 showLabel={false}
                                                 disabled={deleteMode}
                                                 type='number'
@@ -518,7 +513,7 @@ const InventorySpacesSection = ({
                                               </span>
                                               <div className='page-location-select'>
                                                 <InputSelectField
-                                                  name={`inventoryProductAdvertisingSpaces[${inventoryIndex}].pageLocation`}
+                                                  name={`inventoryAdvertisingSpaces[${inventoryIndex}].pageLocation`}
                                                   showLabel={false}
                                                   disabled={deleteMode}
                                                   options={[
@@ -551,7 +546,7 @@ const InventorySpacesSection = ({
                                                 inventoryItem.pageLocation && (
                                                   <div className='page-selection-container'>
                                                     <InputMultiSelectField
-                                                      name={`inventoryProductAdvertisingSpaces[${inventoryIndex}].selectedPages`}
+                                                      name={`inventoryAdvertisingSpaces[${inventoryIndex}].selectedPages`}
                                                       showLabel={false}
                                                       disabled={deleteMode}
                                                       options={generateInteriorPageOptions(
@@ -566,7 +561,7 @@ const InventorySpacesSection = ({
 
                                               {/* Checkbox para todas las páginas */}
                                               <InputCheckboxField
-                                                name={`inventoryProductAdvertisingSpaces[${inventoryIndex}].allPages`}
+                                                name={`inventoryAdvertisingSpaces[${inventoryIndex}].allPages`}
                                                 label='Todas las páginas'
                                                 disabled={deleteMode}
                                                 withoutFormGroup={true}
@@ -589,7 +584,7 @@ const InventorySpacesSection = ({
                                                 Cantidad
                                               </span>
                                               <InputTextField
-                                                name={`inventoryProductAdvertisingSpaces[${inventoryIndex}].quantity`}
+                                                name={`inventoryAdvertisingSpaces[${inventoryIndex}].quantity`}
                                                 showLabel={false}
                                                 disabled={deleteMode}
                                                 type='number'

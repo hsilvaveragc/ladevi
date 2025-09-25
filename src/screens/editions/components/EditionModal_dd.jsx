@@ -85,23 +85,21 @@ const EditionModal = () => {
   // Handler para cambiar selección de todas las páginas
   const handleAllPagesChange = React.useCallback(
     (spaceId, allPages, setFieldValue, values) => {
-      const updatedInventory = values.inventoryProductAdvertisingSpaces.map(
-        (item) => {
-          if (item.productAdvertisingSpaceId === spaceId) {
-            const pageOptions = generateInteriorPageOptions(
-              values.pageCount,
-              item.pageLocation
-            );
-            return {
-              ...item,
-              allPages: allPages,
-              specificPages: allPages ? [...pageOptions] : [],
-            };
-          }
-          return item;
+      const updatedInventory = values.inventoryAdvertisingSpaces.map((item) => {
+        if (item.productAdvertisingSpaceId === spaceId) {
+          const pageOptions = generateInteriorPageOptions(
+            values.pageCount,
+            item.pageLocation
+          );
+          return {
+            ...item,
+            allPages: allPages,
+            specificPages: allPages ? [...pageOptions] : [],
+          };
         }
-      );
-      setFieldValue('inventoryProductAdvertisingSpaces', updatedInventory);
+        return item;
+      });
+      setFieldValue('inventoryAdvertisingSpaces', updatedInventory);
     },
     [generateInteriorPageOptions]
   );
@@ -109,39 +107,37 @@ const EditionModal = () => {
   // Handler para cambiar páginas específicas
   const handleSpecificPagesChange = React.useCallback(
     (spaceId, pageNumber, isChecked, setFieldValue, values) => {
-      const updatedInventory = values.inventoryProductAdvertisingSpaces.map(
-        (item) => {
-          if (item.productAdvertisingSpaceId === spaceId) {
-            let newSpecificPages = [...item.specificPages];
-            if (isChecked) {
-              if (!newSpecificPages.includes(pageNumber)) {
-                newSpecificPages.push(pageNumber);
-              }
-            } else {
-              newSpecificPages = newSpecificPages.filter(
-                (page) => page !== pageNumber
-              );
+      const updatedInventory = values.inventoryAdvertisingSpaces.map((item) => {
+        if (item.productAdvertisingSpaceId === spaceId) {
+          let newSpecificPages = [...item.specificPages];
+          if (isChecked) {
+            if (!newSpecificPages.includes(pageNumber)) {
+              newSpecificPages.push(pageNumber);
             }
-
-            // Verificar si todas las páginas están seleccionadas
-            const pageOptions = generateInteriorPageOptions(
-              values.pageCount,
-              item.pageLocation
+          } else {
+            newSpecificPages = newSpecificPages.filter(
+              (page) => page !== pageNumber
             );
-            const allSelected = pageOptions.every((page) =>
-              newSpecificPages.includes(page)
-            );
-
-            return {
-              ...item,
-              specificPages: newSpecificPages,
-              allPages: allSelected,
-            };
           }
-          return item;
+
+          // Verificar si todas las páginas están seleccionadas
+          const pageOptions = generateInteriorPageOptions(
+            values.pageCount,
+            item.pageLocation
+          );
+          const allSelected = pageOptions.every((page) =>
+            newSpecificPages.includes(page)
+          );
+
+          return {
+            ...item,
+            specificPages: newSpecificPages,
+            allPages: allSelected,
+          };
         }
-      );
-      setFieldValue('inventoryProductAdvertisingSpaces', updatedInventory);
+        return item;
+      });
+      setFieldValue('inventoryAdvertisingSpaces', updatedInventory);
     },
     [generateInteriorPageOptions]
   );
@@ -157,36 +153,34 @@ const EditionModal = () => {
   // Handler para cambiar ubicación de páginas
   const handlePageLocationChange = React.useCallback(
     (spaceId, location, setFieldValue, values) => {
-      const updatedInventory = values.inventoryProductAdvertisingSpaces.map(
-        (item) => {
-          if (item.productAdvertisingSpaceId === spaceId) {
-            // Generar nuevas páginas disponibles según la nueva ubicación
-            const newPageOptions = generateInteriorPageOptions(
-              values.pageCount,
-              location
-            );
+      const updatedInventory = values.inventoryAdvertisingSpaces.map((item) => {
+        if (item.productAdvertisingSpaceId === spaceId) {
+          // Generar nuevas páginas disponibles según la nueva ubicación
+          const newPageOptions = generateInteriorPageOptions(
+            values.pageCount,
+            location
+          );
 
-            // Filtrar las páginas específicas existentes para que solo incluyan páginas válidas
-            const filteredSpecificPages = item.specificPages.filter((page) =>
-              newPageOptions.includes(page)
-            );
+          // Filtrar las páginas específicas existentes para que solo incluyan páginas válidas
+          const filteredSpecificPages = item.specificPages.filter((page) =>
+            newPageOptions.includes(page)
+          );
 
-            // Verificar si todas las páginas de la nueva ubicación están seleccionadas
-            const allSelected = newPageOptions.every((page) =>
-              filteredSpecificPages.includes(page)
-            );
+          // Verificar si todas las páginas de la nueva ubicación están seleccionadas
+          const allSelected = newPageOptions.every((page) =>
+            filteredSpecificPages.includes(page)
+          );
 
-            return {
-              ...item,
-              pageLocation: location,
-              specificPages: filteredSpecificPages,
-              allPages: allSelected && newPageOptions.length > 0,
-            };
-          }
-          return item;
+          return {
+            ...item,
+            pageLocation: location,
+            specificPages: filteredSpecificPages,
+            allPages: allSelected && newPageOptions.length > 0,
+          };
         }
-      );
-      setFieldValue('inventoryProductAdvertisingSpaces', updatedInventory);
+        return item;
+      });
+      setFieldValue('inventoryAdvertisingSpaces', updatedInventory);
     },
     [generateInteriorPageOptions]
   );
@@ -206,7 +200,7 @@ const EditionModal = () => {
     [addMode, productsAvailable, selectedItem.productAdvertisingSpaces]
   );
 
-  // Crear inventoryProductAdvertisingSpaces inicial basado en productAdvertisingSpaces
+  // Crear inventoryAdvertisingSpaces inicial basado en productAdvertisingSpaces
   const createInitialInventory = React.useCallback(
     (productId) => {
       const productAdvertisingSpaces = getProductAdvertisingSpaces(productId);
@@ -224,8 +218,7 @@ const EditionModal = () => {
           allPages: true,
         }));
       } else {
-        const existingInventory =
-          selectedItem.inventoryProductAdvertisingSpaces || [];
+        const existingInventory = selectedItem.inventoryAdvertisingSpaces || [];
 
         return productAdvertisingSpaces.map((space) => {
           const existingItem = existingInventory.find(
@@ -262,7 +255,7 @@ const EditionModal = () => {
       closed: selectedItem.closed || false,
       end: selectedItem.end || '',
       pageCount: selectedItem.pageCount || '',
-      inventoryProductAdvertisingSpaces: createInitialInventory(
+      inventoryAdvertisingSpaces: createInitialInventory(
         selectedItem.productId || -1
       ),
     }),
@@ -278,7 +271,7 @@ const EditionModal = () => {
       .min(1, 'Debe seleccionar un producto'),
     end: Yup.string().required('La fecha de cierre es requerida'),
     pageCount: Yup.number(),
-    inventoryProductAdvertisingSpaces: Yup.array().of(
+    inventoryAdvertisingSpaces: Yup.array().of(
       Yup.object().shape({
         quantity: Yup.number().min(0, 'La cantidad debe ser mayor o igual a 0'),
       })
@@ -365,12 +358,12 @@ const EditionModal = () => {
                           'productId',
                           selectedProduct.id
                         );
-                        // Actualizar inventoryProductAdvertisingSpaces cuando cambie el producto
+                        // Actualizar inventoryAdvertisingSpaces cuando cambie el producto
                         const newInventory = createInitialInventory(
                           selectedProduct.id
                         );
                         formikProps.setFieldValue(
-                          'inventoryProductAdvertisingSpaces',
+                          'inventoryAdvertisingSpaces',
                           newInventory
                         );
                       }

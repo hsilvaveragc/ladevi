@@ -19,32 +19,32 @@ export default {
       })
       .then((response) => response.data),
 
-  // Obtener elementos de producción para una edición
-  getProductionInventory: (productEditionId) =>
+  // Obtener ProductionTemplates con ProductionSlots para una edición
+  getProductionTemplates: (productEditionId) =>
     axios
-      .get(`Production/ProductionInventory`, {
+      .get(`Production/ProductionTemplates`, {
         params: { productEditionId },
         headers: getHeaders(),
       })
       .then((response) => response.data),
 
-  // Mover elemento de producción
-  moveItem: (
-    itemId,
-    sourcePageNumber,
-    sourceSlot,
-    targetPageNumber,
-    targetSlot
+  // Mover slot de una posición a otra
+  moveSlot: (
+    slotId,
+    sourceTemplateId,
+    sourceSlotNumber,
+    targetTemplateId,
+    targetSlotNumber
   ) =>
     axios
       .put(
-        `Production/MoveItem`,
+        `Production/MoveSlot`,
         {
-          itemId,
-          sourcePageNumber,
-          sourceSlot,
-          targetPageNumber,
-          targetSlot,
+          slotId,
+          sourceTemplateId,
+          sourceSlotNumber,
+          targetTemplateId,
+          targetSlotNumber,
         },
         {
           headers: getHeaders(),
@@ -52,15 +52,14 @@ export default {
       )
       .then((response) => response.data),
 
-  // Agregar nuevo slot
-  addSlot: (productEditionId, pageNumber, inventoryProductAdvertisingSpaceId) =>
+  // Agregar nuevo slot a un ProductionTemplate
+  addSlot: (productionTemplateId, inventoryAdvertisingSpaceId) =>
     axios
       .post(
         `Production/AddSlot`,
         {
-          productEditionId,
-          pageNumber,
-          inventoryProductAdvertisingSpaceId,
+          productionTemplateId,
+          inventoryAdvertisingSpaceId,
         },
         {
           headers: getHeaders(),
@@ -69,20 +68,20 @@ export default {
       .then((response) => response.data),
 
   // Remover slot
-  removeSlot: (itemId) =>
+  removeSlot: (slotId) =>
     axios
-      .delete(`Production/RemoveSlot/${itemId}`, {
+      .delete(`Production/RemoveSlot/${slotId}`, {
         headers: getHeaders(),
       })
       .then((response) => response.data),
 
-  // Actualizar observación
-  updateObservation: (itemId, observations) =>
+  // Actualizar observación de un slot
+  updateSlotObservation: (slotId, observations) =>
     axios
       .put(
-        `Production/UpdateObservation`,
+        `Production/UpdateSlotObservation`,
         {
-          itemId,
+          slotId,
           observations,
         },
         {
@@ -91,13 +90,13 @@ export default {
       )
       .then((response) => response.data),
 
-  // Marcar como editorial
-  markAsEditorial: (itemId, isEditorial) =>
+  // Marcar slot como editorial
+  markSlotAsEditorial: (slotId, isEditorial) =>
     axios
       .put(
-        `Production/MarkAsEditorial`,
+        `Production/MarkSlotAsEditorial`,
         {
-          itemId,
+          slotId,
           isEditorial,
         },
         {
@@ -106,13 +105,13 @@ export default {
       )
       .then((response) => response.data),
 
-  // Marcar como CA
-  markAsCA: (itemId, isCA) =>
+  // Marcar slot como CA
+  markSlotAsCA: (slotId, isCA) =>
     axios
       .put(
-        `Production/MarkAsCA`,
+        `Production/MarkSlotAsCA`,
         {
-          itemId,
+          slotId,
           isCA,
         },
         {
@@ -121,7 +120,7 @@ export default {
       )
       .then((response) => response.data),
 
-  // Generar layout automático
+  // Generar layout automático para una edición
   generateAutoLayout: (productEditionId) =>
     axios
       .post(
@@ -164,12 +163,12 @@ export default {
       .then((response) => response.data),
 
   // Asignar orden de publicación a slot
-  assignPublishingOrderToSlot: (itemId, publishingOrderId) =>
+  assignPublishingOrderToSlot: (slotId, publishingOrderId) =>
     axios
       .put(
-        `Production/AssignPublishingOrder`,
+        `Production/AssignPublishingOrderToSlot`,
         {
-          itemId,
+          slotId,
           publishingOrderId,
         },
         {
@@ -179,11 +178,11 @@ export default {
       .then((response) => response.data),
 
   // Desasignar orden de publicación
-  unassignPublishingOrder: (itemId) =>
+  unassignPublishingOrderFromSlot: (slotId) =>
     axios
       .put(
-        `Production/UnassignPublishingOrder`,
-        { itemId },
+        `Production/UnassignPublishingOrderFromSlot`,
+        { slotId },
         {
           headers: getHeaders(),
         }
