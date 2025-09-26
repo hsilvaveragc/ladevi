@@ -9,7 +9,7 @@ import {
   PRODUCT_SHOW_EDIT_MODAL,
   PRODUCT_SHOW_DELETE_MODAL,
   FILTER_PRODUCTS_INIT,
-} from './actionTypes';
+} from "./actionTypes";
 
 export const initialLoad = () => ({
   type: PRODUCTS_INITIAL_LOAD_INIT,
@@ -19,7 +19,7 @@ export const getAllProducts = () => ({
   type: GET_ALL_PRODUCTS_INIT,
 });
 
-export const filterProducts = (payload) => ({
+export const filterProducts = payload => ({
   type: FILTER_PRODUCTS_INIT,
   payload,
 });
@@ -28,17 +28,17 @@ export const getAllProductTypes = () => ({
   type: GET_ALL_PRODUCT_TYPES_INIT,
 });
 
-export const addProduct = (payload) => ({
+export const addProduct = payload => ({
   type: ADD_PRODUCT_INIT,
   payload,
 });
 
-export const editProduct = (payload) => ({
+export const editProduct = payload => ({
   type: EDIT_PRODUCT_INIT,
   payload,
 });
 
-export const deleteProduct = (payload) => ({
+export const deleteProduct = payload => ({
   type: DELETE_PRODUCT_INIT,
   payload,
 });

@@ -1,4 +1,0 @@
-export const CONSTANTS = {
-  ARGENTINA_CODE: 'ARGENTINA',
-  COMTUR_CODE: 'COMTUR',
-};

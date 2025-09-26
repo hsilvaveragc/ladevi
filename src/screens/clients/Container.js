@@ -1,6 +1,5 @@
-import { bindActionCreators, compose } from 'redux';
-import { connect } from 'react-redux';
-
+import { bindActionCreators, compose } from "redux";
+import { connect } from "react-redux";
 import {
   searchClientsInit,
   addClient,
@@ -15,7 +14,8 @@ import {
   deleteClient,
   confirmDuplicateCuitAssociation,
   hideDuplicateCuitModal,
-} from './actionCreators.js';
+} from "./actionCreators.js";
+
 import {
   getAllClients,
   getUsers,
@@ -28,10 +28,11 @@ import {
   getAllTaxCategories,
   getShowDuplicateCuitModal,
   getDuplicateCuitData,
-} from './reducer.js';
-import Page from './Page.jsx';
+} from "./reducer";
 
-const mapStateToProps = (state) => ({
+import Page from "./Page.jsx";
+
+const mapStateToProps = state => ({
   availableClients: getAllClients(state),
   availableUsers: getUsers(state),
   availableCities: getAllCities(state),
@@ -45,7 +46,7 @@ const mapStateToProps = (state) => ({
   duplicateCuitData: getDuplicateCuitData(state),
 });
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators(
     {
       searchClientsInit,
@@ -66,4 +67,9 @@ const mapDispatchToProps = (dispatch) => ({
   ),
 });
 
-export default compose(connect(mapStateToProps, mapDispatchToProps))(Page);
+export default compose(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
+)(Page);

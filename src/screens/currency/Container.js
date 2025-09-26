@@ -1,21 +1,5 @@
-import { bindActionCreators, compose } from 'redux';
-import { connect } from 'react-redux';
-
-import {
-  getEuroParitiesInit,
-  addEuroParity,
-  deleteEuroParity,
-  initialLoad as initialLoadEuroParity,
-  showAddModal as showAddModalEuroParity,
-  showDeleteModal as showDeleteModalEuroParity,
-} from '../euro-parity/actionCreator';
-import {
-  getEuroParities,
-  getLoading as getLoadingEuroParity,
-  getErrors as getErrorsEuroParity,
-  getShowAddModal as getShowAddModalEuroParity,
-  getShowDeleteModal as getShowDeleteModalEuroParity,
-} from '../euro-parity/reducer';
+import { bindActionCreators, compose } from "redux";
+import { connect } from "react-redux";
 
 import {
   getCurrenciesInit,
@@ -26,7 +10,17 @@ import {
   showAddModal,
   showEditModal,
   showDeleteModal,
-} from './actionCreator';
+} from "./actionCreator";
+
+import {
+  getEuroParitiesInit,
+  addEuroParity,
+  deleteEuroParity,
+  initialLoad as initialLoadEuroParity,
+  showAddModal as showAddModalEuroParity,
+  showDeleteModal as showDeleteModalEuroParity,
+} from "../euro-parity/actionCreator";
+
 import {
   getCountries,
   getCurrencies,
@@ -35,10 +29,19 @@ import {
   getShowAddModal,
   getShowEditModal,
   getShowDeleteModal,
-} from './reducer';
-import Page from './Page';
+} from "./reducer";
 
-const mapStateToProps = (state) => ({
+import {
+  getEuroParities,
+  getLoading as getLoadingEuroParity,
+  getErrors as getErrorsEuroParity,
+  getShowAddModal as getShowAddModalEuroParity,
+  getShowDeleteModal as getShowDeleteModalEuroParity,
+} from "../euro-parity/reducer";
+
+import Page from "./Page";
+
+const mapStateToProps = state => ({
   data: getCurrencies(state),
   isLoading: getLoading(state),
   errors: getErrors(state),
@@ -53,7 +56,7 @@ const mapStateToProps = (state) => ({
   showDeleteModalEuroParity: getShowDeleteModalEuroParity(state),
 });
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators(
     {
       getCurrenciesInit,
@@ -75,4 +78,9 @@ const mapDispatchToProps = (dispatch) => ({
   ),
 });
 
-export default compose(connect(mapStateToProps, mapDispatchToProps))(Page);
+export default compose(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
+)(Page);

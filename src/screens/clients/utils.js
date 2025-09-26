@@ -1,4 +1,4 @@
-import * as Yup from 'yup';
+import * as Yup from "yup";
 import {
   not,
   isEmpty,
@@ -14,52 +14,54 @@ import {
   sort,
   ascend,
   prop,
-} from 'ramda';
+} from "ramda";
 
-export const transformIntoClientTaxes = (res) => {
-  const byOrder = ascend(prop('order'));
+export const transformIntoClientTaxes = res => {
+  const byOrder = ascend(prop("order"));
 
   const identificationOptions = res
-    .filter((tax) => tax.isIdentificationField)
-    .map((tax) => ({ id: tax.id, name: tax.name, countryId: tax.countryId }));
+    .filter(tax => tax.isIdentificationField)
+    .map(tax => ({ id: tax.id, name: tax.name, countryId: tax.countryId }));
 
   const taxOptions = res
-    .filter((tax) => not(tax.isIdentificationField))
-    .map((tax) => ({
+    .filter(tax => not(tax.isIdentificationField))
+    .map(tax => ({
       ...tax,
-      options: tax.options.map((option) => ({ id: option, name: option })),
+      options: tax.options.map(option => ({ id: option, name: option })),
     }));
+  console.log(res.filter(tax => not(tax.isIdentificationField)));
+  console.log(taxOptions);
   return {
     identificationOptions,
     taxOptions: sort(byOrder, taxOptions),
   };
 };
 
-export const buildFilterCriteria = (filterCriteria) => {
+export const buildFilterCriteria = filterCriteria => {
   const filters = compose(
     // handles brandName dropdown behaviour
-    map((filter) =>
-      equals('fullName', filter.field)
-        ? { ...filter, operator: 'contains' }
+    map(filter =>
+      equals("fullName", filter.field)
+        ? { ...filter, operator: "contains" }
         : filter
     ),
-    filter((filter) => not(isNil(filter))),
+    filter(filter => not(isNil(filter))),
     //handles status dropdown behaviour
-    map((filter) =>
-      equals('status', filter.field)
-        ? equals('all', filter.value)
+    map(filter =>
+      equals("status", filter.field)
+        ? equals("all", filter.value)
           ? null
           : {
               ...filter,
-              field: 'isEnabled',
+              field: "isEnabled",
               value: true,
             }
         : filter
     ),
-    filter((filter) => not(isNil(filter))),
-    map((key) =>
+    filter(filter => not(isNil(filter))),
+    map(key =>
       not(isEmpty(filterCriteria[key])) && not(equals(filterCriteria[key], -1))
-        ? { field: key, operator: 'eq', value: filterCriteria[key] }
+        ? { field: key, operator: "eq", value: filterCriteria[key] }
         : null
     ),
     keys
@@ -68,7 +70,7 @@ export const buildFilterCriteria = (filterCriteria) => {
   const filterQuery = {
     //take: 1000,
     filter: {
-      logic: 'and',
+      logic: "and",
       filters: [...filters],
     },
   };
@@ -76,9 +78,9 @@ export const buildFilterCriteria = (filterCriteria) => {
   return isEmpty(filters) ? {} : filterQuery;
 };
 
-export const buildAddPayload = (payload) => {
+export const buildAddPayload = payload => {
   const clientTaxes = compose(
-    (taxes) => [
+    taxes => [
       ...taxes,
       {
         taxTypeId: +payload.identificationTaxId,
@@ -98,21 +100,21 @@ export const buildAddPayload = (payload) => {
   return { ...payload, clientTaxes };
 };
 
-export const parseClientTaxes = (client) => {
+export const parseClientTaxes = client => {
   if (client.clientTaxes) {
     const identificationOptions = client.clientTaxes
-      .filter((tax) => tax.taxType.isIdentificationField)
-      .map((tax) => ({
+      .filter(tax => tax.taxType.isIdentificationField)
+      .map(tax => ({
         id: tax.taxTypeId,
         name: tax.taxType.name,
         value: tax.value,
       }));
 
     const taxOptions = client.clientTaxes
-      .filter((tax) => not(tax.taxType.isIdentificationField))
-      .map((tax) => ({
+      .filter(tax => not(tax.taxType.isIdentificationField))
+      .map(tax => ({
         ...tax,
-        options: tax.taxType.options.map((option) => ({
+        options: tax.taxType.options.map(option => ({
           id: option,
           name: option,
         })),
@@ -133,7 +135,7 @@ export const generateClientTaxesInitialValues = (options, client) => {
   return reduce(
     (acc, tax) => {
       const selectedTax = find(
-        propEq('taxTypeId', tax.id),
+        propEq("taxTypeId", tax.id),
         parseClientTaxes(client).taxOptions
       );
       acc[tax.id] = selectedTax.value;
@@ -144,7 +146,7 @@ export const generateClientTaxesInitialValues = (options, client) => {
   );
 };
 
-export const generateEditInitialValues = (options) => {
+export const generateEditInitialValues = options => {
   return reduce(
     (acc, tax) => {
       acc[tax.taxTypeId] = {
@@ -158,18 +160,18 @@ export const generateEditInitialValues = (options) => {
   );
 };
 
-export const generateValidationSchema = (options) =>
+export const generateValidationSchema = options =>
   compose(
     reduce((acc, tax) => {
-      acc[tax] = Yup.string().required('Requerido');
+      acc[tax] = Yup.string().required("Requerido");
       return acc;
     }, {}),
     keys
   )(options);
 
-export const buildEditPayload = (payload) => {
+export const buildEditPayload = payload => {
   const clientTaxes = compose(
-    (taxes) => [
+    taxes => [
       ...taxes,
       {
         taxTypeId: +payload.identificationTaxId,
@@ -189,7 +191,7 @@ export const buildEditPayload = (payload) => {
     keys
   )(payload.clientTaxes);
 
-  const ctFixed = clientTaxes.map((ct) => ({
+  const ctFixed = clientTaxes.map(ct => ({
     id: ct.id,
     taxTypeId: ct.taxTypeId,
     value: ct.value,

@@ -1,18 +1,18 @@
-import 'shared/utils/extensionsMethods.js';
-import { CONSTANTS } from 'shared/utils/constants';
-import useUser from 'shared/security/useUser';
+import "shared/utils/extensionsMethods.js";
+import { CONSTANTS } from "shared/utils/constants";
+import useUser from "shared/security/useUser";
 
 export const getBillingConditions = () => [
-  { id: 1, name: 'Anticipada' },
-  { id: 2, name: 'Contra Publicacion' },
-  { id: 3, name: 'Canje' },
-  { id: 4, name: 'Sin Cargo' },
+  { id: 1, name: "Anticipada" },
+  { id: 2, name: "Contra Publicacion" },
+  { id: 3, name: "Canje" },
+  { id: 4, name: "Sin Cargo" },
 ];
 
 export const getPaymentMethod = () => [
-  { id: 1, name: 'Documentada' },
-  { id: 2, name: 'Un Pago' },
-  { id: 3, name: 'Otra' },
+  { id: 1, name: "Documentada" },
+  { id: 2, name: "Un Pago" },
+  { id: 3, name: "Otra" },
 ];
 
 export const GetInitValuesInAddMode = () => {
@@ -26,58 +26,58 @@ export const GetInitValuesInAddMode = () => {
 
   return {
     activeTab: 1,
-    id: '',
-    number: '',
-    clientId: '',
+    id: "",
+    number: "",
+    clientId: "",
     clientIsAgency: false,
-    clientCountryId: '',
+    clientCountryId: "",
     clientIsComtur: false,
-    sellerId: userRol.isSeller ? parseFloat(userId) : '',
-    billingCountryId: '',
-    name: '',
-    productId: '',
-    productCountryId: '',
+    sellerId: userRol.isSeller ? parseFloat(userId) : "",
+    billingCountryId: "",
+    name: "",
+    productId: "",
+    productCountryId: "",
     noParity: false,
-    currencyParity: '',
+    currencyParity: "",
     contractDate: new Date(),
     start: actualDate,
     end: endContract,
-    billingConditionId: '',
-    iva: '',
-    paymentMethodId: '',
+    billingConditionId: "",
+    iva: "",
+    paymentMethodId: "",
     currencyId: CONSTANTS.USA_CURRENCY_ID,
     useEuro: false,
     paidOut: false,
-    invoiceNumber: '',
-    checkQuantity: '',
-    daysToFirstPayment: '',
-    daysBetweenChecks: '',
+    invoiceNumber: "",
+    checkQuantity: "",
+    daysToFirstPayment: "",
+    daysBetweenChecks: "",
     quantitySP: 0,
-    observations: '',
+    observations: "",
     publishingOrdersCounter: 0,
     productAdvertisingSpaceIdsPublished: [],
     soldSpaces: [
       {
-        advertisingSpaceLocationTypeId: '',
-        productAdvertisingSpaceId: '',
-        typeSpecialDiscount: '',
-        typeGerentialDiscount: '',
-        quantity: '',
-        specialDiscount: '',
-        gerentialDiscount: '',
-        descriptionSpecialDiscount: '',
-        descriptionGerentialDiscount: '',
-        total: '',
-        balance: '',
-        spacePrice: '',
-        locationDiscount: '',
-        unitPriceWithDiscounts: '',
+        advertisingSpaceLocationTypeId: "",
+        productAdvertisingSpaceId: "",
+        typeSpecialDiscount: "",
+        typeGerentialDiscount: "",
+        quantity: "",
+        specialDiscount: "",
+        gerentialDiscount: "",
+        descriptionSpecialDiscount: "",
+        descriptionGerentialDiscount: "",
+        total: "",
+        balance: "",
+        spacePrice: "",
+        locationDiscount: "",
+        unitPriceWithDiscounts: "",
         quantityOP: 0,
-        discountForCheck: '',
-        discountForLoyalty: '',
-        discountForSameCountry: '',
-        discountForOtherCountry: '',
-        discountForAgency: '',
+        discountForCheck: "",
+        discountForLoyalty: "",
+        discountForSameCountry: "",
+        discountForOtherCountry: "",
+        discountForAgency: "",
         applyDiscountForCheck: false,
         applyDiscountForLoyalty: false,
         applyDiscountForSameCountry: false,
@@ -107,7 +107,7 @@ export const GetInitValuesIsDuplicate = (
     actualDate.getMonth(),
     actualDate.getDate()
   );
-  const client = availableClients.find((x) => x.id === values.clientId);
+  const client = availableClients.find(x => x.id === values.clientId);
   const { localCurrency } = getCurrenciesForClient(
     client.countryId,
     availableCurrencies
@@ -118,15 +118,15 @@ export const GetInitValuesIsDuplicate = (
       : localCurrency;
 
   const discounts = [
-    ['Check', 1],
-    ['SameCountry', 2],
-    ['OtherCountry', 3],
-    ['Loyalty', 4],
-    ['Agency', 5],
-    ['Volume', 6],
+    ["Check", 1],
+    ["SameCountry", 2],
+    ["OtherCountry", 3],
+    ["Loyalty", 4],
+    ["Agency", 5],
+    ["Volume", 6],
   ];
 
-  const processSpace = (sp) => ({
+  const processSpace = sp => ({
     ...sp,
     id: 0,
     typeSpecialDiscount: sp.typeSpecialDiscount,
@@ -139,7 +139,7 @@ export const GetInitValuesIsDuplicate = (
     gerentialDiscount: !isNaN(sp.gerentialDiscount)
       ? Number(sp.gerentialDiscount).toLocaleCurrency()
       : 0,
-    balance: '',
+    balance: "",
     quantityOP: 0,
     alicuotasAplicadas: discounts
       .filter(([type]) => sp[`applyDiscountFor${type}`])
@@ -148,11 +148,11 @@ export const GetInitValuesIsDuplicate = (
         alicuota: sp[`discountFor${type}`],
       })),
     ubicaciones: values.productId
-      ? availableSpaceLocations.filter((x) =>
+      ? availableSpaceLocations.filter(x =>
           availableSpaceTypes
-            .find((t) => t.id === sp.productAdvertisingSpaceId)
+            .find(t => t.id === sp.productAdvertisingSpaceId)
             ?.productAdvertisingSpaceLocationDiscounts.some(
-              (pald) => pald.advertisingSpaceLocationTypeId === x.id
+              pald => pald.advertisingSpaceLocationTypeId === x.id
             )
         )
       : [],
@@ -161,8 +161,8 @@ export const GetInitValuesIsDuplicate = (
   return {
     ...GetInitValuesInAddMode(),
     ...values,
-    id: '',
-    number: '',
+    id: "",
+    number: "",
     sellerId: client.applicationUserSellerId,
     clientIsAgency: client.isAgency,
     clientCountryId: client.countryId,
@@ -170,19 +170,19 @@ export const GetInitValuesIsDuplicate = (
     contractDate: new Date(),
     start: actualDate,
     end: endContract,
-    invoiceNumber: '',
+    invoiceNumber: "",
     paidOut: false,
-    checkQuantity: '',
-    daysToFirstPayment: '',
-    daysBetweenChecks: '',
+    checkQuantity: "",
+    daysToFirstPayment: "",
+    daysBetweenChecks: "",
 
     currencyParity:
       values.currencyId == CONSTANTS.USA_CURRENCY_ID
         ? 1
-        : (finalCurrency?.currencyParities?.find(
-            (x) =>
+        : finalCurrency?.currencyParities?.find(
+            x =>
               new Date(x.start) <= new Date() && new Date(x.end) >= new Date()
-          )?.localCurrencyToDollarExchangeRate ?? 1),
+          )?.localCurrencyToDollarExchangeRate ?? 1,
     publishingOrdersCounter: 0,
     quantitySP: 0,
     productAdvertisingSpaceIdsPublished: [],
@@ -198,21 +198,21 @@ export const GetInitValuesIsEditMode = (
   selectedItem
 ) => {
   const selectedClient = availableClients.find(
-    (c) => c.id === selectedItem?.clientId ?? 0
+    c => c.id === selectedItem?.clientId ?? 0
   );
 
   const selectedProduct = availableProducts.find(
-    (c) => c.id === selectedItem?.productId ?? 0
+    c => c.id === selectedItem?.productId ?? 0
   );
 
   let quantitySP = 0;
   if (selectedItem.soldSpaces) {
-    selectedItem.soldSpaces.forEach(function (sp) {
+    selectedItem.soldSpaces.forEach(function(sp) {
       quantitySP += parseFloat(sp.quantity);
     });
   }
 
-  const initValues = {
+  let initValues = {
     activeTab: 1,
     id: selectedItem.id,
     number: selectedItem.number,
@@ -227,7 +227,7 @@ export const GetInitValuesIsEditMode = (
     productCountryId: selectedProduct.countryId,
     noParity: false,
     currencyParity:
-      selectedItem.currencyParity?.toLocaleString('pt-BR', {
+      selectedItem.currencyParity?.toLocaleString("pt-BR", {
         maximumFractionDigits: 2,
       }) ?? 1,
     contractDate: selectedItem.contractDate,
@@ -240,41 +240,41 @@ export const GetInitValuesIsEditMode = (
     end: selectedItem.end,
     paidOut: selectedItem.paidOut,
     invoiceNumber: selectedItem.invoiceNumber,
-    checkQuantity: selectedItem.checkQuantity ?? '',
-    daysToFirstPayment: selectedItem.daysToFirstPayment ?? '',
-    daysBetweenChecks: selectedItem.daysBetweenChecks ?? '',
+    checkQuantity: selectedItem.checkQuantity ?? "",
+    daysToFirstPayment: selectedItem.daysToFirstPayment ?? "",
+    daysBetweenChecks: selectedItem.daysBetweenChecks ?? "",
     quantitySP: quantitySP,
     observations: selectedItem.observations,
-    soldSpaces: selectedItem.soldSpaces.map((sp) => ({
+    soldSpaces: selectedItem.soldSpaces.map(sp => ({
       ...sp,
-      specialDiscount: sp.specialDiscount.toLocaleString('pt-BR', {
+      specialDiscount: sp.specialDiscount.toLocaleString("pt-BR", {
         maximumFractionDigits: 2,
       }),
-      gerentialDiscount: sp.gerentialDiscount.toLocaleString('pt-BR', {
+      gerentialDiscount: sp.gerentialDiscount.toLocaleString("pt-BR", {
         maximumFractionDigits: 2,
       }),
-      total: sp.total.toLocaleString('pt-BR', {
+      total: sp.total.toLocaleString("pt-BR", {
         maximumFractionDigits: 2,
       }),
       unitPriceWithDiscounts: sp.unitPriceWithDiscounts.toLocaleString(
-        'pt-BR',
+        "pt-BR",
         {
           maximumFractionDigits: 2,
         }
       ),
       quantityOP: selectedItem.publishingOrders.filter(
-        (po) => po.soldSpaceId === sp.id
+        po => po.soldSpaceId === sp.id
       ).length,
     })),
     publishingOrdersCounter: selectedItem.publishingOrders.length,
     productAdvertisingSpaceIdsPublished: Array.from(
       new Set(
-        selectedItem.publishingOrders?.map((x) => x.productAdvertisingSpaceId)
+        selectedItem.publishingOrders?.map(x => x.productAdvertisingSpaceId)
       )
     ),
   };
 
-  initValues.soldSpaces.forEach((ss) => {
+  initValues.soldSpaces.forEach(ss => {
     ss.alicuotasAplicadas = [];
     if (ss.applyDiscountForCheck) {
       ss.alicuotasAplicadas.push({
@@ -320,13 +320,13 @@ export const GetInitValuesIsEditMode = (
 
     ss.ubicaciones = [];
     if (selectedItem.productId) {
-      const spaceTypeSelected = availableSpaceTypes.find(
-        (x) => x.id === ss.productAdvertisingSpaceId
+      let spaceTypeSelected = availableSpaceTypes.find(
+        x => x.id === ss.productAdvertisingSpaceId
       );
       //setear ubicaciones de cada spacesold
-      ss.ubicaciones = availableSpaceLocations.filter((x) =>
+      ss.ubicaciones = availableSpaceLocations.filter(x =>
         spaceTypeSelected.productAdvertisingSpaceLocationDiscounts.find(
-          (pald) => pald.advertisingSpaceLocationTypeId === x.id
+          pald => pald.advertisingSpaceLocationTypeId === x.id
         )
       );
     }
@@ -342,7 +342,7 @@ export const getCountriesForBilling = (
   entitiesWithCountry,
   idToFinded
 ) => {
-  const entitySelected = entitiesWithCountry.find((x) => x.id === idToFinded);
+  const entitySelected = entitiesWithCountry.find(x => x.id === idToFinded);
 
   if (entitySelected) {
     let result = [
@@ -354,7 +354,7 @@ export const getCountriesForBilling = (
     ];
     if (result && result.length > 0) {
       const idsUnicos = new Set();
-      result = result.filter((item) =>
+      result = result.filter(item =>
         idsUnicos.has(item.id) ? false : idsUnicos.add(item.id)
       );
     }
@@ -367,23 +367,23 @@ export const getCurrenciesForClient = (
   availableCurrencies
 ) => {
   const usdCurrency = availableCurrencies.find(
-    (currency) => currency.countryId === CONSTANTS.USA_COUNTRY_ID
+    currency => currency.countryId === CONSTANTS.USA_COUNTRY_ID
   );
 
   const localCurrency =
     clientCountryId && clientCountryId !== CONSTANTS.USA_COUNTRY_ID
       ? availableCurrencies.find(
-          (currency) => currency.countryId === clientCountryId
+          currency => currency.countryId === clientCountryId
         )
       : undefined;
 
   return { usdCurrency, localCurrency };
 };
 
-export const getModifiedEuroCurrency = (availableEuroParities) => {
+export const getModifiedEuroCurrency = availableEuroParities => {
   return {
     id: -1,
-    name: 'EUR',
+    name: "EUR",
     currencyParities: availableEuroParities.map(
       ({ id, euroToDollarExchangeRate, start, end }) => ({
         id,

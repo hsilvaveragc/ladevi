@@ -1,12 +1,12 @@
-import React, { Fragment, useEffect, useState } from 'react';
-import { equals } from 'ramda';
-import { FieldArray } from 'formik';
+import React, { Fragment, useEffect, useState } from "react";
+import { equals } from "ramda";
+import { FieldArray } from "formik";
 
-import 'shared/utils/extensionsMethods.js';
-import InputTextField from 'shared/components/InputTextField';
-import InputSelectField from 'shared/components/InputSelectField';
-import InputCheckboxField from 'shared/components/InputCheckboxField';
-import { RemoveButton } from 'shared/components/Buttons';
+import "shared/utils/extensionsMethods.js";
+import InputTextField from "shared/components/InputTextField";
+import InputSelectField from "shared/components/InputSelectField";
+import InputCheckboxField from "shared/components/InputCheckboxField";
+import { RemoveButton } from "shared/components/Buttons";
 
 import {
   makeTotals,
@@ -25,7 +25,7 @@ import {
   getTotalSPVolumenDiscount,
   getUnitarioSPVolumenDiscount,
   parseFloatRegionArg,
-} from '../../utils2';
+} from "../../utils2";
 
 const SpacesSoldData = ({
   addMode,
@@ -47,25 +47,25 @@ const SpacesSoldData = ({
   };
 
   const isAnticipatedContract = formikProps.values.billingConditionId === 1;
-  const invoiceNumberHasValue = formikProps.values.invoiceNumber !== '';
+  const invoiceNumberHasValue = formikProps.values.invoiceNumber !== "";
   const disabledByInvoiceNumber =
     isAnticipatedContract && invoiceNumberHasValue && editMode;
 
   return (
     <FieldArray
-      name='soldSpaces'
+      name="soldSpaces"
       validateOnChange={false}
       render={({ remove, push }) => (
         <>
           {formikProps.values.soldSpaces.length > 0 &&
             formikProps.values.soldSpaces.map((item, index) => {
               const spaceType = availableSpaceTypes.find(
-                (x) => x.id === item.productAdvertisingSpaceId
+                x => x.id === item.productAdvertisingSpaceId
               );
 
               const dollarPrice =
                 addMode || item.productAdvertisingSpaceId !== spaceType?.id
-                  ? (spaceType?.dollarPrice ?? undefined)
+                  ? spaceType?.dollarPrice ?? undefined
                   : item.spacePrice;
 
               const spacePrice = editMode ? dollarPrice : undefined;
@@ -85,34 +85,32 @@ const SpacesSoldData = ({
                 undefined,
                 spacePrice
               );
-              const isDisabled =
-                formikProps.values.productAdvertisingSpaceIdsPublished.some(
-                  (x) =>
-                    x ==
-                    formikProps.values.soldSpaces[index]
-                      .productAdvertisingSpaceId
-                );
+              let isDisabled = formikProps.values.productAdvertisingSpaceIdsPublished.some(
+                x =>
+                  x ==
+                  formikProps.values.soldSpaces[index].productAdvertisingSpaceId
+              );
 
               return (
                 <Fragment key={index}>
-                  <div className='space-container' key={index}>
-                    <div className='form-row'>
-                      <div className='col-3'>
+                  <div className="space-container" key={index}>
+                    <div className="form-row">
+                      <div className="col-3">
                         <InputSelectField
-                          labelText='Tipo de Espacio *'
+                          labelText="Tipo de Espacio *"
                           name={`soldSpaces.${index}.productAdvertisingSpaceId`}
                           options={availableSpaceTypes.filter(
-                            (x) => x.productId === formikProps.values.productId
+                            x => x.productId === formikProps.values.productId
                           )}
-                          onChangeHandler={(st) => {
+                          onChangeHandler={st => {
                             formikProps.setFieldValue(
                               `soldSpaces.${index}.productAdvertisingSpaceId`,
                               st.id
                             );
                             const ubicaciones = availableSpaceLocations.filter(
-                              (x) =>
+                              x =>
                                 st.productAdvertisingSpaceLocationDiscounts.find(
-                                  (pald) =>
+                                  pald =>
                                     pald.advertisingSpaceLocationTypeId === x.id
                                 )
                             );
@@ -126,7 +124,7 @@ const SpacesSoldData = ({
                               formikProps.values.soldSpaces[index]
                                 .advertisingSpaceLocationTypeId &&
                               !ubicaciones.find(
-                                (u) =>
+                                u =>
                                   u.id ==
                                   formikProps.values.soldSpaces[index]
                                     .advertisingSpaceLocationTypeId
@@ -164,7 +162,7 @@ const SpacesSoldData = ({
                               discountForAgency = st.discountForAgency;
                               discountForVolume =
                                 st.productAdvertisingSpaceVolumeDiscounts.find(
-                                  (pv) =>
+                                  pv =>
                                     pv.rangeStart <=
                                       formikProps.values.soldSpaces[index]
                                         .quantity &&
@@ -179,7 +177,7 @@ const SpacesSoldData = ({
                               ) {
                                 discountForLocation =
                                   st.productAdvertisingSpaceLocationDiscounts.find(
-                                    (pl) =>
+                                    pl =>
                                       pl.advertisingSpaceLocationTypeId ===
                                       ubicaciones[0].id
                                   ).discount ?? 0;
@@ -237,7 +235,7 @@ const SpacesSoldData = ({
                               discountForVolume
                             );
 
-                            const alicuotasAplicadas = [];
+                            let alicuotasAplicadas = [];
                             if (
                               formikProps.values.soldSpaces[index]
                                 .applyDiscountForCheck
@@ -301,10 +299,16 @@ const SpacesSoldData = ({
                             };
 
                             if (formikProps.values.soldSpaces[index].quantity) {
-                              valuesLocal.soldSpaces[index].discountForCheck =
-                                discountForCheck ? discountForCheck : 0;
-                              valuesLocal.soldSpaces[index].discountForLoyalty =
-                                discountForLoyalty ? discountForLoyalty : 0;
+                              valuesLocal.soldSpaces[
+                                index
+                              ].discountForCheck = discountForCheck
+                                ? discountForCheck
+                                : 0;
+                              valuesLocal.soldSpaces[
+                                index
+                              ].discountForLoyalty = discountForLoyalty
+                                ? discountForLoyalty
+                                : 0;
                               valuesLocal.soldSpaces[
                                 index
                               ].discountForSameCountry = discountForSameCountry
@@ -312,19 +316,24 @@ const SpacesSoldData = ({
                                 : 0;
                               valuesLocal.soldSpaces[
                                 index
-                              ].discountForOtherCountry =
-                                discountForOtherCountry
-                                  ? discountForOtherCountry
-                                  : 0;
-                              valuesLocal.soldSpaces[index].discountForAgency =
-                                discountForAgency ? discountForAgency : 0;
-                              valuesLocal.soldSpaces[index].discountForVolume =
-                                discountForVolume ? discountForVolume : 0;
+                              ].discountForOtherCountry = discountForOtherCountry
+                                ? discountForOtherCountry
+                                : 0;
+                              valuesLocal.soldSpaces[
+                                index
+                              ].discountForAgency = discountForAgency
+                                ? discountForAgency
+                                : 0;
+                              valuesLocal.soldSpaces[
+                                index
+                              ].discountForVolume = discountForVolume
+                                ? discountForVolume
+                                : 0;
 
-                              const quantity =
+                              var quantity =
                                 formikProps.values.soldSpaces[index].quantity;
 
-                              const parity = formikProps.values.currencyParity;
+                              let parity = formikProps.values.currencyParity;
 
                               const unitarioSoldSpace = getUnitarioSoldSpace(
                                 valuesLocal,
@@ -337,7 +346,7 @@ const SpacesSoldData = ({
 
                               formikProps.setFieldValue(
                                 `soldSpaces.${index}.unitPriceWithDiscounts`,
-                                unitarioSoldSpace.toLocaleString('pt-BR', {
+                                unitarioSoldSpace.toLocaleString("pt-BR", {
                                   maximumFractionDigits: 2,
                                 })
                               );
@@ -354,7 +363,7 @@ const SpacesSoldData = ({
                             );
                             formikProps.setFieldValue(
                               `soldSpaces.${index}.total`,
-                              totalSoldSpace.toLocaleString('pt-BR', {
+                              totalSoldSpace.toLocaleString("pt-BR", {
                                 maximumFractionDigits: 2,
                               })
                             );
@@ -369,20 +378,20 @@ const SpacesSoldData = ({
                             formikProps.errors.soldSpaces &&
                             formikProps.errors.soldSpaces[index] &&
                             formikProps.errors.soldSpaces[index][
-                              'productAdvertisingSpaceId'
+                              "productAdvertisingSpaceId"
                             ]
                           }
                         />
                       </div>
-                      <div className='col-5'>
+                      <div className="col-5">
                         <InputSelectField
-                          labelText='Ubicación *'
+                          labelText="Ubicación *"
                           name={`soldSpaces.${index}.advertisingSpaceLocationTypeId`}
                           options={
                             formikProps.values.soldSpaces[index]?.ubicaciones ??
                             []
                           }
-                          onChangeHandler={(ubicacion) => {
+                          onChangeHandler={ubicacion => {
                             let discountForlocation = 0;
                             if (
                               addMode ||
@@ -391,16 +400,15 @@ const SpacesSoldData = ({
                                 selectedItem.soldSpaces[index]
                                   .advertisingSpaceLocationTypeId
                             ) {
-                              const spaceTypeSelected =
-                                availableSpaceTypes.find(
-                                  (x) =>
-                                    x.id ===
-                                    formikProps.values.soldSpaces[index]
-                                      .productAdvertisingSpaceId
-                                );
+                              let spaceTypeSelected = availableSpaceTypes.find(
+                                x =>
+                                  x.id ===
+                                  formikProps.values.soldSpaces[index]
+                                    .productAdvertisingSpaceId
+                              );
                               discountForlocation =
                                 spaceTypeSelected.productAdvertisingSpaceLocationDiscounts.find(
-                                  (pl) =>
+                                  pl =>
                                     pl.advertisingSpaceLocationTypeId ===
                                     ubicacion.id
                                 ).discount ?? 0;
@@ -423,7 +431,7 @@ const SpacesSoldData = ({
                             );
                             formikProps.setFieldValue(
                               `soldSpaces.${index}.total`,
-                              totalSoldSpace.toLocaleString('pt-BR', {
+                              totalSoldSpace.toLocaleString("pt-BR", {
                                 maximumFractionDigits: 2,
                               })
                             );
@@ -437,7 +445,7 @@ const SpacesSoldData = ({
                             );
                             formikProps.setFieldValue(
                               `soldSpaces.${index}.unitPriceWithDiscounts`,
-                              unitarioSoldSpace.toLocaleString('pt-BR', {
+                              unitarioSoldSpace.toLocaleString("pt-BR", {
                                 maximumFractionDigits: 2,
                               })
                             );
@@ -451,23 +459,23 @@ const SpacesSoldData = ({
                             formikProps.errors.soldSpaces &&
                             formikProps.errors.soldSpaces[index] &&
                             formikProps.errors.soldSpaces[index][
-                              'advertisingSpaceLocationTypeId'
+                              "advertisingSpaceLocationTypeId"
                             ]
                           }
                         />
                       </div>
-                      <div className='col-2'>
+                      <div className="col-2">
                         <InputTextField
-                          labelText='Cantidad *'
+                          labelText="Cantidad *"
                           name={`soldSpaces.${index}.quantity`}
                           disabled={
                             deleteMode ||
                             (isSeller && editMode) ||
                             disabledByInvoiceNumber
                           }
-                          onChangeHandler={(evt) => {
-                            const spaceTypeSelected = availableSpaceTypes.find(
-                              (x) =>
+                          onChangeHandler={evt => {
+                            let spaceTypeSelected = availableSpaceTypes.find(
+                              x =>
                                 x.id ===
                                 formikProps.values.soldSpaces[index]
                                   .productAdvertisingSpaceId
@@ -477,7 +485,7 @@ const SpacesSoldData = ({
                               ? 0
                               : Number(evt.target.value);
 
-                            const quantitySPs =
+                            let quantitySPs =
                               parseFloat(
                                 formikProps.values.soldSpaces
                                   .filter((item, i) => i !== index)
@@ -485,18 +493,17 @@ const SpacesSoldData = ({
                               ) + parseFloat(quantityValue);
 
                             formikProps.setFieldValue(
-                              'quantitySP',
+                              "quantitySP",
                               quantitySPs
                             );
 
-                            const volumeDiscount =
-                              spaceTypeSelected?.productAdvertisingSpaceVolumeDiscounts
-                                ?.find(
-                                  (pv) =>
-                                    pv.rangeStart <= quantityValue &&
-                                    pv.rangeEnd > quantityValue
-                                )
-                                ?.discount.toLocaleCurrency();
+                            const volumeDiscount = spaceTypeSelected?.productAdvertisingSpaceVolumeDiscounts
+                              ?.find(
+                                pv =>
+                                  pv.rangeStart <= quantityValue &&
+                                  pv.rangeEnd > quantityValue
+                              )
+                              ?.discount.toLocaleCurrency();
 
                             if (
                               formikProps.values.soldSpaces[index]
@@ -504,7 +511,7 @@ const SpacesSoldData = ({
                             ) {
                               const indexAli = formikProps.values.soldSpaces[
                                 index
-                              ].alicuotasAplicadas.findIndex((x) => x.id === 6);
+                              ].alicuotasAplicadas.findIndex(x => x.id === 6);
 
                               const updatedAlicuotas = [
                                 ...formikProps.values.soldSpaces[
@@ -540,7 +547,7 @@ const SpacesSoldData = ({
 
                             let totalSoldSpace = 0;
                             let unitarioSoldSpace = 0;
-                            const parity = formikProps.values.currencyParity;
+                            let parity = formikProps.values.currencyParity;
                             totalSoldSpace =
                               quantityValue === 0
                                 ? 0
@@ -574,14 +581,15 @@ const SpacesSoldData = ({
                                 quantityValue <
                                 formikProps.values.soldSpaces[index].quantityOP
                               ) {
+                                console.log(`soldSpaces.${index}.quantity`);
                                 formikProps.setFieldError(
                                   `soldSpaces.${index}.quantity`,
-                                  'La cantidad no puede ser menor a la cantidad de órdenes publicadas'
+                                  "La cantidad no puede ser menor a la cantidad de órdenes publicadas"
                                 );
                               } else {
                                 formikProps.setFieldError(
                                   `soldSpaces.${index}.quantity`,
-                                  ''
+                                  ""
                                 );
                               }
                             }
@@ -589,41 +597,41 @@ const SpacesSoldData = ({
                           error={
                             formikProps.errors.soldSpaces &&
                             formikProps.errors.soldSpaces[index] &&
-                            formikProps.errors.soldSpaces[index]['quantity']
+                            formikProps.errors.soldSpaces[index]["quantity"]
                           }
                         />
                       </div>
-                      <div className='col-2'>
+                      <div className="col-2">
                         <InputTextField
-                          labelText='Saldo'
+                          labelText="Saldo"
                           name={`soldSpaces.${index}.balance`}
                           disabled={true}
                           error={
                             formikProps.errors.soldSpaces &&
                             formikProps.errors.soldSpaces[index] &&
-                            formikProps.errors.soldSpaces[index]['balance']
+                            formikProps.errors.soldSpaces[index]["balance"]
                           }
                         />
                       </div>
                     </div>
-                    <div className='form-row'>
-                      <div className='col-12'>
-                        <div className='discounts-container'>
-                          <div className='discount'>
+                    <div className="form-row">
+                      <div className="col-12">
+                        <div className="discounts-container">
+                          <div className="discount">
                             <InputTextField
-                              labelText='Adelantado/cheque'
+                              labelText="Adelantado/cheque"
                               name={`soldSpaces.${index}.discountForCheck`}
                               disabled={true}
                               error={
                                 formikProps.errors.soldSpaces &&
                                 formikProps.errors.soldSpaces[index] &&
                                 formikProps.errors.soldSpaces[index][
-                                  'discountForCheck'
+                                  "discountForCheck"
                                 ]
                               }
                             />
                             <InputCheckboxField
-                              labelText='Pagada'
+                              labelText="Pagada"
                               showLabel={false}
                               name={`soldSpaces.${index}.applyDiscountForCheck`}
                               disabled={
@@ -636,7 +644,7 @@ const SpacesSoldData = ({
                                 formikProps.errors.soldSpaces &&
                                 formikProps.errors.soldSpaces[index] &&
                                 formikProps.errors.soldSpaces[index][
-                                  'applyDiscountForCheck'
+                                  "applyDiscountForCheck"
                                 ]
                               }
                               inline
@@ -666,15 +674,12 @@ const SpacesSoldData = ({
                                     `soldSpaces.${index}.alicuotasAplicadas`,
                                     formikProps.values.soldSpaces[
                                       index
-                                    ].alicuotasAplicadas.filter(
-                                      (x) => x.id !== 1
-                                    )
+                                    ].alicuotasAplicadas.filter(x => x.id !== 1)
                                   );
                                 }
 
-                                const valueCheck =
-                                  !formikProps.values.soldSpaces[index]
-                                    .applyDiscountForCheck;
+                                const valueCheck = !formikProps.values
+                                  .soldSpaces[index].applyDiscountForCheck;
                                 const total = getTotalSPChequeDiscount(
                                   formikProps.values,
                                   index,
@@ -695,29 +700,28 @@ const SpacesSoldData = ({
                                     formikProps.errors.soldSpaces[index]
                                   ) {
                                     formikProps.errors.soldSpaces[index][
-                                      'specialDiscount'
-                                    ] =
-                                      `La cantidad máxima de descuentos no puede superar el 100%`;
+                                      "specialDiscount"
+                                    ] = `La cantidad máxima de descuentos no puede superar el 100%`;
                                   } else {
                                     formikProps.errors.soldSpaces = [{}];
                                     formikProps.errors.soldSpaces[index] = {};
                                     formikProps.errors.soldSpaces[index][
-                                      'specialDiscount'
+                                      "specialDiscount"
                                     ] =
-                                      'La cantidad máxima de descuentos no puede superar el 100%';
+                                      "La cantidad máxima de descuentos no puede superar el 100%";
                                   }
                                 }
 
                                 formikProps.setFieldValue(
                                   `soldSpaces.${index}.total`,
-                                  total.toLocaleString('pt-BR', {
+                                  total.toLocaleString("pt-BR", {
                                     maximumFractionDigits: 2,
                                   })
                                 );
 
                                 formikProps.setFieldValue(
                                   `soldSpaces.${index}.unitPriceWithDiscounts`,
-                                  unitario.toLocaleString('pt-BR', {
+                                  unitario.toLocaleString("pt-BR", {
                                     maximumFractionDigits: 2,
                                   })
                                 );
@@ -725,21 +729,21 @@ const SpacesSoldData = ({
                             />
                           </div>
                           {countryAndClientSameCountry() ? (
-                            <div className='discount'>
+                            <div className="discount">
                               <InputTextField
-                                labelText='Cliente Nacional'
+                                labelText="Cliente Nacional"
                                 name={`soldSpaces.${index}.discountForSameCountry`}
                                 disabled={true}
                                 error={
                                   formikProps.errors.soldSpaces &&
                                   formikProps.errors.soldSpaces[index] &&
                                   formikProps.errors.soldSpaces[index][
-                                    'discountForSameCountry'
+                                    "discountForSameCountry"
                                   ]
                                 }
                               />
                               <InputCheckboxField
-                                labelText='Pagada'
+                                labelText="Pagada"
                                 showLabel={false}
                                 name={`soldSpaces.${index}.applyDiscountForSameCountry`}
                                 disabled={
@@ -751,11 +755,11 @@ const SpacesSoldData = ({
                                   formikProps.errors.soldSpaces &&
                                   formikProps.errors.soldSpaces[index] &&
                                   formikProps.errors.soldSpaces[index][
-                                    'applyDiscountForSameCountry'
+                                    "applyDiscountForSameCountry"
                                   ]
                                 }
                                 inline
-                                onChangeHandler={(evt) => {
+                                onChangeHandler={evt => {
                                   if (
                                     !formikProps.values.soldSpaces[index]
                                       .applyDiscountForSameCountry
@@ -782,14 +786,14 @@ const SpacesSoldData = ({
                                       formikProps.values.soldSpaces[
                                         index
                                       ].alicuotasAplicadas.filter(
-                                        (x) => x.id !== 2
+                                        x => x.id !== 2
                                       )
                                     );
                                   }
 
-                                  const valueCheck =
-                                    !formikProps.values.soldSpaces[index]
-                                      .applyDiscountForSameCountry;
+                                  const valueCheck = !formikProps.values
+                                    .soldSpaces[index]
+                                    .applyDiscountForSameCountry;
                                   const total = getTotalSPNacDiscount(
                                     formikProps.values,
                                     index,
@@ -810,29 +814,28 @@ const SpacesSoldData = ({
                                       formikProps.errors.soldSpaces[index]
                                     ) {
                                       formikProps.errors.soldSpaces[index][
-                                        'specialDiscount'
-                                      ] =
-                                        `La cantidad máxima de descuentos no puede superar el 100%`;
+                                        "specialDiscount"
+                                      ] = `La cantidad máxima de descuentos no puede superar el 100%`;
                                     } else {
                                       formikProps.errors.soldSpaces = [{}];
                                       formikProps.errors.soldSpaces[index] = {};
                                       formikProps.errors.soldSpaces[index][
-                                        'specialDiscount'
+                                        "specialDiscount"
                                       ] =
-                                        'La cantidad máxima de descuentos no puede superar el 100%';
+                                        "La cantidad máxima de descuentos no puede superar el 100%";
                                     }
                                   }
 
                                   formikProps.setFieldValue(
                                     `soldSpaces.${index}.total`,
-                                    total.toLocaleString('pt-BR', {
+                                    total.toLocaleString("pt-BR", {
                                       maximumFractionDigits: 2,
                                     })
                                   );
 
                                   formikProps.setFieldValue(
                                     `soldSpaces.${index}.unitPriceWithDiscounts`,
-                                    unitario.toLocaleString('pt-BR', {
+                                    unitario.toLocaleString("pt-BR", {
                                       maximumFractionDigits: 2,
                                     })
                                   );
@@ -840,21 +843,21 @@ const SpacesSoldData = ({
                               />
                             </div>
                           ) : (
-                            <div className='discount'>
+                            <div className="discount">
                               <InputTextField
-                                labelText='Cliente Internacional'
+                                labelText="Cliente Internacional"
                                 name={`soldSpaces.${index}.discountForOtherCountry`}
                                 disabled={true}
                                 error={
                                   formikProps.errors.soldSpaces &&
                                   formikProps.errors.soldSpaces[index] &&
                                   formikProps.errors.soldSpaces[index][
-                                    'discountForOtherCountry'
+                                    "discountForOtherCountry"
                                   ]
                                 }
                               />
                               <InputCheckboxField
-                                labelText='Pagada'
+                                labelText="Pagada"
                                 showLabel={false}
                                 name={`soldSpaces.${index}.applyDiscountForOtherCountry`}
                                 disabled={
@@ -866,7 +869,7 @@ const SpacesSoldData = ({
                                   formikProps.errors.soldSpaces &&
                                   formikProps.errors.soldSpaces[index] &&
                                   formikProps.errors.soldSpaces[index][
-                                    'applyDiscountForOtherCountry'
+                                    "applyDiscountForOtherCountry"
                                   ]
                                 }
                                 inline
@@ -897,14 +900,14 @@ const SpacesSoldData = ({
                                       formikProps.values.soldSpaces[
                                         index
                                       ].alicuotasAplicadas.filter(
-                                        (x) => x.id !== 3
+                                        x => x.id !== 3
                                       )
                                     );
                                   }
 
-                                  const valueCheck =
-                                    !formikProps.values.soldSpaces[index]
-                                      .applyDiscountForOtherCountry;
+                                  const valueCheck = !formikProps.values
+                                    .soldSpaces[index]
+                                    .applyDiscountForOtherCountry;
                                   const total = getTotalSPInterDiscount(
                                     formikProps.values,
                                     index,
@@ -925,29 +928,28 @@ const SpacesSoldData = ({
                                       formikProps.errors.soldSpaces[index]
                                     ) {
                                       formikProps.errors.soldSpaces[index][
-                                        'specialDiscount'
-                                      ] =
-                                        `La cantidad máxima de descuentos no puede superar el 100%`;
+                                        "specialDiscount"
+                                      ] = `La cantidad máxima de descuentos no puede superar el 100%`;
                                     } else {
                                       formikProps.errors.soldSpaces = [{}];
                                       formikProps.errors.soldSpaces[index] = {};
                                       formikProps.errors.soldSpaces[index][
-                                        'specialDiscount'
+                                        "specialDiscount"
                                       ] =
-                                        'La cantidad máxima de descuentos no puede superar el 100%';
+                                        "La cantidad máxima de descuentos no puede superar el 100%";
                                     }
                                   }
 
                                   formikProps.setFieldValue(
                                     `soldSpaces.${index}.total`,
-                                    total.toLocaleString('pt-BR', {
+                                    total.toLocaleString("pt-BR", {
                                       maximumFractionDigits: 2,
                                     })
                                   );
 
                                   formikProps.setFieldValue(
                                     `soldSpaces.${index}.unitPriceWithDiscounts`,
-                                    unitario.toLocaleString('pt-BR', {
+                                    unitario.toLocaleString("pt-BR", {
                                       maximumFractionDigits: 2,
                                     })
                                   );
@@ -955,21 +957,21 @@ const SpacesSoldData = ({
                               />
                             </div>
                           )}
-                          <div className='discount'>
+                          <div className="discount">
                             <InputTextField
-                              labelText='Fidelización'
+                              labelText="Fidelización"
                               name={`soldSpaces.${index}.discountForLoyalty`}
                               disabled={true}
                               error={
                                 formikProps.errors.soldSpaces &&
                                 formikProps.errors.soldSpaces[index] &&
                                 formikProps.errors.soldSpaces[index][
-                                  'discountForLoyalty'
+                                  "discountForLoyalty"
                                 ]
                               }
                             />
                             <InputCheckboxField
-                              labelText='Pagada'
+                              labelText="Pagada"
                               showLabel={false}
                               name={`soldSpaces.${index}.applyDiscountForLoyalty`}
                               disabled={
@@ -981,7 +983,7 @@ const SpacesSoldData = ({
                                 formikProps.errors.soldSpaces &&
                                 formikProps.errors.soldSpaces[index] &&
                                 formikProps.errors.soldSpaces[index][
-                                  'applyDiscountForLoyalty'
+                                  "applyDiscountForLoyalty"
                                 ]
                               }
                               inline
@@ -1011,15 +1013,12 @@ const SpacesSoldData = ({
                                     `soldSpaces.${index}.alicuotasAplicadas`,
                                     formikProps.values.soldSpaces[
                                       index
-                                    ].alicuotasAplicadas.filter(
-                                      (x) => x.id !== 4
-                                    )
+                                    ].alicuotasAplicadas.filter(x => x.id !== 4)
                                   );
                                 }
 
-                                const valueCheck =
-                                  !formikProps.values.soldSpaces[index]
-                                    .applyDiscountForLoyalty;
+                                const valueCheck = !formikProps.values
+                                  .soldSpaces[index].applyDiscountForLoyalty;
                                 const total = getTotalSPFidelDiscount(
                                   formikProps.values,
                                   index,
@@ -1040,50 +1039,49 @@ const SpacesSoldData = ({
                                     formikProps.errors.soldSpaces[index]
                                   ) {
                                     formikProps.errors.soldSpaces[index][
-                                      'specialDiscount'
-                                    ] =
-                                      `La cantidad máxima de descuentos no puede superar el 100%`;
+                                      "specialDiscount"
+                                    ] = `La cantidad máxima de descuentos no puede superar el 100%`;
                                   } else {
                                     formikProps.errors.soldSpaces = [{}];
                                     formikProps.errors.soldSpaces[index] = {};
                                     formikProps.errors.soldSpaces[index][
-                                      'specialDiscount'
+                                      "specialDiscount"
                                     ] =
-                                      'La cantidad máxima de descuentos no puede superar el 100%';
+                                      "La cantidad máxima de descuentos no puede superar el 100%";
                                   }
                                 }
 
                                 formikProps.setFieldValue(
                                   `soldSpaces.${index}.total`,
-                                  total.toLocaleString('pt-BR', {
+                                  total.toLocaleString("pt-BR", {
                                     maximumFractionDigits: 2,
                                   })
                                 );
 
                                 formikProps.setFieldValue(
                                   `soldSpaces.${index}.unitPriceWithDiscounts`,
-                                  unitario.toLocaleString('pt-BR', {
+                                  unitario.toLocaleString("pt-BR", {
                                     maximumFractionDigits: 2,
                                   })
                                 );
                               }}
                             />
                           </div>
-                          <div className='discount'>
+                          <div className="discount">
                             <InputTextField
-                              labelText='Agencia'
+                              labelText="Agencia"
                               name={`soldSpaces.${index}.discountForAgency`}
                               disabled={true}
                               error={
                                 formikProps.errors.soldSpaces &&
                                 formikProps.errors.soldSpaces[index] &&
                                 formikProps.errors.soldSpaces[index][
-                                  'discountForAgency'
+                                  "discountForAgency"
                                 ]
                               }
                             />
                             <InputCheckboxField
-                              labelText=''
+                              labelText=""
                               showLabel={false}
                               name={`soldSpaces.${index}.appyDiscountForAgency`}
                               disabled={
@@ -1095,7 +1093,7 @@ const SpacesSoldData = ({
                                 formikProps.errors.soldSpaces &&
                                 formikProps.errors.soldSpaces[index] &&
                                 formikProps.errors.soldSpaces[index][
-                                  'appyDiscountForAgency'
+                                  "appyDiscountForAgency"
                                 ]
                               }
                               inline
@@ -1125,15 +1123,12 @@ const SpacesSoldData = ({
                                     `soldSpaces.${index}.alicuotasAplicadas`,
                                     formikProps.values.soldSpaces[
                                       index
-                                    ].alicuotasAplicadas.filter(
-                                      (x) => x.id !== 5
-                                    )
+                                    ].alicuotasAplicadas.filter(x => x.id !== 5)
                                   );
                                 }
 
-                                const valueCheck =
-                                  !formikProps.values.soldSpaces[index]
-                                    .appyDiscountForAgency;
+                                const valueCheck = !formikProps.values
+                                  .soldSpaces[index].appyDiscountForAgency;
                                 const total = getTotalSPAgencyDiscount(
                                   formikProps.values,
                                   index,
@@ -1154,50 +1149,49 @@ const SpacesSoldData = ({
                                     formikProps.errors.soldSpaces[index]
                                   ) {
                                     formikProps.errors.soldSpaces[index][
-                                      'specialDiscount'
-                                    ] =
-                                      `La cantidad máxima de descuentos no puede superar el 100%`;
+                                      "specialDiscount"
+                                    ] = `La cantidad máxima de descuentos no puede superar el 100%`;
                                   } else {
                                     formikProps.errors.soldSpaces = [{}];
                                     formikProps.errors.soldSpaces[index] = {};
                                     formikProps.errors.soldSpaces[index][
-                                      'specialDiscount'
+                                      "specialDiscount"
                                     ] =
-                                      'La cantidad máxima de descuentos no puede superar el 100%';
+                                      "La cantidad máxima de descuentos no puede superar el 100%";
                                   }
                                 }
 
                                 formikProps.setFieldValue(
                                   `soldSpaces.${index}.total`,
-                                  total.toLocaleString('pt-BR', {
+                                  total.toLocaleString("pt-BR", {
                                     maximumFractionDigits: 2,
                                   })
                                 );
 
                                 formikProps.setFieldValue(
                                   `soldSpaces.${index}.unitPriceWithDiscounts`,
-                                  unitario.toLocaleString('pt-BR', {
+                                  unitario.toLocaleString("pt-BR", {
                                     maximumFractionDigits: 2,
                                   })
                                 );
                               }}
                             />
                           </div>
-                          <div className='discount'>
+                          <div className="discount">
                             <InputTextField
-                              labelText='Volumen'
+                              labelText="Volumen"
                               name={`soldSpaces.${index}.discountForVolume`}
                               disabled={true}
                               error={
                                 formikProps.errors.soldSpaces &&
                                 formikProps.errors.soldSpaces[index] &&
                                 formikProps.errors.soldSpaces[index][
-                                  'discountForVolume'
+                                  "discountForVolume"
                                 ]
                               }
                             />
                             <InputCheckboxField
-                              labelText='Pagada'
+                              labelText="Pagada"
                               showLabel={false}
                               name={`soldSpaces.${index}.applyDiscountForVolume`}
                               disabled={
@@ -1209,7 +1203,7 @@ const SpacesSoldData = ({
                                 formikProps.errors.soldSpaces &&
                                 formikProps.errors.soldSpaces[index] &&
                                 formikProps.errors.soldSpaces[index][
-                                  'applyDiscountForVolume'
+                                  "applyDiscountForVolume"
                                 ]
                               }
                               inline
@@ -1239,14 +1233,11 @@ const SpacesSoldData = ({
                                     `soldSpaces.${index}.alicuotasAplicadas`,
                                     formikProps.values.soldSpaces[
                                       index
-                                    ].alicuotasAplicadas.filter(
-                                      (x) => x.id !== 6
-                                    )
+                                    ].alicuotasAplicadas.filter(x => x.id !== 6)
                                   );
                                 }
-                                const valueCheck =
-                                  !formikProps.values.soldSpaces[index]
-                                    .applyDiscountForVolume;
+                                const valueCheck = !formikProps.values
+                                  .soldSpaces[index].applyDiscountForVolume;
                                 const total = getTotalSPVolumenDiscount(
                                   formikProps.values,
                                   index,
@@ -1267,29 +1258,28 @@ const SpacesSoldData = ({
                                     formikProps.errors.soldSpaces[index]
                                   ) {
                                     formikProps.errors.soldSpaces[index][
-                                      'specialDiscount'
-                                    ] =
-                                      `La cantidad máxima de descuentos no puede superar el 100%`;
+                                      "specialDiscount"
+                                    ] = `La cantidad máxima de descuentos no puede superar el 100%`;
                                   } else {
                                     formikProps.errors.soldSpaces = [{}];
                                     formikProps.errors.soldSpaces[index] = {};
                                     formikProps.errors.soldSpaces[index][
-                                      'specialDiscount'
+                                      "specialDiscount"
                                     ] =
-                                      'La cantidad máxima de descuentos no puede superar el 100%';
+                                      "La cantidad máxima de descuentos no puede superar el 100%";
                                   }
                                 }
 
                                 formikProps.setFieldValue(
                                   `soldSpaces.${index}.total`,
-                                  total.toLocaleString('pt-BR', {
+                                  total.toLocaleString("pt-BR", {
                                     maximumFractionDigits: 2,
                                   })
                                 );
 
                                 formikProps.setFieldValue(
                                   `soldSpaces.${index}.unitPriceWithDiscounts`,
-                                  unitario.toLocaleString('pt-BR', {
+                                  unitario.toLocaleString("pt-BR", {
                                     maximumFractionDigits: 2,
                                   })
                                 );
@@ -1299,14 +1289,14 @@ const SpacesSoldData = ({
                         </div>
                       </div>
                     </div>
-                    <div className='form-row'>
-                      <div className='col-3'>
+                    <div className="form-row">
+                      <div className="col-3">
                         <InputSelectField
-                          labelText='Especial'
+                          labelText="Especial"
                           name={`soldSpaces.${index}.typeSpecialDiscount`}
                           options={[
-                            { id: 1, name: 'Descuento' },
-                            { id: 2, name: 'Recargo' },
+                            { id: 1, name: "Descuento" },
+                            { id: 2, name: "Recargo" },
                           ]}
                           disabled={
                             deleteMode ||
@@ -1317,10 +1307,11 @@ const SpacesSoldData = ({
                             formikProps.errors.soldSpaces &&
                             formikProps.errors.soldSpaces[index] &&
                             formikProps.errors.soldSpaces[index][
-                              'typeSpecialDiscount'
+                              "typeSpecialDiscount"
                             ]
                           }
-                          onChangeHandler={(tipoDescuento) => {
+                          onChangeHandler={tipoDescuento => {
+                            console.log("Tipo Descuento: ", tipoDescuento);
                             const aux = {
                               ...formikProps.values,
                               soldSpaces: [
@@ -1347,7 +1338,7 @@ const SpacesSoldData = ({
 
                             formikProps.setFieldValue(
                               `soldSpaces.${index}.unitPriceWithDiscounts`,
-                              unitario.toLocaleString('pt-BR', {
+                              unitario.toLocaleString("pt-BR", {
                                 maximumFractionDigits: 2,
                               })
                             );
@@ -1357,19 +1348,19 @@ const SpacesSoldData = ({
                               formikProps.errors.soldSpaces &&
                               formikProps.errors.soldSpaces[index] &&
                               formikProps.errors.soldSpaces[index][
-                                'specialDiscount'
+                                "specialDiscount"
                               ]
                             ) {
                               const gerencialDiscountError =
                                 formikProps.errors.soldSpaces[index][
-                                  'specialDiscount'
+                                  "specialDiscount"
                                 ];
 
                               if (gerencialDiscountError) {
                                 delete formikProps.errors.soldSpaces[index][
-                                  'specialDiscount'
+                                  "specialDiscount"
                                 ];
-                                const keysObject = Object.keys(
+                                var keysObject = Object.keys(
                                   formikProps.errors.soldSpaces[index]
                                 );
                                 if (keysObject.length == 0) {
@@ -1380,9 +1371,9 @@ const SpacesSoldData = ({
                           }}
                         />
                       </div>
-                      <div className='col-7'>
+                      <div className="col-7">
                         <InputTextField
-                          labelText='Descripción'
+                          labelText="Descripción"
                           name={`soldSpaces.${index}.descriptionSpecialDiscount`}
                           disabled={
                             deleteMode ||
@@ -1393,14 +1384,14 @@ const SpacesSoldData = ({
                             formikProps.errors.soldSpaces &&
                             formikProps.errors.soldSpaces[index] &&
                             formikProps.errors.soldSpaces[index][
-                              'descriptionSpecialDiscount'
+                              "descriptionSpecialDiscount"
                             ]
                           }
                         />
                       </div>
-                      <div className='col-2'>
+                      <div className="col-2">
                         <InputTextField
-                          labelText='%'
+                          labelText="%"
                           name={`soldSpaces.${index}.specialDiscount`}
                           disabled={
                             deleteMode ||
@@ -1411,10 +1402,10 @@ const SpacesSoldData = ({
                             formikProps.errors.soldSpaces &&
                             formikProps.errors.soldSpaces[index] &&
                             formikProps.errors.soldSpaces[index][
-                              'specialDiscount'
+                              "specialDiscount"
                             ]
                           }
-                          onChangeHandler={(evt) => {
+                          onChangeHandler={evt => {
                             const aux = { ...formikProps.values };
 
                             if (!aux.soldSpaces[index].typeSpecialDiscount) {
@@ -1446,7 +1437,7 @@ const SpacesSoldData = ({
 
                             formikProps.setFieldValue(
                               `soldSpaces.${index}.unitPriceWithDiscounts`,
-                              unitario.toLocaleString('pt-BR', {
+                              unitario.toLocaleString("pt-BR", {
                                 maximumFractionDigits: 2,
                               })
                             );
@@ -1458,29 +1449,27 @@ const SpacesSoldData = ({
                             ) {
                               if (formikProps.errors.soldSpaces) {
                                 formikProps.errors.soldSpaces[index][
-                                  'specialDiscount'
-                                ] =
-                                  `El descuento especial máximo es de ${productSelected.maxAplicableDiscount}`;
+                                  "specialDiscount"
+                                ] = `El descuento especial máximo es de ${productSelected.maxAplicableDiscount}`;
                               } else {
                                 formikProps.errors.soldSpaces = [{}];
                                 formikProps.errors.soldSpaces[index][
-                                  'specialDiscount'
-                                ] =
-                                  `El descuento especial máximo es de ${productSelected.maxAplicableDiscount}`;
+                                  "specialDiscount"
+                                ] = `El descuento especial máximo es de ${productSelected.maxAplicableDiscount}`;
                               }
                             }
                           }}
                         />
                       </div>
                     </div>
-                    <div className='form-row'>
-                      <div className='col-3'>
+                    <div className="form-row">
+                      <div className="col-3">
                         <InputSelectField
-                          labelText='Gerencial'
+                          labelText="Gerencial"
                           name={`soldSpaces.${index}.typeGerentialDiscount`}
                           options={[
-                            { id: 1, name: 'Descuento' },
-                            { id: 2, name: 'Recargo' },
+                            { id: 1, name: "Descuento" },
+                            { id: 2, name: "Recargo" },
                           ]}
                           disabled={
                             deleteMode || isSeller || disabledByInvoiceNumber
@@ -1489,10 +1478,11 @@ const SpacesSoldData = ({
                             formikProps.errors.soldSpaces &&
                             formikProps.errors.soldSpaces[index] &&
                             formikProps.errors.soldSpaces[index][
-                              'typeGerentialDiscount'
+                              "typeGerentialDiscount"
                             ]
                           }
-                          onChangeHandler={(tipoDescuento) => {
+                          onChangeHandler={tipoDescuento => {
+                            console.log("Tipo Descuento: ", tipoDescuento);
                             const aux = {
                               ...formikProps.values,
                               soldSpaces: [
@@ -1519,16 +1509,16 @@ const SpacesSoldData = ({
 
                             formikProps.setFieldValue(
                               `soldSpaces.${index}.unitPriceWithDiscounts`,
-                              unitario.toLocaleString('pt-BR', {
+                              unitario.toLocaleString("pt-BR", {
                                 maximumFractionDigits: 2,
                               })
                             );
                           }}
                         />
                       </div>
-                      <div className='col-7'>
+                      <div className="col-7">
                         <InputTextField
-                          labelText='Descripción'
+                          labelText="Descripción"
                           name={`soldSpaces.${index}.descriptionGerentialDiscount`}
                           disabled={
                             deleteMode || isSeller || disabledByInvoiceNumber
@@ -1537,14 +1527,14 @@ const SpacesSoldData = ({
                             formikProps.errors.soldSpaces &&
                             formikProps.errors.soldSpaces[index] &&
                             formikProps.errors.soldSpaces[index][
-                              'descriptionGerentialDiscount'
+                              "descriptionGerentialDiscount"
                             ]
                           }
                         />
                       </div>
-                      <div className='col-2'>
+                      <div className="col-2">
                         <InputTextField
-                          labelText='%'
+                          labelText="%"
                           name={`soldSpaces.${index}.gerentialDiscount`}
                           disabled={
                             deleteMode || isSeller || disabledByInvoiceNumber
@@ -1553,10 +1543,10 @@ const SpacesSoldData = ({
                             formikProps.errors.soldSpaces &&
                             formikProps.errors.soldSpaces[index] &&
                             formikProps.errors.soldSpaces[index][
-                              'gerentialDiscount'
+                              "gerentialDiscount"
                             ]
                           }
-                          onChangeHandler={(evt) => {
+                          onChangeHandler={evt => {
                             const aux = { ...formikProps.values };
 
                             if (!aux.soldSpaces[index].typeGerentialDiscount) {
@@ -1586,14 +1576,14 @@ const SpacesSoldData = ({
 
                             formikProps.setFieldValue(
                               `soldSpaces.${index}.total`,
-                              totalSoldSpace.toLocaleString('pt-BR', {
+                              totalSoldSpace.toLocaleString("pt-BR", {
                                 maximumFractionDigits: 2,
                               })
                             );
 
                             formikProps.setFieldValue(
                               `soldSpaces.${index}.unitPriceWithDiscounts`,
-                              unitario.toLocaleString('pt-BR', {
+                              unitario.toLocaleString("pt-BR", {
                                 maximumFractionDigits: 2,
                               })
                             );
@@ -1603,21 +1593,21 @@ const SpacesSoldData = ({
                     </div>
 
                     <div
-                      className='form-row'
-                      style={{ fontSize: '0.8rem', fontWeight: 500 }}
+                      className="form-row"
+                      style={{ fontSize: "0.8rem", fontWeight: 500 }}
                     >
                       <div
-                        className='price col-3'
-                        style={{ paddingTop: '8px' }}
+                        className="price col-3"
+                        style={{ paddingTop: "8px" }}
                       >
-                        <span className='title'>Precio unitario: </span>
-                        <span className='text'>{`$ ${precioUnitario}`}</span>
+                        <span className="title">Precio unitario: </span>
+                        <span className="text">{`$ ${precioUnitario}`}</span>
                       </div>
                       <div
-                        className='discount col-3'
-                        style={{ paddingTop: '8px' }}
+                        className="discount col-3"
+                        style={{ paddingTop: "8px" }}
                       >
-                        <span className='title'>
+                        <span className="title">
                           {`Desc. unitarios ( ${
                             formikProps.values.soldSpaces.length > 0 &&
                             formikProps.values.soldSpaces[index]
@@ -1625,8 +1615,8 @@ const SpacesSoldData = ({
                               ? formikProps.values.soldSpaces[
                                   index
                                 ].alicuotasAplicadas
-                                  .map((a) => a.alicuota)
-                                  .join('+')
+                                  .map(a => a.alicuota)
+                                  .join("+")
                               : 0
                           }`}
 
@@ -1636,13 +1626,13 @@ const SpacesSoldData = ({
                             ? `${
                                 formikProps.values.soldSpaces[index]
                                   .typeSpecialDiscount === 1
-                                  ? '+'
-                                  : '-'
+                                  ? "+"
+                                  : "-"
                               }${
                                 formikProps.values.soldSpaces[index]
                                   .specialDiscount
                               }`
-                            : ''}
+                            : ""}
 
                           {formikProps.values.soldSpaces[index]
                             .typeGerentialDiscount &&
@@ -1650,19 +1640,19 @@ const SpacesSoldData = ({
                             ? `${
                                 formikProps.values.soldSpaces[index]
                                   .typeGerentialDiscount === 1
-                                  ? '+'
-                                  : '-'
+                                  ? "+"
+                                  : "-"
                               }${
                                 formikProps.values.soldSpaces[index]
                                   .gerentialDiscount
                               }`
-                            : ''}
+                            : ""}
 
                           {!formikProps.values.soldSpaces[index]
                             .locationDiscount ||
                           formikProps.values.soldSpaces[index]
                             .locationDiscount === 0
-                            ? ''
+                            ? ""
                             : `${
                                 formikProps.values.soldSpaces[index]
                                   .alicuotasAplicadas.length > 0 ||
@@ -1670,40 +1660,40 @@ const SpacesSoldData = ({
                                   .typeSpecialDiscount ||
                                 formikProps.values.soldSpaces[index]
                                   .typeGerentialDiscount
-                                  ? '+'
-                                  : ''
+                                  ? "+"
+                                  : ""
                               }${formikProps.values.soldSpaces[
                                 index
-                              ].locationDiscount.toLocaleString('pt-BR', {
+                              ].locationDiscount.toLocaleString("pt-BR", {
                                 maximumFractionDigits: 2,
                               })}`}
-                          {'): $ '}
+                          {"): $ "}
                         </span>
-                        <span className='text' style={{ paddingTop: '8px' }}>
+                        <span className="text" style={{ paddingTop: "8px" }}>
                           {descuentosUnitario}
                         </span>
                       </div>
-                      <div className='col-2' style={{ paddingTop: '8px' }}>
-                        <span className='title'>{`IVA(${(
+                      <div className="col-2" style={{ paddingTop: "8px" }}>
+                        <span className="title">{`IVA(${(
                           formikProps.values.iva * 100
-                        ).toLocaleString('pt-BR', {
+                        ).toLocaleString("pt-BR", {
                           maximumFractionDigits: 2,
                         })}%): `}</span>
-                        <span className='text'>{`$ ${unitarioConIVA}`}</span>
+                        <span className="text">{`$ ${unitarioConIVA}`}</span>
                       </div>
-                      <div className='col-2'>
+                      <div className="col-2">
                         <span
-                          className='text'
+                          className="text"
                           style={{
-                            float: 'right',
-                            paddingTop: '8px',
-                            width: '70%',
+                            float: "right",
+                            paddingTop: "8px",
+                            width: "70%",
                           }}
                         >
                           Precio unitario sin IVA
                         </span>
                       </div>
-                      <div className='col-2'>
+                      <div className="col-2">
                         <InputTextField
                           showLabel={false}
                           disabled={
@@ -1715,74 +1705,71 @@ const SpacesSoldData = ({
                           onBlurHandler={() => {
                             // Recalculamos el precio unitario sin IVA ya que por temas de redondeo al aplicar el descuento
                             // puede quedar ligeramente diferente
-                            const unitPriceLocal =
-                              parseFloatRegionArg(precioUnitario);
+                            const unitPriceLocal = parseFloatRegionArg(
+                              precioUnitario
+                            );
 
-                            const unitDiscountsLocal =
-                              parseFloatRegionArg(descuentosUnitario);
+                            const unitDiscountsLocal = parseFloatRegionArg(
+                              descuentosUnitario
+                            );
 
                             const realUnitPrice =
                               unitPriceLocal - unitDiscountsLocal;
 
                             formikProps.setFieldValue(
                               `soldSpaces.${index}.unitPriceWithDiscounts`,
-                              realUnitPrice.toLocaleString('pt-BR', {
+                              realUnitPrice.toLocaleString("pt-BR", {
                                 maximumFractionDigits: 2,
                               })
                             );
                           }}
-                          onChangeHandler={(evt) => {
+                          onChangeHandler={evt => {
                             const newUnitario = !evt.target.value
                               ? 0
                               : parseFloatRegionArg(evt.target.value);
 
-                            const unitarioSD =
-                              parseFloatRegionArg(precioUnitario);
+                            const unitarioSD = parseFloatRegionArg(
+                              precioUnitario
+                            );
 
                             const currentSoldSpace =
                               formikProps.values.soldSpaces[index];
 
-                            const discountForCheckLocal =
-                              currentSoldSpace.applyDiscountForCheck
-                                ? parseFloatRegionArg(
-                                    currentSoldSpace.discountForCheck
-                                  )
-                                : 0;
+                            const discountForCheckLocal = currentSoldSpace.applyDiscountForCheck
+                              ? parseFloatRegionArg(
+                                  currentSoldSpace.discountForCheck
+                                )
+                              : 0;
 
-                            const discountForSameCountryLocal =
-                              currentSoldSpace.applyDiscountForSameCountry
-                                ? parseFloatRegionArg(
-                                    currentSoldSpace.discountForSameCountry
-                                  )
-                                : 0;
+                            const discountForSameCountryLocal = currentSoldSpace.applyDiscountForSameCountry
+                              ? parseFloatRegionArg(
+                                  currentSoldSpace.discountForSameCountry
+                                )
+                              : 0;
 
-                            const discountForOtherCountryLocal =
-                              currentSoldSpace.applyDiscountForOtherCountry
-                                ? parseFloatRegionArg(
-                                    currentSoldSpace.discountForOtherCountry
-                                  )
-                                : 0;
+                            const discountForOtherCountryLocal = currentSoldSpace.applyDiscountForOtherCountry
+                              ? parseFloatRegionArg(
+                                  currentSoldSpace.discountForOtherCountry
+                                )
+                              : 0;
 
-                            const discountForLoyaltyLocal =
-                              currentSoldSpace.applyDiscountForLoyalty
-                                ? parseFloatRegionArg(
-                                    currentSoldSpace.discountForLoyalty
-                                  )
-                                : 0;
+                            const discountForLoyaltyLocal = currentSoldSpace.applyDiscountForLoyalty
+                              ? parseFloatRegionArg(
+                                  currentSoldSpace.discountForLoyalty
+                                )
+                              : 0;
 
-                            const discountForAgencyLocal =
-                              currentSoldSpace.applyDiscountForAgency
-                                ? parseFloatRegionArg(
-                                    currentSoldSpace.discountForAgency
-                                  )
-                                : 0;
+                            const discountForAgencyLocal = currentSoldSpace.applyDiscountForAgency
+                              ? parseFloatRegionArg(
+                                  currentSoldSpace.discountForAgency
+                                )
+                              : 0;
 
-                            const discountForVolumeLocal =
-                              currentSoldSpace.applyDiscountForVolume
-                                ? parseFloatRegionArg(
-                                    currentSoldSpace.discountForVolume
-                                  )
-                                : 0;
+                            const discountForVolumeLocal = currentSoldSpace.applyDiscountForVolume
+                              ? parseFloatRegionArg(
+                                  currentSoldSpace.discountForVolume
+                                )
+                              : 0;
 
                             let gerentialDiscountLocal = parseFloatRegionArg(
                               currentSoldSpace.gerentialDiscount
@@ -1857,16 +1844,14 @@ const SpacesSoldData = ({
                                 formikProps.errors.soldSpaces[index]
                               ) {
                                 formikProps.errors.soldSpaces[index][
-                                  'specialDiscount'
-                                ] =
-                                  `La cantidad máxima de descuentos es de ${productSelected.maxAplicableDiscount}`;
+                                  "specialDiscount"
+                                ] = `La cantidad máxima de descuentos es de ${productSelected.maxAplicableDiscount}`;
                               } else {
                                 formikProps.errors.soldSpaces = [{}];
                                 formikProps.errors.soldSpaces[index] = {};
                                 formikProps.errors.soldSpaces[index][
-                                  'specialDiscount'
-                                ] =
-                                  `La cantidad máxima de descuentos es de ${productSelected.maxAplicableDiscount}`;
+                                  "specialDiscount"
+                                ] = `La cantidad máxima de descuentos es de ${productSelected.maxAplicableDiscount}`;
                               }
                             } else {
                               if (
@@ -1874,8 +1859,8 @@ const SpacesSoldData = ({
                                 formikProps.errors.soldSpaces[index]
                               ) {
                                 formikProps.errors.soldSpaces[index][
-                                  'specialDiscount'
-                                ] = '';
+                                  "specialDiscount"
+                                ] = "";
                               }
                             }
 
@@ -1887,12 +1872,12 @@ const SpacesSoldData = ({
 
                               formikProps.setFieldValue(
                                 `soldSpaces.${index}.descriptionSpecialDiscount`,
-                                'Descuento generado por diferencia de total'
+                                "Descuento generado por diferencia de total"
                               );
 
                               formikProps.setFieldValue(
                                 `soldSpaces.${index}.specialDiscount`,
-                                percentaje.toLocaleString('pt-BR', {
+                                percentaje.toLocaleString("pt-BR", {
                                   maximumFractionDigits: 2,
                                 })
                               );
@@ -1904,12 +1889,12 @@ const SpacesSoldData = ({
 
                               formikProps.setFieldValue(
                                 `soldSpaces.${index}.descriptionSpecialDiscount`,
-                                'Recargo generado por diferencia de total'
+                                "Recargo generado por diferencia de total"
                               );
 
                               formikProps.setFieldValue(
                                 `soldSpaces.${index}.specialDiscount`,
-                                percentaje.toLocaleString('pt-BR', {
+                                percentaje.toLocaleString("pt-BR", {
                                   maximumFractionDigits: 2,
                                 })
                               );
@@ -1919,22 +1904,22 @@ const SpacesSoldData = ({
                             formikProps.errors.soldSpaces &&
                             formikProps.errors.soldSpaces[index] &&
                             formikProps.errors.soldSpaces[index][
-                              'unitPriceWithDiscounts'
+                              "unitPriceWithDiscounts"
                             ]
                           }
                         />
                       </div>
                     </div>
                     <div
-                      className='form-row'
-                      style={{ fontSize: '0.8rem', fontWeight: 500 }}
+                      className="form-row"
+                      style={{ fontSize: "0.8rem", fontWeight: 500 }}
                     >
-                      <div className='price col-3'>
-                        <span className='title'>Precio: </span>
-                        <span className='text'>{`$ ${subTotal}`}</span>
+                      <div className="price col-3">
+                        <span className="title">Precio: </span>
+                        <span className="text">{`$ ${subTotal}`}</span>
                       </div>
-                      <div className='discount col-3'>
-                        <span className='title'>
+                      <div className="discount col-3">
+                        <span className="title">
                           {`Descuentos ( ${
                             formikProps.values.soldSpaces.length > 0 &&
                             formikProps.values.soldSpaces[index]
@@ -1942,8 +1927,8 @@ const SpacesSoldData = ({
                               ? formikProps.values.soldSpaces[
                                   index
                                 ].alicuotasAplicadas
-                                  .map((a) => a.alicuota)
-                                  .join('+')
+                                  .map(a => a.alicuota)
+                                  .join("+")
                               : 0
                           }`}
                           {formikProps.values.soldSpaces[index]
@@ -1952,31 +1937,31 @@ const SpacesSoldData = ({
                             ? `${
                                 formikProps.values.soldSpaces[index]
                                   .typeSpecialDiscount === 1
-                                  ? '+'
-                                  : '-'
+                                  ? "+"
+                                  : "-"
                               }${
                                 formikProps.values.soldSpaces[index]
                                   .specialDiscount
                               }`
-                            : ''}
+                            : ""}
                           {formikProps.values.soldSpaces[index]
                             .typeGerentialDiscount &&
                           formikProps.values.soldSpaces[index].gerentialDiscount
                             ? `${
                                 formikProps.values.soldSpaces[index]
                                   .typeGerentialDiscount === 1
-                                  ? '+'
-                                  : '-'
+                                  ? "+"
+                                  : "-"
                               }${
                                 formikProps.values.soldSpaces[index]
                                   .gerentialDiscount
                               }`
-                            : ''}
+                            : ""}
                           {!formikProps.values.soldSpaces[index]
                             .locationDiscount ||
                           formikProps.values.soldSpaces[index]
                             .locationDiscount === 0
-                            ? ''
+                            ? ""
                             : `${
                                 formikProps.values.soldSpaces[index]
                                   .alicuotasAplicadas.length > 0 ||
@@ -1984,36 +1969,36 @@ const SpacesSoldData = ({
                                   .typeSpecialDiscount ||
                                 formikProps.values.soldSpaces[index]
                                   .typeGerentialDiscount
-                                  ? '+'
-                                  : ''
+                                  ? "+"
+                                  : ""
                               }${formikProps.values.soldSpaces[
                                 index
-                              ].locationDiscount.toLocaleString('pt-BR', {
+                              ].locationDiscount.toLocaleString("pt-BR", {
                                 maximumFractionDigits: 2,
                               })}`}
-                          {'): $ '}
+                          {"): $ "}
                         </span>
-                        <span className='text'>{totalDiscounts}</span>
+                        <span className="text">{totalDiscounts}</span>
                       </div>
                       <div
-                        className='taxes'
-                        style={{ width: '21%', paddingLeft: '4px' }}
+                        className="taxes"
+                        style={{ width: "21%", paddingLeft: "4px" }}
                       >
-                        <span className='title'>{`IVA(${(
+                        <span className="title">{`IVA(${(
                           formikProps.values.iva * 100
-                        ).toLocaleString('pt-BR', {
+                        ).toLocaleString("pt-BR", {
                           maximumFractionDigits: 2,
                         })}%): `}</span>
-                        <span className='text'>{`$ ${subtotalWithIva}`}</span>
+                        <span className="text">{`$ ${subtotalWithIva}`}</span>
                       </div>
-                      <div className='col-3' style={{ paddingLeft: '7px' }}>
-                        <span className='title'>Total con IVA: </span>
-                        <span className='text'>{`$ ${totalSoldSpace}`}</span>
+                      <div className="col-3" style={{ paddingLeft: "7px" }}>
+                        <span className="title">Total con IVA: </span>
+                        <span className="text">{`$ ${totalSoldSpace}`}</span>
                       </div>
                     </div>
 
-                    <div className='form-row' style={{ marginTop: '15px' }}>
-                      <div className='col-2'>
+                    <div className="form-row" style={{ marginTop: "15px" }}>
+                      <div className="col-2">
                         <RemoveButton
                           disabled={
                             formikProps.values.soldSpaces.length === 1 ||
@@ -2029,7 +2014,7 @@ const SpacesSoldData = ({
                             const newQtySP =
                               parseFloat(formikProps.values.quantitySP) -
                               parseFloat(qtyDeleted);
-                            formikProps.setFieldValue('quantitySP', newQtySP);
+                            formikProps.setFieldValue("quantitySP", newQtySP);
                             remove(index);
                           }}
                         />
@@ -2039,36 +2024,36 @@ const SpacesSoldData = ({
                 </Fragment>
               );
             })}
-          <div className='form-row'>
-            <div className='col-12'>
-              <div className='add-space-button'>
+          <div className="form-row">
+            <div className="col-12">
+              <div className="add-space-button">
                 <button
-                  className='btn btn-primary '
+                  className="btn btn-primary "
                   disabled={
                     deleteMode ||
                     (isSeller && editMode) ||
                     disabledByInvoiceNumber
                   }
-                  onClick={(e) => {
+                  onClick={e => {
                     e.preventDefault();
                     push({
-                      advertisingSpaceLocationTypeId: '',
-                      productAdvertisingSpaceId: '',
-                      typeSpecialDiscount: '',
-                      typeGerentialDiscount: '',
-                      quantity: '',
-                      specialDiscount: '',
-                      gerentialDiscount: '',
-                      descriptionSpecialDiscount: '',
-                      descriptionGerentialDiscount: '',
-                      total: '',
-                      balance: '',
-                      spacePrice: '',
-                      discountForCheck: '',
-                      discountForLoyalty: '',
-                      discountForSameCountry: '',
-                      discountForOtherCountry: '',
-                      discountForAgency: '',
+                      advertisingSpaceLocationTypeId: "",
+                      productAdvertisingSpaceId: "",
+                      typeSpecialDiscount: "",
+                      typeGerentialDiscount: "",
+                      quantity: "",
+                      specialDiscount: "",
+                      gerentialDiscount: "",
+                      descriptionSpecialDiscount: "",
+                      descriptionGerentialDiscount: "",
+                      total: "",
+                      balance: "",
+                      spacePrice: "",
+                      discountForCheck: "",
+                      discountForLoyalty: "",
+                      discountForSameCountry: "",
+                      discountForOtherCountry: "",
+                      discountForAgency: "",
                       applyDiscountForCheck: false,
                       applyDiscountForLoyalty: false,
                       applyDiscountForSameCountry: false,

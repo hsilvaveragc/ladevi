@@ -1,13 +1,14 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencilAlt, faTrash } from '@fortawesome/free-solid-svg-icons';
-import PropTypes from 'prop-types';
+import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPencilAlt, faTrash } from "@fortawesome/free-solid-svg-icons";
+import PropTypes from "prop-types";
 
 export const EditButton = ({ onClickHandler, disable }) => (
   <button
-    type='button'
-    className='btn btn-warning'
+    type="button"
+    className="btn btn-warning"
     onClick={onClickHandler}
-    style={{ width: '100%' }}
+    style={{ width: "100%" }}
   >
     <FontAwesomeIcon icon={faPencilAlt}></FontAwesomeIcon> Editar
   </button>
@@ -23,17 +24,17 @@ export const RemoveButton = ({
   disabled = false,
 }) => (
   <button
-    type='button'
-    className='btn btn-danger'
+    type="button"
+    className="btn btn-danger"
     onClick={onClickHandler}
     style={{
-      width: '100%',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      gap: '0.5rem',
-      paddingTop: '2px',
-      paddingBottom: '2px',
+      width: "100%",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      gap: "0.5rem",
+      paddingTop: "2px",
+      paddingBottom: "2px",
     }}
     disabled={disabled}
   >
@@ -47,7 +48,7 @@ export const RemoveConfirmButton = ({
   loading = false,
 }) => (
   <DangerButton
-    type='button'
+    type="button"
     onClickHandler={onClickHandler}
     disabled={loading}
   >
@@ -61,12 +62,12 @@ RemoveButton.propTypes = {
 
 export const SaveButton = ({
   children,
-  type = 'button',
+  type = "button",
   onClickHandler,
   disabled,
 }) => (
   <button
-    className='btn btn-success'
+    className="btn btn-success"
     type={type}
     onClick={onClickHandler}
     disabled={disabled}
@@ -78,12 +79,12 @@ export const SaveButton = ({
 export const DangerButton = ({
   onClickHandler,
   children,
-  type = 'button',
+  type = "button",
   disabled,
 }) => (
   <button
     type={type}
-    className='btn btn-danger'
+    className="btn btn-danger"
     onClick={onClickHandler}
     disabled={disabled}
   >
@@ -94,9 +95,9 @@ export const DangerButton = ({
 export const WarningButton = ({
   onClickHandler,
   children,
-  type = 'button',
+  type = "button",
 }) => (
-  <button type={type} className='btn btn-warning' onClick={onClickHandler}>
+  <button type={type} className="btn btn-warning" onClick={onClickHandler}>
     {children}
   </button>
 );

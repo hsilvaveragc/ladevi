@@ -1,12 +1,10 @@
-import { useEffect } from 'react';
-import { Route, Redirect } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import Header from 'shared/components/Header';
-
-import useUser from 'shared/security/useUser';
-import useAppData from 'shared/appData/useAppData';
-
-import { logoutInit } from '../../screens/login/actionCreators';
+import React, { useEffect } from "react";
+import { Route, Redirect } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import Header from "shared/components/Header";
+import useUser from "shared/security/useUser";
+import useAppData from "shared/appData/useAppData";
+import { logoutInit } from "../../screens/login/actionCreators";
 
 const PrivateRoute = ({ component: Component, routeTitle, ...rest }) => {
   const { isAuthenticated } = useUser();
@@ -34,7 +32,7 @@ const PrivateRoute = ({ component: Component, routeTitle, ...rest }) => {
   return (
     <Route
       {...rest}
-      render={(props) =>
+      render={props =>
         isAuthenticated ? (
           <>
             <Header
@@ -58,7 +56,7 @@ const PrivateRoute = ({ component: Component, routeTitle, ...rest }) => {
         ) : (
           <>
             <Header {...props} />
-            <Redirect to={'/login'} />
+            <Redirect to={"/login"} />
           </>
         )
       }

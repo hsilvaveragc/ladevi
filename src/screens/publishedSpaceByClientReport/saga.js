@@ -1,12 +1,12 @@
-import { put, all, takeLatest, call } from 'redux-saga/effects';
-import { toast } from 'react-toastify';
+import { put, all, takeLatest, call } from "redux-saga/effects";
+import { toast } from "react-toastify";
 
-import productsService from '../products/service';
-import ordersService from '../orders/service';
-import usersService from '../users/service';
-import clientsService from '../clients/service';
+import ordersByClient from "./service";
+import productsService from "../products/service";
+import ordersService from "../orders/service";
+import usersService from "../users/service";
+import clientsService from "../clients/service";
 
-import ordersByClient from './service';
 import {
   INITIAL_LOAD_INIT,
   INITIAL_LOAD_SUCCESS,
@@ -20,16 +20,19 @@ import {
   GET_PRODUCTEDITION_BYPRODUCT_INIT,
   GET_PRODUCTEDITION_BYPRODUCT_SUCCESS,
   GET_PRODUCTEDITION_BYPRODUCT_FAILURE,
-} from './actionTypes';
+} from "./actionTypes";
 
 export function* initialLoad() {
   try {
-    const [availableClients, availableSellers, availableProductTypes] =
-      yield all([
-        call(clientsService.getAllClientsOptions),
-        call(usersService.getAllApplicationUserOptions),
-        call(productsService.getAllProductTypes),
-      ]);
+    const [
+      availableClients,
+      availableSellers,
+      availableProductTypes,
+    ] = yield all([
+      call(clientsService.getAllClientsOptions),
+      call(usersService.getAllApplicationUserOptions),
+      call(productsService.getAllProductTypes),
+    ]);
 
     yield put({
       type: INITIAL_LOAD_SUCCESS,
@@ -40,12 +43,13 @@ export function* initialLoad() {
       },
     });
   } catch (err) {
+    console.log(err);
     yield all([
       put({
         type: INITIAL_LOAD_FAILURE,
         errors: { ...err.response.data.errors },
       }),
-      call(toast.error, 'Hubo un error :('),
+      call(toast.error, "Hubo un error :("),
     ]);
   }
 }
@@ -62,6 +66,7 @@ export function* getAllProductEditions({ payload }) {
       payload: [...productEditionsPayload],
     });
   } catch (err) {
+    console.log(err);
     yield put({
       type: GET_PRODUCTEDITION_BYPRODUCT_FAILURE,
       error: err.response.data.message,
@@ -81,12 +86,13 @@ export function* getProductByType({ payload }) {
       payload: productPayload,
     });
   } catch (err) {
+    console.log(err);
     yield all([
       put({
         type: GET_PRODUCT_BYTYPE_FAILURE,
         errors: { ...err.response.data.errors },
       }),
-      call(toast.error, 'Hubo un error :('),
+      call(toast.error, "Hubo un error :("),
     ]);
   }
 }
@@ -100,7 +106,7 @@ export function* filterReport({ payload }) {
 
     if (filterOrderPayload.length === 0) {
       //alert("No hay resultados");
-      yield all([call(toast.info, 'No hay resultados')]);
+      yield all([call(toast.info, "No hay resultados")]);
     }
 
     yield put({
@@ -108,12 +114,13 @@ export function* filterReport({ payload }) {
       payload: filterOrderPayload,
     });
   } catch (err) {
+    console.log(err);
     yield all([
       put({
         type: FILTER_ORDERSBYCLIENT_FAILURE,
         errors: { ...err.response.data.errors },
       }),
-      call(toast.error, 'Hubo un error :('),
+      call(toast.error, "Hubo un error :("),
     ]);
   }
 }

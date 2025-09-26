@@ -1,8 +1,8 @@
-import Modal from 'shared/components/Modal';
+import React, { useState } from "react";
+import Modal from "shared/components/Modal";
+import OrderForm from "./Form";
 
-import OrderForm from './Form';
-
-const OrderModals = (props) => (
+export default props => (
   <>
     <Modal
       shouldClose={true}
@@ -112,5 +112,3 @@ const OrderModals = (props) => (
     </Modal>
   </>
 );
-
-export default OrderModals;

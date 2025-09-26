@@ -1,6 +1,7 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const NewClientFormContainer = styled.div`
+  width: 60vw;
   display: flex;
   flex-direction: column;
   padding: 1rem;

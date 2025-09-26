@@ -1,16 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import Modal from "../../../shared/components/Modal";
+import EuroForm from "./Form";
 
-import Modal from '../../../shared/components/Modal';
-
-import EuroForm from './Form';
-
-const EuroParityModals = (props) => (
+export default props => (
   <>
     <Modal
       shouldClose={true}
       closeHandler={props.actions.showAddModalEuroParity}
       isOpen={props.showAddModalEuroParity}
-      size='sm'
     >
       <EuroForm
         saveHandler={props.actions.addEuroParity}
@@ -25,7 +22,6 @@ const EuroParityModals = (props) => (
       shouldClose={true}
       closeHandler={props.actions.showDeleteModalEuroParity}
       isOpen={props.showDeleteModalEuroParity}
-      size='sm'
     >
       <EuroForm
         selectedItem={props.selectedItem}
@@ -37,5 +33,3 @@ const EuroParityModals = (props) => (
     </Modal>
   </>
 );
-
-export default EuroParityModals;

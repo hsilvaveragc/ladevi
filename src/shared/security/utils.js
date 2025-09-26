@@ -1,21 +1,21 @@
 const STORAGE_KEYS = {
-  isAuthenticated: 'isAuthenticated',
-  token: 'TOKEN',
-  refreshToken: 'REFRESH_TOKEN',
-  userId: 'userId',
-  userFullName: 'userFullName',
-  userRole: 'loggedUser',
-  userCountryId: 'userCountryId',
+  isAuthenticated: "isAuthenticated",
+  token: "TOKEN",
+  refreshToken: "REFRESH_TOKEN",
+  userId: "userId",
+  userFullName: "userFullName",
+  userRole: "loggedUser",
+  userCountryId: "userCountryId",
 };
 
 const ROL_KEYS = {
-  admin: 'Administrador',
-  supervisor: 'Supervisor',
-  nationalSeller: 'Vendedor Nacional',
-  comturSeller: 'Vendedor COMTUR',
+  admin: "Administrador",
+  supervisor: "Supervisor",
+  nationalSeller: "Vendedor Nacional",
+  comturSeller: "Vendedor COMTUR",
 };
 
-export const setAuthFromStorage = (loginPayload) => {
+export const setAuthFromStorage = loginPayload => {
   localStorage.setItem(STORAGE_KEYS.token, loginPayload.token);
   localStorage.setItem(STORAGE_KEYS.refreshToken, loginPayload.refreshToken);
   localStorage.setItem(STORAGE_KEYS.userId, loginPayload.user.id);
@@ -25,12 +25,12 @@ export const setAuthFromStorage = (loginPayload) => {
     loginPayload.user.applicationRoleName
   );
   localStorage.setItem(STORAGE_KEYS.userCountryId, loginPayload.user.countryId);
-  localStorage.setItem('isAuthenticated', loginPayload ? true : false);
+  localStorage.setItem("isAuthenticated", loginPayload ? true : false);
 };
 
 export const getAuthFromStorage = () => ({
   isAuthenticated:
-    localStorage.getItem(STORAGE_KEYS.isAuthenticated) === 'true',
+    localStorage.getItem(STORAGE_KEYS.isAuthenticated) === "true",
   token: localStorage.getItem(STORAGE_KEYS.token),
   refreshToken: localStorage.getItem(STORAGE_KEYS.refreshToken),
   userId: parseInt(localStorage.getItem(STORAGE_KEYS.userId)),
@@ -52,7 +52,7 @@ export const getAuthFromStorage = () => ({
 });
 
 export const removeAuthFromStorage = () => {
-  Object.values(STORAGE_KEYS).forEach((key) => localStorage.removeItem(key));
+  Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
 };
 
 export const getTokenFromStorage = () => {

@@ -1,7 +1,5 @@
-import { put, all, takeLatest, call } from 'redux-saga/effects';
-import { toast } from 'react-toastify';
-
-import { appDataService } from '../../shared/services';
+import { put, all, takeLatest, call } from "redux-saga/effects";
+import { toast } from "react-toastify";
 
 import {
   GET_ALL_PRODUCTS_INIT,
@@ -25,8 +23,10 @@ import {
   FILTER_PRODUCTS_INIT,
   FILTER_PRODUCTS_SUCCESS,
   FILTER_PRODUCTS_FAILURE,
-} from './actionTypes.js';
-import productsService from './service';
+} from "./actionTypes.js";
+
+import productsService from "./service";
+import { appDataService } from "../../shared/services";
 
 export function* initialLoad() {
   try {
@@ -63,7 +63,7 @@ export function* initialLoad() {
         type: PRODUCTS_INITIAL_LOAD_FAILURE,
         errors: { ...err.response.data.errors },
       }),
-      call(toast.error, 'Hubo un error :('),
+      call(toast.error, "Hubo un error :("),
     ]);
   }
 }
@@ -81,7 +81,7 @@ export function* getAllProducts() {
         type: GET_ALL_PRODUCTS_FAILURE,
         errors: { ...err.response.data.errors },
       }),
-      call(toast.error, 'Hubo un error :('),
+      call(toast.error, "Hubo un error :("),
     ]);
   }
 }
@@ -94,12 +94,13 @@ export function* filterProducts({ payload }) {
       payload: productsPayload,
     });
   } catch (err) {
+    console.log(err);
     yield all([
       put({
         type: FILTER_PRODUCTS_FAILURE,
         errors: { ...err.response.data.errors },
       }),
-      call(toast.error, 'Hubo un error :('),
+      call(toast.error, "Hubo un error :("),
     ]);
   }
 }
@@ -117,7 +118,7 @@ export function* getAllProductTypes() {
         type: GET_ALL_PRODUCT_TYPES_FAILURE,
         errors: { ...err.response.data.errors },
       }),
-      call(toast.error, 'Hubo un error :('),
+      call(toast.error, "Hubo un error :("),
     ]);
   }
 }
@@ -130,18 +131,19 @@ export function* addProduct({ payload }) {
       type: ADD_PRODUCT_SUCCESS,
       payload: addProductPayload,
     });
-    yield call(toast.success, 'Producto agregado con exito!');
+    yield call(toast.success, "Producto agregado con exito!");
     yield put({
       type: FILTER_PRODUCTS_INIT,
       payload: payload.params || {},
     });
   } catch (err) {
+    console.log(err);
     yield all([
       put({
         type: ADD_PRODUCT_FAILURE,
         errors: { ...err.response.data.errors },
       }),
-      call(toast.error, 'Hubo un error :('),
+      call(toast.error, "Hubo un error :("),
     ]);
   }
 }
@@ -150,7 +152,7 @@ export function* editProduct({ payload }) {
   try {
     const servicePayload = yield call(productsService.editProduct, payload);
     yield all([
-      call(toast.success, 'Producto editado con exito!'),
+      call(toast.success, "Producto editado con exito!"),
       put({
         type: EDIT_PRODUCT_SUCCESS,
         payload: servicePayload,
@@ -166,7 +168,7 @@ export function* editProduct({ payload }) {
         type: EDIT_PRODUCT_FAILURE,
         errors: { ...err.response.data.errors },
       }),
-      call(toast.error, 'Hubo un error :('),
+      call(toast.error, "Hubo un error :("),
     ]);
   }
 }
@@ -175,7 +177,7 @@ export function* deleteProduct({ payload }) {
   try {
     const servicePayload = yield call(productsService.deleteProduct, payload);
     yield all([
-      call(toast.success, 'Producto borrado con exito!'),
+      call(toast.success, "Producto borrado con exito!"),
       put({
         type: DELETE_PRODUCT_SUCCESS,
         payload: servicePayload,
@@ -190,7 +192,7 @@ export function* deleteProduct({ payload }) {
         type: DELETE_PRODUCT_FAILURE,
         errors: { ...err.response.data.errors },
       }),
-      call(toast.error, 'Hubo un error :('),
+      call(toast.error, "Hubo un error :("),
     ]);
   }
 }

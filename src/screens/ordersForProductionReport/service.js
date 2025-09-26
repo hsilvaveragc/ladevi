@@ -1,9 +1,8 @@
-import axios from 'axios';
-
-import { getHeaders } from 'shared/services/utils';
+import axios from "axios";
+import { getHeaders } from "shared/services/utils";
 
 export default {
-  filterOrdersFPR: (payload) =>
+  filterOrdersFPR: payload =>
     axios
       .get(
         `Report/GetOrdersForProduction/${payload.productId}/${payload.productEditionId}/${payload.onlyNews}`,
@@ -11,8 +10,8 @@ export default {
           headers: getHeaders(),
         }
       )
-      .then((response) => response.data),
-  addReportOPGeneration: (payload) =>
+      .then(response => response.data),
+  addReportOPGeneration: payload =>
     axios.post(
       `Report/SaveReportGeneration/${payload}`,
       {},

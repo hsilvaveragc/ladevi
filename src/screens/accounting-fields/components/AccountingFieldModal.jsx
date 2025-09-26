@@ -1,14 +1,13 @@
-import Modal from 'shared/components/Modal';
+import React from "react";
+import Modal from "shared/components/Modal";
+import AccountingFieldForm from "./AccountingFieldForm";
 
-import AccountingFieldForm from './AccountingFieldForm';
-
-const AccountingFieldModal = (props) => (
+const AccountingFieldModal = props => (
   <>
     <Modal
       shouldClose={true}
       closeHandler={props.actions.showAddModal}
       isOpen={props.showAddModal}
-      size='sm'
     >
       <AccountingFieldForm
         selectedItem={{}}

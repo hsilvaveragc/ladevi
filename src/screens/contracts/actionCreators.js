@@ -11,7 +11,7 @@ import {
   GET_SPACETYPES_INIT,
   GET_CURRENCIES_INIT,
   GET_EUROPARITY_INIT,
-} from './actionTypes.js';
+} from "./actionTypes.js";
 
 export const initialLoad = () => ({
   type: INITIAL_LOAD_INIT,
@@ -33,37 +33,37 @@ export const showDeleteModal = () => ({
   type: SHOW_DELETE_MODAL,
 });
 
-export const filterContracts = (payload) => ({
+export const filterContracts = payload => ({
   type: FILTER_CONTRACTS_INIT,
   payload,
 });
 
-export const addContract = (payload) => ({
+export const addContract = payload => ({
   type: ADD_CONTRACT_INIT,
   payload,
 });
 
-export const editContract = (payload) => ({
+export const editContract = payload => ({
   type: EDIT_CONTRACT_INIT,
   payload,
 });
 
-export const deleteContract = (payload) => ({
+export const deleteContract = payload => ({
   type: DELETE_CONTRACT_INIT,
   payload,
 });
 
-export const getSpaceTypesByProduct = (payload) => ({
+export const getSpaceTypesByProduct = payload => ({
   type: GET_SPACETYPES_INIT,
   payload,
 });
 
-export const getCurrenciesByCountry = (payload) => ({
+export const getCurrenciesByCountry = payload => ({
   type: GET_CURRENCIES_INIT,
   payload,
 });
 
-export const getEuroParity = (payload) => ({
+export const getEuroParity = payload => ({
   type: GET_EUROPARITY_INIT,
   payload,
 });

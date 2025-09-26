@@ -1,11 +1,10 @@
-import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import React from "react";
+import PropTypes from "prop-types";
+import styled from "styled-components";
 
-const InputCheckboxContainer = styled.div.withConfig({
-  shouldForwardProp: (prop) => !['inline'].includes(prop),
-})`
-  display: ${(props) => (props.inline ? 'inline-flex' : 'flex')};
-  height: ${(props) => (props.inline ? '' : '100%')};
+const InputCheckboxContainer = styled.div`
+  display: ${props => (props.inline ? "inline-flex" : "flex")};
+  height: ${props => (props.inline ? "" : "100%")};
   margin-bottom: 0rem;
   .checkbox-container {
     display: flex;
@@ -30,33 +29,33 @@ const InputCheckboxContainer = styled.div.withConfig({
 export default function InputCheckboxFieldSimple({
   name,
   checked = false,
-  labelText = '',
+  labelText = "",
   showLabel = true,
   disabled = false,
   inline = false,
-  error = '',
+  error = "",
   onChangeHandler = () => {},
 }) {
   return (
     <InputCheckboxContainer inline={inline}>
-      <div className='checkbox-container'>
+      <div className="checkbox-container">
         {showLabel && (
-          <label className='form-check-label' htmlFor={name}>
+          <label className="form-check-label" htmlFor={name}>
             {labelText}
           </label>
         )}
         <input
           id={name}
           name={name}
-          type='checkbox'
-          className={error ? 'is-invalid' : ''}
+          type="checkbox"
+          className={error ? "is-invalid" : ""}
           checked={checked}
           disabled={disabled}
           onChange={onChangeHandler}
         />
       </div>
       {error && (
-        <small id={`${name}-error`} className='form-text'>
+        <small id={`${name}-error`} className="form-text">
           {error}
         </small>
       )}

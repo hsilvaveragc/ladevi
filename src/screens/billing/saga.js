@@ -1,8 +1,8 @@
-import React from 'react';
-import { put, all, takeLatest, call, select } from 'redux-saga/effects';
-import { toast } from 'react-toastify';
-import { CONSTANTS } from './constants';
-import billingService from './service';
+import React from "react";
+import { put, all, takeLatest, call, select } from "redux-saga/effects";
+import { toast } from "react-toastify";
+import { CONSTANTS } from "./constants";
+import billingService from "./service";
 import {
   INITIAL_LOAD_INIT,
   INITIAL_LOAD_SUCCESS,
@@ -28,12 +28,12 @@ import {
   SEND_MULTIPLE_TO_XUBIO_INIT,
   SEND_MULTIPLE_TO_XUBIO_SUCCESS,
   SEND_MULTIPLE_TO_XUBIO_FAILURE,
-} from './actionTypes';
+} from "./actionTypes";
 import {
   getSelectedClient,
   getEntityType,
   getSelectedCurrency,
-} from './reducer';
+} from "./reducer";
 
 export function* initialLoad() {
   try {
@@ -64,11 +64,11 @@ export function* initialLoad() {
       type: INITIAL_LOAD_FAILURE,
       errors: {
         ...(err.response?.data?.errors || {
-          general: 'Error al cargar los datos iniciales',
+          general: "Error al cargar los datos iniciales",
         }),
       },
     });
-    yield call(toast.error, 'Hubo un error al cargar los datos iniciales');
+    yield call(toast.error, "Hubo un error al cargar los datos iniciales");
   }
 }
 
@@ -87,11 +87,11 @@ export function* fetchClients({ payload }) {
       type: FETCH_CLIENTS_FAILURE,
       errors: {
         ...(err.response?.data?.errors || {
-          general: 'Error al cargar clientes',
+          general: "Error al cargar clientes",
         }),
       },
     });
-    yield call(toast.error, 'Hubo un error al cargar los clientes');
+    yield call(toast.error, "Hubo un error al cargar los clientes");
   }
 }
 
@@ -113,11 +113,11 @@ export function* fetchContracts({ payload }) {
       type: FETCH_CONTRACTS_FAILURE,
       errors: {
         ...(err.response?.data?.errors || {
-          general: 'Error al cargar contratos',
+          general: "Error al cargar contratos",
         }),
       },
     });
-    yield call(toast.error, 'Hubo un error al cargar los contratos');
+    yield call(toast.error, "Hubo un error al cargar los contratos");
   }
 }
 
@@ -136,11 +136,11 @@ export function* fetchProducts({ payload }) {
       type: FETCH_PRODUCTS_FAILURE,
       errors: {
         ...(err.response?.data?.errors || {
-          general: 'Error al cargar productos',
+          general: "Error al cargar productos",
         }),
       },
     });
-    yield call(toast.error, 'Hubo un error al cargar los productos');
+    yield call(toast.error, "Hubo un error al cargar los productos");
   }
 }
 
@@ -159,11 +159,11 @@ export function* fetchEditions({ payload }) {
       type: FETCH_EDITIONS_FAILURE,
       errors: {
         ...(err.response?.data?.errors || {
-          general: 'Error al cargar ediciones',
+          general: "Error al cargar ediciones",
         }),
       },
     });
-    yield call(toast.error, 'Hubo un error al cargar las ediciones');
+    yield call(toast.error, "Hubo un error al cargar las ediciones");
   }
 }
 
@@ -171,7 +171,7 @@ export function* fetchOrders({ payload }) {
   try {
     let orders;
 
-    console.log('Cargando órdenes por edición:', payload.editionId);
+    console.log("Cargando órdenes por edición:", payload.editionId);
 
     // Obtener el tipo de cliente del estado
     const state = yield select();
@@ -179,9 +179,9 @@ export function* fetchOrders({ payload }) {
     const isComturClient = clientType === CONSTANTS.COMTUR_CODE;
 
     console.log(
-      'Tipo de cliente:',
+      "Tipo de cliente:",
       clientType,
-      'isComturClient:',
+      "isComturClient:",
       isComturClient
     );
 
@@ -191,7 +191,7 @@ export function* fetchOrders({ payload }) {
       isComturClient
     );
 
-    console.log('Órdenes cargadas por edición:', orders);
+    console.log("Órdenes cargadas por edición:", orders);
 
     yield put({
       type: FETCH_ORDERS_SUCCESS,
@@ -200,18 +200,18 @@ export function* fetchOrders({ payload }) {
       },
     });
   } catch (err) {
-    console.log('Error cargando órdenes:', err);
+    console.log("Error cargando órdenes:", err);
     yield put({
       type: FETCH_ORDERS_FAILURE,
       errors: {
         ...(err.response?.data?.errors || {
-          general: 'Error al cargar órdenes',
+          general: "Error al cargar órdenes",
         }),
       },
     });
     yield call(
       toast.error,
-      'Hubo un error al cargar las órdenes de publicación'
+      "Hubo un error al cargar las órdenes de publicación"
     );
   }
 }
@@ -219,13 +219,13 @@ export function* fetchOrders({ payload }) {
 export function* sendToXubio({ payload }) {
   // Mostrar toast de procesamiento
   const toastId = toast.info(
-    <div style={{ display: 'flex', alignItems: 'center' }}>
-      <div className='spinner-border spinner-border-sm me-2' role='status'>
-        <span className='visually-hidden'></span>
+    <div style={{ display: "flex", alignItems: "center" }}>
+      <div className="spinner-border spinner-border-sm me-2" role="status">
+        <span className="visually-hidden"></span>
       </div>
-      <span className='ml-3'>Procesando facturación...</span>
+      <span className="ml-3">Procesando facturación...</span>
     </div>,
-    { autoClose: false, closeButton: false, position: 'top-center' }
+    { autoClose: false, closeButton: false, position: "top-center" }
   );
 
   try {
@@ -253,12 +253,12 @@ export function* sendToXubio({ payload }) {
     const successMessage =
       result && result.numeroDocumento
         ? `Factura Nro. ${result.numeroDocumento} generada en Xubio con éxito`
-        : 'Factura enviada a Xubio con éxito';
+        : "Factura enviada a Xubio con éxito";
 
     yield call(toast.success, successMessage, {
       autoClose: 10000,
       closeButton: true,
-      position: 'top-center',
+      position: "top-center",
     });
 
     // Recargar los datos según el tipo de entidad
@@ -289,27 +289,27 @@ export function* sendToXubio({ payload }) {
       };
 
       // Recorrer todas las claves de error para extraer mensajes
-      Object.keys(auxError).forEach((errorKey) => {
+      Object.keys(auxError).forEach(errorKey => {
         if (Array.isArray(auxError[errorKey])) {
           // Si es un array de mensajes, agregar todos
-          auxError[errorKey].forEach((message) => {
+          auxError[errorKey].forEach(message => {
             errorMessages.push(message);
           });
-        } else if (typeof auxError[errorKey] === 'string') {
+        } else if (typeof auxError[errorKey] === "string") {
           // Si es un string directamente
           errorMessages.push(auxError[errorKey]);
         }
       });
 
       // Manejar el caso especial cuando hay una clave vacía en el objeto de errores
-      if (auxError[''] && auxError[''].length > 0) {
+      if (auxError[""] && auxError[""].length > 0) {
         // Mostrar el primer mensaje de error en la clave vacía
-        yield call(toast.error, auxError[''][0], { position: 'top-center' });
+        yield call(toast.error, auxError[""][0], { position: "top-center" });
       }
     } else {
       // Si no hay errores estructurados, crear un error general
-      auxError.general = 'Error al procesar la facturación';
-      errorMessages.push('Error al procesar la facturación');
+      auxError.general = "Error al procesar la facturación";
+      errorMessages.push("Error al procesar la facturación");
     }
 
     // Dispatch del error con los errores procesados
@@ -320,13 +320,13 @@ export function* sendToXubio({ payload }) {
 
     // Mostrar mensajes de error individuales
     if (errorMessages.length > 0) {
-      errorMessages.forEach((message) => {
-        toast.error(message, { position: 'top-center', autoClose: 8000 });
+      errorMessages.forEach(message => {
+        toast.error(message, { position: "top-center", autoClose: 8000 });
       });
     } else {
       // Si no hay mensajes específicos, mostrar mensaje genérico
-      yield call(toast.error, 'Hubo un error al procesar la facturación', {
-        position: 'top-center',
+      yield call(toast.error, "Hubo un error al procesar la facturación", {
+        position: "top-center",
       });
     }
   }
@@ -335,13 +335,13 @@ export function* sendToXubio({ payload }) {
 export function* sendMultipleToXubio({ payload }) {
   // Mostrar toast de procesamiento
   const toastId = toast.info(
-    <div style={{ display: 'flex', alignItems: 'center' }}>
-      <div className='spinner-border spinner-border-sm me-2' role='status'>
-        <span className='visually-hidden'></span>
+    <div style={{ display: "flex", alignItems: "center" }}>
+      <div className="spinner-border spinner-border-sm me-2" role="status">
+        <span className="visually-hidden"></span>
       </div>
-      <span className='ml-3'>Procesando facturación múltiple...</span>
+      <span className="ml-3">Procesando facturación múltiple...</span>
     </div>,
-    { autoClose: false, closeButton: false, position: 'top-center' }
+    { autoClose: false, closeButton: false, position: "top-center" }
   );
 
   try {
@@ -370,11 +370,11 @@ export function* sendMultipleToXubio({ payload }) {
     const successCount = results.successCount || 0;
     const errorCount = results.errorCount || 0;
 
-    let invoiceNumbers = '';
+    let invoiceNumbers = "";
     if (successCount > 0) {
       invoiceNumbers = results.results
-        .map((item) => `${item.numeroDocumento}`)
-        .join(', ');
+        .map(item => `${item.numeroDocumento}`)
+        .join(", ");
     }
 
     let successMessage = `Facturación completada: ${successCount}, facturas generadas (${invoiceNumbers})`;
@@ -385,13 +385,13 @@ export function* sendMultipleToXubio({ payload }) {
     yield call(toast.success, successMessage, {
       autoClose: 15000,
       closeButton: true,
-      position: 'top-center',
+      position: "top-center",
     });
 
     // Mostrar errores individuales si los hay
     if (results.errors && results.errors.length > 0) {
-      results.errors.forEach((error) => {
-        toast.error(error, { position: 'top-center', autoClose: 10000 });
+      results.errors.forEach(error => {
+        toast.error(error, { position: "top-center", autoClose: 10000 });
       });
     }
 
@@ -416,27 +416,27 @@ export function* sendMultipleToXubio({ payload }) {
       };
 
       // Recorrer todas las claves de error para extraer mensajes
-      Object.keys(auxError).forEach((errorKey) => {
+      Object.keys(auxError).forEach(errorKey => {
         if (Array.isArray(auxError[errorKey])) {
           // Si es un array de mensajes, agregar todos
-          auxError[errorKey].forEach((message) => {
+          auxError[errorKey].forEach(message => {
             errorMessages.push(message);
           });
-        } else if (typeof auxError[errorKey] === 'string') {
+        } else if (typeof auxError[errorKey] === "string") {
           // Si es un string directamente
           errorMessages.push(auxError[errorKey]);
         }
       });
 
       // Manejar el caso especial cuando hay una clave vacía en el objeto de errores
-      if (auxError[''] && auxError[''].length > 0) {
+      if (auxError[""] && auxError[""].length > 0) {
         // Mostrar el primer mensaje de error en la clave vacía
-        yield call(toast.error, auxError[''][0], { position: 'top-center' });
+        yield call(toast.error, auxError[""][0], { position: "top-center" });
       }
     } else {
       // Si no hay errores estructurados, crear un error general
-      auxError.general = 'Error al procesar la facturación múltiple';
-      errorMessages.push('Error al procesar la facturación múltiple');
+      auxError.general = "Error al procesar la facturación múltiple";
+      errorMessages.push("Error al procesar la facturación múltiple");
     }
 
     // Dispatch del error con los errores procesados
@@ -447,16 +447,16 @@ export function* sendMultipleToXubio({ payload }) {
 
     // Mostrar mensajes de error individuales
     if (errorMessages.length > 0) {
-      errorMessages.forEach((message) => {
-        toast.error(message, { position: 'top-center', autoClose: 8000 });
+      errorMessages.forEach(message => {
+        toast.error(message, { position: "top-center", autoClose: 8000 });
       });
     } else {
       // Si no hay mensajes específicos, mostrar mensaje genérico
       yield call(
         toast.error,
-        'Hubo un error al procesar la facturación múltiple',
+        "Hubo un error al procesar la facturación múltiple",
         {
-          position: 'top-center',
+          position: "top-center",
         }
       );
     }

@@ -1,11 +1,12 @@
-import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import React from "react";
+import styled from "styled-components";
+import { Link } from "react-router-dom";
 
-import productosIcon from 'shared/images/icon-productos.png';
-import edicionesIcon from 'shared/images/icon-ediciones.png';
-import contablesIcon from 'shared/images/icon-contables.png';
-import espaciosIcon from 'shared/images/icon-espacios.png';
-import monedaIcon from 'shared/images/moneda.png';
+import productosIcon from "shared/images/icon-productos.png";
+import edicionesIcon from "shared/images/icon-ediciones.png";
+import contablesIcon from "shared/images/icon-contables.png";
+import espaciosIcon from "shared/images/icon-espacios.png";
+import monedaIcon from "shared/images/moneda.png";
 
 const SettingsPageContainer = styled.div`
   display: flex;
@@ -36,25 +37,25 @@ const SettingsPageContainer = styled.div`
 export default function SettingsPage() {
   return (
     <SettingsPageContainer>
-      <div className='menu-container'>
-        <Link to='/configuracion/espacios'>
-          <img src={espaciosIcon} alt='Icono' />
+      <div className="menu-container">
+        <Link to="/configuracion/espacios">
+          <img src={espaciosIcon} alt="Icono" />
           <span>Tipos de Espacio</span>
         </Link>
-        <Link to='/configuracion/productos'>
-          <img src={productosIcon} alt='Icono' />
+        <Link to="/configuracion/productos">
+          <img src={productosIcon} alt="Icono" />
           <span>Productos</span>
         </Link>
-        <Link to='/configuracion/ediciones'>
-          <img src={edicionesIcon} alt='Icono' />
+        <Link to="/configuracion/ediciones">
+          <img src={edicionesIcon} alt="Icono" />
           <span>Ediciones</span>
         </Link>
-        <Link to='/configuracion/contables'>
-          <img src={contablesIcon} alt='Icono' />
+        <Link to="/configuracion/contables">
+          <img src={contablesIcon} alt="Icono" />
           <span>Campos Contables</span>
         </Link>
-        <Link to='/configuracion/monedas'>
-          <img src={monedaIcon} alt='Icono' />
+        <Link to="/configuracion/monedas">
+          <img src={monedaIcon} alt="Icono" />
           <span>Monedas</span>
         </Link>
       </div>

@@ -1,10 +1,10 @@
-import styled from 'styled-components';
-import { Formik, Form } from 'formik';
-import InputTextField from 'shared/components/InputTextField';
-import InputSelectField from 'shared/components/InputSelectField';
-import { SaveButton, DangerButton } from 'shared/components/Buttons';
-
-import useUser from 'shared/security/useUser';
+import React from "react";
+import styled from "styled-components";
+import { Formik, Form } from "formik";
+import useUser from "shared/security/useUser";
+import InputTextField from "shared/components/InputTextField";
+import InputSelectField from "shared/components/InputSelectField";
+import { SaveButton, DangerButton } from "shared/components/Buttons";
 
 const FiltersContainer = styled.div`
   width: 70vw;
@@ -31,7 +31,7 @@ const Filters = ({
 
   const defaultOption = {
     id: -1,
-    name: 'Todos',
+    name: "Todos",
   };
 
   return (
@@ -39,34 +39,34 @@ const Filters = ({
       validateOnChange={false}
       validateOnBlur={false}
       initialValues={{
-        name: '',
+        name: "",
         countryId:
           userRol.isNationalSeller || userRol.isSupervisor ? userCountryId : -1,
       }}
-      onSubmit={(values) => {
+      onSubmit={values => {
         handleFilter(values);
         handleChangeParams(values);
       }}
       enableReinitialize={true}
     >
-      {(formikProps) => {
+      {formikProps => {
         return (
           <FiltersContainer>
             <Form>
-              <div className='form-row'>
-                <div className='col-4'>
-                  <InputTextField labelText='Nombre' name='name' />
+              <div className="form-row">
+                <div className="col-4">
+                  <InputTextField labelText="Nombre" name="name" />
                 </div>
-                <div className='col-4'>
+                <div className="col-4">
                   <InputSelectField
-                    labelText='Pais'
-                    name='countryId'
+                    labelText="Pais"
+                    name="countryId"
                     options={[defaultOption, ...countries]}
                     disabled={userRol.isNationalSeller || userRol.isSupervisor}
                   />
                 </div>
-                <div className='col-3'>
-                  <div className='buttons-container'>
+                <div className="col-3">
+                  <div className="buttons-container">
                     <DangerButton
                       onClickHandler={() => {
                         formikProps.resetForm();
@@ -75,7 +75,7 @@ const Filters = ({
                     >
                       Limpiar
                     </DangerButton>
-                    <SaveButton type='submit'>Buscar</SaveButton>
+                    <SaveButton type="submit">Buscar</SaveButton>
                   </div>
                 </div>
               </div>

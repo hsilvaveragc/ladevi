@@ -1,32 +1,31 @@
-import axios from 'axios';
-import { dissoc } from 'ramda';
-import { sortAlphabetically } from 'shared/utils';
+import axios from "axios";
+import { dissoc } from "ramda";
+import { getHeaders } from "shared/services/utils";
+import { sortAlphabetically } from "shared/utils";
 
-import { getHeaders } from 'shared/services/utils';
-
-const getFiltersPayload = (payload) => {
+const getFiltersPayload = payload => {
   let result = null;
   const filters = [];
 
   if (payload.name) {
     filters.push({
-      field: 'name',
-      operator: 'contains',
+      field: "name",
+      operator: "contains",
       value: payload.name,
     });
   }
 
   if (payload.productId && payload.productId !== -1) {
     filters.push({
-      field: 'productId',
-      operator: 'eq',
+      field: "productId",
+      operator: "eq",
       value: payload.productId,
     });
   }
 
   if (filters.length > 0) {
     result = {
-      logic: 'and',
+      logic: "and",
       filters,
     };
   }
@@ -34,7 +33,7 @@ const getFiltersPayload = (payload) => {
 };
 
 export default {
-  filterProductAdvertisingSpace: (payload) =>
+  filterProductAdvertisingSpace: payload =>
     axios
       .post(
         `ProductAdvertisingSpace/Search`,
@@ -46,7 +45,7 @@ export default {
           headers: getHeaders(),
         }
       )
-      .then((response) => response.data.data),
+      .then(response => response.data.data),
   getAllProductAdvertisingSpaces: () =>
     axios
       .post(
@@ -56,39 +55,39 @@ export default {
           headers: getHeaders(),
         }
       )
-      .then((response) => response.data.data),
-  addProductAdvertisingSpace: (payload) =>
+      .then(response => response.data.data),
+  addProductAdvertisingSpace: payload =>
     axios
       .post(
         `ProductAdvertisingSpace/Post`,
-        { ...dissoc('id', payload) },
+        { ...dissoc("id", payload) },
         {
           headers: getHeaders(),
         }
       )
-      .then((response) => response.data.data),
-  editProductAdvertisingSpace: (payload) =>
+      .then(response => response.data.data),
+  editProductAdvertisingSpace: payload =>
     axios
       .put(`ProductAdvertisingSpace/Put/${payload.id}`, payload, {
         headers: getHeaders(),
       })
-      .then((response) => response.data.data),
-  deleteProductAdvertisingSpace: (payload) =>
+      .then(response => response.data.data),
+  deleteProductAdvertisingSpace: payload =>
     axios
       .delete(`ProductAdvertisingSpace/Delete/${payload.id}`, {
         headers: getHeaders(),
       })
-      .then((response) => response.data.data),
+      .then(response => response.data.data),
   getProductAdvertisingSpaceOptions: () =>
     axios
       .get(`ProductAdvertisingSpace/Options`, {
         headers: getHeaders(),
       })
-      .then((response) => sortAlphabetically(response.data, 'name')),
+      .then(response => sortAlphabetically(response.data, "name")),
   getProductAdvertisingSpaceOptionsFull: () =>
     axios
       .get(`ProductAdvertisingSpace/OptionsFull`, {
         headers: getHeaders(),
       })
-      .then((response) => sortAlphabetically(response.data, 'name')),
+      .then(response => sortAlphabetically(response.data, "name")),
 };

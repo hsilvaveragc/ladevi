@@ -1,7 +1,8 @@
-import PropTypes from 'prop-types';
-import styled from 'styled-components';
-import { Link } from 'react-router-dom';
-import withBreadcrumbs from 'react-router-breadcrumbs-hoc';
+import React from "react";
+import PropTypes from "prop-types";
+import styled from "styled-components";
+import { Link } from "react-router-dom";
+import withBreadcrumbs from "react-router-breadcrumbs-hoc";
 
 const BreadcrumbsBarContainer = styled.nav`
   width: 100%;
@@ -9,13 +10,13 @@ const BreadcrumbsBarContainer = styled.nav`
 `;
 
 const BreadcrumbsBar = ({ breadcrumbs }) => (
-  <BreadcrumbsBarContainer aria-label='breadcrumb'>
-    <ol className='breadcrumb'>
+  <BreadcrumbsBarContainer aria-label="breadcrumb">
+    <ol className="breadcrumb">
       {breadcrumbs.map(({ breadcrumb, match, location }) => (
         <Link
           key={match.url}
           className={`breadcrumb-item ${
-            location.pathname === match.url ? 'active' : null
+            location.pathname === match.url ? "active" : null
           }`}
           to={match.url}
         >

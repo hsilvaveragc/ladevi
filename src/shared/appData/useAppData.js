@@ -1,5 +1,4 @@
-import { useSelector, useDispatch } from 'react-redux';
-
+import { useSelector, useDispatch } from "react-redux";
 import {
   fetchAppRoles,
   fetchCountries,
@@ -7,14 +6,14 @@ import {
   fetchDistricts,
   fetchCitiesById,
   setLoggedUser,
-} from './actionCreators';
+} from "./actionCreators";
 import {
   appRolesSelector,
   countriesSelector,
   statesGroupedByCountrySelector,
   districtsGroupedByStateSelector,
   loggedUserSelector,
-} from './reducers';
+} from "./reducers";
 
 const useAppData = () => {
   const dispatch = useDispatch();
@@ -32,8 +31,8 @@ const useAppData = () => {
     fetchCountries: () => dispatch(fetchCountries()),
     fetchStates: () => dispatch(fetchStates()),
     fetchDistricts: () => dispatch(fetchDistricts()),
-    fetchCitiesById: (payload) => dispatch(fetchCitiesById(payload)),
-    setLoggedUser: (payload) => dispatch(setLoggedUser(payload)),
+    fetchCitiesById: payload => dispatch(fetchCitiesById(payload)),
+    setLoggedUser: payload => dispatch(setLoggedUser(payload)),
   };
 
   // Carga inicial de datos si es necesario

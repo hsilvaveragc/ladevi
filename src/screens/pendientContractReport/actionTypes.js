@@ -1,12 +1,12 @@
-export const INITIAL_LOAD_INIT = '@pendientContract/INITIAL_LOAD_INIT';
-export const INITIAL_LOAD_SUCCESS = '@pendientContract/INITIAL_LOAD_SUCCESS';
-export const INITIAL_LOAD_FAILURE = '@pendientContract/INITIAL_LOAD_FAILURE';
+export const INITIAL_LOAD_INIT = "@pendientContract/INITIAL_LOAD_INIT";
+export const INITIAL_LOAD_SUCCESS = "@pendientContract/INITIAL_LOAD_SUCCESS";
+export const INITIAL_LOAD_FAILURE = "@pendientContract/INITIAL_LOAD_FAILURE";
 
 export const FILTER_PENDIENTCONTRACT_INIT =
-  '@pendientContract/FILTER_PENDIENTCONTRACT_INIT';
+  "@pendientContract/FILTER_PENDIENTCONTRACT_INIT";
 export const FILTER_PENDIENTCONTRACT_SUCCESS =
-  '@pendientContract/FILTER_PENDIENTCONTRACT_SUCCESS';
+  "@pendientContract/FILTER_PENDIENTCONTRACT_SUCCESS";
 export const FILTER_PENDIENTCONTRACT_FAILURE =
-  '@pendientContract/FILTER_PENDIENTCONTRACT_FAILURE';
+  "@pendientContract/FILTER_PENDIENTCONTRACT_FAILURE";
 
-export const CLEARFILTERS = '@pendientContract/CLEARFILTERS';
+export const CLEARFILTERS = "@pendientContract/CLEARFILTERS";

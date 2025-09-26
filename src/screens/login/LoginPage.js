@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import Modal from 'react-modal';
-
-import Footer from '../../shared/components/Footer';
-import Logo from '../../shared/images/newLogo.png';
-
-import LoginForm from './components/LoginForm';
-import ForgotPasswordForm from './components/ForgotPasswordForm';
+import React, { useState } from "react";
+import styled from "styled-components";
+import Modal from "react-modal";
+import LoginForm from "./components/LoginForm";
+import ForgotPasswordForm from "./components/ForgotPasswordForm";
+import Footer from "../../shared/components/Footer";
+import Logo from "../../shared/images/newLogo.png";
 
 const LoginPageContainer = styled.div`
   display: flex;
@@ -16,16 +14,16 @@ const LoginPageContainer = styled.div`
 `;
 const modalStyle = {
   overlay: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.75)",
   },
   content: {
-    top: 'auto',
-    bottom: 'auto',
-    left: 'auto',
-    right: 'auto',
+    top: "auto",
+    bottom: "auto",
+    left: "auto",
+    right: "auto",
   },
 };
 export default function LoginPage({
@@ -42,7 +40,7 @@ export default function LoginPage({
       <img
         src={Logo}
         style={{
-          marginTop: '40px',
+          marginTop: "40px",
         }}
       />
       <LoginPageContainer>

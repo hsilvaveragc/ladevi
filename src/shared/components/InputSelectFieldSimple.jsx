@@ -1,7 +1,8 @@
 // InputSelectFieldSimple.jsx
-import PropTypes from 'prop-types';
-import styled from 'styled-components';
-import Select from 'react-select';
+import React from "react";
+import PropTypes from "prop-types";
+import styled from "styled-components";
+import Select from "react-select";
 
 const InputSelectContainer = styled.div`
   label {
@@ -22,24 +23,24 @@ const InputSelectFieldSimple = ({
   labelText,
   options = [],
   value,
-  error = '',
-  placeholderText = 'Seleccionar',
+  error = "",
+  placeholderText = "Seleccionar",
   disabled = false,
   isLoading = false,
   showLabel = true,
-  fontSize = '16px', // Nuevo prop para controlar el tamaño de letra
+  fontSize = "16px", // Nuevo prop para controlar el tamaño de letra
   onChangeHandler = () => {},
-  getOptionLabel = (option) => option.name,
-  getOptionValue = (option) => option.id,
+  getOptionLabel = option => option.name,
+  getOptionValue = option => option.id,
 }) => {
   // Encontrar el objeto seleccionado basado en el valor
   const selectedValue = options.find(
-    (option) => (option.id ?? option.code) === value
+    option => (option.id ?? option.code) === value
   );
 
   // Estilos personalizados para react-select con tamaño de letra configurable
   const customStyles = {
-    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+    menuPortal: base => ({ ...base, zIndex: 9999 }),
     control: (provided, state) => ({
       ...provided,
       fontSize: fontSize,
@@ -63,23 +64,23 @@ const InputSelectFieldSimple = ({
   };
 
   return (
-    <InputSelectContainer className='form-group'>
+    <InputSelectContainer className="form-group">
       {showLabel && <label htmlFor={name}>{labelText}</label>}
       <Select
         name={name}
-        className={error ? 'is-invalid' : ''}
+        className={error ? "is-invalid" : ""}
         isDisabled={disabled}
-        onChange={(selected) => onChangeHandler(selected)}
+        onChange={selected => onChangeHandler(selected)}
         value={selectedValue || null}
         options={options}
         getOptionLabel={getOptionLabel}
         getOptionValue={getOptionValue}
-        placeholder={isLoading ? 'Cargando...' : placeholderText}
+        placeholder={isLoading ? "Cargando..." : placeholderText}
         isLoading={isLoading}
         styles={customStyles}
         menuPortalTarget={document.body}
       />
-      {error && <small className='form-text'>{error}</small>}
+      {error && <small className="form-text">{error}</small>}
     </InputSelectContainer>
   );
 };

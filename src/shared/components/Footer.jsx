@@ -1,6 +1,6 @@
-import styled from 'styled-components';
-
-import { footerBg, textFont } from '../styles/constants';
+import React from "react";
+import styled from "styled-components";
+import { footerBg, textFont } from "../styles/constants";
 
 const FooterContainer = styled.footer`
   background-color: ${footerBg};

@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react';
-import { PageContainer } from 'shared/utils';
-
-import Modals from './components/Modals';
-import Filters from './components/Filters';
-import ClientTable from './components/ClientTable';
+import React, { useState, useEffect } from "react";
+import { PageContainer } from "shared/utils";
+import Modals from "./components/Modals";
+import Filters from "./components/Filters";
+import ClientTable from "./components/ClientTable";
 
 export default function Page(props) {
   const [selectedItem, setSelectedItem] = useState({});
@@ -13,12 +12,12 @@ export default function Page(props) {
     props.actions.initialLoad();
   }, [props.actions]);
 
-  const handleEdit = (item) => {
+  const handleEdit = item => {
     setSelectedItem(item);
     props.actions.showEditModal();
   };
 
-  const handleDelete = (item) => {
+  const handleDelete = item => {
     setSelectedItem(item);
     props.actions.showDeleteModal();
   };

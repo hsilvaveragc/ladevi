@@ -1,5 +1,6 @@
-import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import React from "react";
+import PropTypes from "prop-types";
+import styled from "styled-components";
 
 const InputTextContainer = styled.div`
   label {
@@ -13,10 +14,10 @@ const InputTextContainer = styled.div`
 
 function InputTextAreaFieldSimple({
   name,
-  value = '',
-  error = '',
+  value = "",
+  error = "",
   labelText,
-  placeholder = '',
+  placeholder = "",
   disabled = false,
   displayErrorMsg = true,
   showLabel = true,
@@ -25,13 +26,13 @@ function InputTextAreaFieldSimple({
   onChangeHandler = () => {},
 }) {
   return (
-    <InputTextContainer className='form-group'>
+    <InputTextContainer className="form-group">
       {showLabel && <label htmlFor={name}>{labelText}</label>}
       <textarea
         id={name}
         name={name}
         placeholder={placeholder}
-        className={error ? 'form-control is-invalid' : 'form-control'}
+        className={error ? "form-control is-invalid" : "form-control"}
         rows={rows}
         cols={cols}
         disabled={disabled}
@@ -41,7 +42,7 @@ function InputTextAreaFieldSimple({
         {value}
       </textarea>
       {displayErrorMsg && error && (
-        <small id={`${name}-error`} className='form-text'>
+        <small id={`${name}-error`} className="form-text">
           {error}
         </small>
       )}

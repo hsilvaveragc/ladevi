@@ -1,3 +1,3 @@
-import GeneralForm from './GeneralForm';
+import GeneralForm from "./GeneralForm";
 
 export default GeneralForm;

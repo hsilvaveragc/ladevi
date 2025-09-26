@@ -1,4 +1,4 @@
-import { createSelector } from 'reselect';
+import { createSelector } from "reselect";
 
 import {
   INITIAL_LOAD_INIT,
@@ -8,7 +8,7 @@ import {
   FILTER_PENDIENTCONTRACT_SUCCESS,
   FILTER_PENDIENTCONTRACT_FAILURE,
   CLEARFILTERS,
-} from './actionTypes';
+} from "./actionTypes";
 
 const initialState = {
   contracts: [],
@@ -20,7 +20,7 @@ const initialState = {
   loadingSellers: false,
 };
 
-export default function (state = initialState, action) {
+export default function(state = initialState, action) {
   switch (action.type) {
     case FILTER_PENDIENTCONTRACT_INIT:
       return {
@@ -28,6 +28,7 @@ export default function (state = initialState, action) {
         loading: true,
         errors: {},
       };
+      break;
     case INITIAL_LOAD_INIT:
       return {
         ...state,
@@ -36,6 +37,7 @@ export default function (state = initialState, action) {
         loadingSellers: true,
         errors: {},
       };
+      break;
     case CLEARFILTERS:
       return {
         ...state,
@@ -44,6 +46,7 @@ export default function (state = initialState, action) {
         loadingSellers: false,
         errors: {},
       };
+      break;
     case INITIAL_LOAD_SUCCESS:
       return {
         ...state,
@@ -54,6 +57,7 @@ export default function (state = initialState, action) {
         sellers: [...action.payload.availableSellers],
         clients: [...action.payload.availableClients],
       };
+      break;
     case FILTER_PENDIENTCONTRACT_SUCCESS:
       return {
         ...state,
@@ -61,6 +65,7 @@ export default function (state = initialState, action) {
         errors: {},
         contracts: action.payload,
       };
+      break;
     case INITIAL_LOAD_FAILURE:
     case FILTER_PENDIENTCONTRACT_FAILURE:
       return {
@@ -70,38 +75,40 @@ export default function (state = initialState, action) {
         loadingSellers: false,
         errors: action.payload,
       };
+      break;
     case FILTER_PENDIENTCONTRACT_FAILURE:
       return {
         ...state,
         loading: false,
         errors: action.payload,
       };
+      break;
     default:
       return state;
   }
 }
 
-const getReducer = (state) => state.pendientContractReport;
+const getReducer = state => state.pendientContractReport;
 
 export const getPendientContracts = createSelector(
   getReducer,
-  (state) => state.contracts
+  state => state.contracts
 );
 
-export const getErrors = createSelector(getReducer, (state) => state.errors);
+export const getErrors = createSelector(getReducer, state => state.errors);
 
-export const getLoading = createSelector(getReducer, (state) => state.loading);
+export const getLoading = createSelector(getReducer, state => state.loading);
 
 export const getLoadingAllClients = createSelector(
   getReducer,
-  (state) => state.loadingAllClients
+  state => state.loadingAllClients
 );
 
 export const getLoadingSellers = createSelector(
   getReducer,
-  (state) => state.loadingSellers
+  state => state.loadingSellers
 );
 
-export const getSellers = createSelector(getReducer, (state) => state.sellers);
+export const getSellers = createSelector(getReducer, state => state.sellers);
 
-export const getClients = createSelector(getReducer, (state) => state.clients);
+export const getClients = createSelector(getReducer, state => state.clients);

@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getHeaderStyleTable, getAllItem } from 'shared/utils/index';
-import { CONSTANTS } from '../constants';
-import { addToCart } from '../actionCreators';
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getHeaderStyleTable, getAllItem } from "shared/utils/index";
+import { CONSTANTS } from "../constants";
+import { addToCart } from "../actionCreators";
 import {
   getContracts,
   getLoading,
   getCartItems,
   getSelectedCurrency,
   getSelectedClient,
-} from '../reducer';
-import Table from 'shared/components/Table';
-import InputTextFieldSimple from 'shared/components/InputTextFieldSimple';
-import InputSelectFieldSimple from 'shared/components/InputSelectFieldSimple';
-import { SaveButton } from 'shared/components/Buttons';
+} from "../reducer";
+import Table from "shared/components/Table";
+import InputTextFieldSimple from "shared/components/InputTextFieldSimple";
+import InputSelectFieldSimple from "shared/components/InputSelectFieldSimple";
+import { SaveButton } from "shared/components/Buttons";
 
 const ContractsTable = () => {
   const dispatch = useDispatch();
@@ -25,8 +25,8 @@ const ContractsTable = () => {
   const selectedCurrency = useSelector(getSelectedCurrency);
 
   const [filters, setFilters] = useState({
-    number: '',
-    name: '',
+    number: "",
+    name: "",
     productId: -1,
     sellerId: -1,
   });
@@ -41,8 +41,8 @@ const ContractsTable = () => {
   const contractsInCart = React.useMemo(
     () =>
       cartItems
-        .filter((item) => item.type === CONSTANTS.CONTRACT_CODE)
-        .map((item) => item.id),
+        .filter(item => item.type === CONSTANTS.CONTRACT_CODE)
+        .map(item => item.id),
     [cartItems]
   );
 
@@ -53,7 +53,7 @@ const ContractsTable = () => {
       let contractsFilteredByCurrency = contracts;
       if (selectedCurrency) {
         contractsFilteredByCurrency = contracts.filter(
-          (contract) => contract.currencyName === selectedCurrency
+          contract => contract.currencyName === selectedCurrency
         );
       } else {
         setVisibleContracts([]);
@@ -68,7 +68,7 @@ const ContractsTable = () => {
       const uniqueSellers = new Set();
       const sellerOpts = [getAllItem()];
 
-      contractsFilteredByCurrency.forEach((contract) => {
+      contractsFilteredByCurrency.forEach(contract => {
         if (contract.productId && !uniqueProducts.has(contract.productId)) {
           uniqueProducts.add(contract.productId);
           productOpts.push({
@@ -90,7 +90,7 @@ const ContractsTable = () => {
 
       // Inicializar los contratos filtrados excluyendo los que ya están en el carrito
       const availableContracts = contractsFilteredByCurrency.filter(
-        (contract) => !contractsInCart.includes(contract.id)
+        contract => !contractsInCart.includes(contract.id)
       );
       setVisibleContracts(availableContracts);
     } else {
@@ -114,12 +114,12 @@ const ContractsTable = () => {
     let contractsToFilter = contracts;
     if (selectedCurrency) {
       contractsToFilter = contracts.filter(
-        (contract) => contract.currencyName === selectedCurrency
+        contract => contract.currencyName === selectedCurrency
       );
     }
 
     // Luego aplicar los filtros adicionales
-    const filtered = contractsToFilter.filter((contract) => {
+    const filtered = contractsToFilter.filter(contract => {
       // Excluir órdenes que ya están en el carrito
       if (contractsInCart.includes(contract.id)) {
         return false;
@@ -164,22 +164,22 @@ const ContractsTable = () => {
     setVisibleContracts(filtered);
   };
 
-  const handleAddContractToCart = (contract) => {
+  const handleAddContractToCart = contract => {
     if (loading) {
       return;
     }
 
     // Filtrar solo los items no facturados del contrato
     const soldSpacesArray = contract.soldSpaces || [];
-    const nonBilledItems = soldSpacesArray.filter((item) => !item.billed);
+    const nonBilledItems = soldSpacesArray.filter(item => !item.billed);
 
     if (nonBilledItems.length === 0) {
-      alert('No hay espacios disponibles para facturar en este contrato');
+      alert("No hay espacios disponibles para facturar en este contrato");
       return;
     }
 
     // Crear array con TODOS los ítems no facturados del contrato
-    const newEntityItems = nonBilledItems.map((contractItem) => ({
+    const newEntityItems = nonBilledItems.map(contractItem => ({
       id: contractItem.id,
       productAdvertisingSpaceName: contractItem.productAdvertisingSpaceName,
       advertisingSpaceLocationTypeName:
@@ -207,16 +207,15 @@ const ContractsTable = () => {
     // Crear el item del carrito con TODO el contrato
     const cartItem = {
       id: contract.id,
-      type: 'CONTRACT',
-      description: `Contrato #${contract.number || ''} - ${
-        contract.name || ''
-      }`,
-      number: contract.number || '',
-      name: contract.name || '',
+      type: "CONTRACT",
+      description: `Contrato #${contract.number || ""} - ${contract.name ||
+        ""}`,
+      number: contract.number || "",
+      name: contract.name || "",
       amount,
       amountTaxes: totalTaxes,
       entityItems: newEntityItems,
-      currencyName: contract.currencyName || '$',
+      currencyName: contract.currencyName || "$",
       isAnticipated: true,
       isCompleteContract: true,
     };
@@ -226,73 +225,72 @@ const ContractsTable = () => {
 
   const columns = [
     {
-      Header: 'Número',
-      accessor: 'number',
-      width: '10%',
+      Header: "Número",
+      accessor: "number",
+      width: "10%",
       headerStyle: getHeaderStyleTable(),
     },
     {
-      Header: 'Cliente',
-      accessor: 'clientBrandName',
-      width: '20%',
+      Header: "Cliente",
+      accessor: "clientBrandName",
+      width: "20%",
       headerStyle: getHeaderStyleTable(),
     },
     {
-      Header: 'Contrato',
-      accessor: 'name',
-      width: '25%',
+      Header: "Contrato",
+      accessor: "name",
+      width: "25%",
       headerStyle: getHeaderStyleTable(),
     },
     {
-      Header: 'Producto',
-      accessor: 'productName',
-      width: '15%',
+      Header: "Producto",
+      accessor: "productName",
+      width: "15%",
       headerStyle: getHeaderStyleTable(),
     },
     {
-      id: 'balance',
-      Header: 'Saldo',
-      accessor: (d) => {
-        const saldos = d.balance.join(', ');
+      id: "balance",
+      Header: "Saldo",
+      accessor: d => {
+        const saldos = d.balance.join(", ");
         return saldos;
       },
-      width: '10%',
+      width: "10%",
       headerStyle: getHeaderStyleTable(),
     },
     {
-      id: 'end',
-      Header: 'F. vto',
-      accessor: (d) => {
+      id: "end",
+      Header: "F. vto",
+      accessor: d => {
         const fechaEnd = new Date(d.end);
-        return `${fechaEnd.getDate()}/${
-          fechaEnd.getMonth() + 1
-        }/${fechaEnd.getFullYear()}`;
+        return `${fechaEnd.getDate()}/${fechaEnd.getMonth() +
+          1}/${fechaEnd.getFullYear()}`;
       },
-      width: '10%',
+      width: "10%",
       headerStyle: getHeaderStyleTable(),
     },
     {
-      Header: 'Vendedor',
-      accessor: 'sellerFullName',
-      width: '15%',
+      Header: "Vendedor",
+      accessor: "sellerFullName",
+      width: "15%",
       headerStyle: getHeaderStyleTable(),
     },
     {
-      Header: 'Acciones',
-      width: '10%',
+      Header: "Acciones",
+      width: "10%",
       Cell: ({ row }) => {
         const contract = row._original;
 
         return (
           <button
-            className='btn btn-sm btn-primary'
-            onClick={(e) => {
+            className="btn btn-sm btn-primary"
+            onClick={e => {
               e.preventDefault();
               e.stopPropagation();
               handleAddContractToCart(contract);
             }}
             disabled={loading}
-            title='Agregar'
+            title="Agregar"
           >
             Agregar
           </button>
@@ -303,62 +301,62 @@ const ContractsTable = () => {
   ];
 
   return (
-    <div className='card mb-4'>
-      <div className='card-header'>
-        <h5 className='mb-0'>Contratos disponibles para facturar</h5>
+    <div className="card mb-4">
+      <div className="card-header">
+        <h5 className="mb-0">Contratos disponibles para facturar</h5>
       </div>
-      <div className='card-body'>
-        <div className='mb-4'>
-          <div className='row'>
-            <div className='col-md-2'>
+      <div className="card-body">
+        <div className="mb-4">
+          <div className="row">
+            <div className="col-md-2">
               <InputTextFieldSimple
-                labelText='Número'
-                name='number'
+                labelText="Número"
+                name="number"
                 value={filters.number}
-                onChangeHandler={(e) =>
-                  handleFilterChange('number', e.target.value)
+                onChangeHandler={e =>
+                  handleFilterChange("number", e.target.value)
                 }
-                placeholderText='Filtrar por número...'
+                placeholderText="Filtrar por número..."
               />
             </div>
-            <div className='col-md-3'>
+            <div className="col-md-3">
               <InputTextFieldSimple
-                labelText='Nombre'
-                name='name'
+                labelText="Nombre"
+                name="name"
                 value={filters.name}
-                onChangeHandler={(e) =>
-                  handleFilterChange('name', e.target.value)
+                onChangeHandler={e =>
+                  handleFilterChange("name", e.target.value)
                 }
-                placeholderText='Filtrar por nombre...'
+                placeholderText="Filtrar por nombre..."
               />
             </div>
-            <div className='col-md-3'>
+            <div className="col-md-3">
               <InputSelectFieldSimple
-                labelText='Producto'
-                name='productId'
+                labelText="Producto"
+                name="productId"
                 options={productOptions}
                 value={filters.productId}
-                onChangeHandler={(product) =>
-                  handleFilterChange('productId', product.id)
+                onChangeHandler={product =>
+                  handleFilterChange("productId", product.id)
                 }
-                getOptionLabel={(option) => option.name}
-                getOptionValue={(option) => option.id}
+                getOptionLabel={option => option.name}
+                getOptionValue={option => option.id}
               />
             </div>
-            <div className='col-md-3'>
+            <div className="col-md-3">
               <InputSelectFieldSimple
-                labelText='Vendedor'
-                name='sellerId'
+                labelText="Vendedor"
+                name="sellerId"
                 options={sellerOptions}
                 value={filters.sellerId}
-                onChangeHandler={(seller) =>
-                  handleFilterChange('sellerId', seller.id)
+                onChangeHandler={seller =>
+                  handleFilterChange("sellerId", seller.id)
                 }
-                getOptionLabel={(option) => option.name}
-                getOptionValue={(option) => option.id}
+                getOptionLabel={option => option.name}
+                getOptionValue={option => option.id}
               />
             </div>
-            <div className='col-md-1 d-flex justify-content-center align-items-center mt-2'>
+            <div className="col-md-1 d-flex justify-content-center align-items-center mt-2">
               <div>
                 <SaveButton
                   onClickHandler={handleApplyFilters}
@@ -372,10 +370,10 @@ const ContractsTable = () => {
         </div>
 
         {visibleContracts.length === 0 ? (
-          <div className='alert alert-info'>
+          <div className="alert alert-info">
             {(selectedClient && contracts.length == 0) || selectedCurrency
-              ? 'No hay contratos disponibles con los filtros aplicados'
-              : 'Selecciona una moneda para ver los contratos disponibles'}
+              ? "No hay contratos disponibles con los filtros aplicados"
+              : "Selecciona una moneda para ver los contratos disponibles"}
           </div>
         ) : (
           <Table

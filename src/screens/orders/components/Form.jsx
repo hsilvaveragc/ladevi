@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import { Formik, Form } from 'formik';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import InputTextField from 'shared/components/InputTextField';
-import InputSelectField from 'shared/components/InputSelectField';
-import InputCheckboxField from 'shared/components/InputCheckboxField';
-import InputTextAreaField from 'shared/components/InputTextAreaField';
-import { SaveButton, DangerButton } from 'shared/components/Buttons';
-
-import useUser from 'shared/security/useUser';
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import { Formik, Form } from "formik";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import useUser from "shared/security/useUser";
+import InputTextField from "shared/components/InputTextField";
+import InputSelectField from "shared/components/InputSelectField";
+import InputCheckboxField from "shared/components/InputCheckboxField";
+import InputTextAreaField from "shared/components/InputTextAreaField";
+import { SaveButton, DangerButton } from "shared/components/Buttons";
 
 const NewOrderFormContainer = styled.div`
+  width: 50vw;
   display: flex;
   flex-direction: column;
   padding: 1rem;
@@ -25,7 +25,7 @@ const NewOrderFormContainer = styled.div`
   }
 
   /* Firefox */
-  input[type='number'] {
+  input[type="number"] {
     -moz-appearance: textfield;
   }
   .check-container {
@@ -81,14 +81,14 @@ const Order = ({
     editMode && !selectedItem.canDelete && selectedItem.productEdition.closed;
 
   const disabledByPageNumber =
-    editMode && selectedItem.pageNumber !== '' && !userRol.isAdmin;
+    editMode && selectedItem.pageNumber !== "" && !userRol.isAdmin;
 
   const getSellerId = () => {
     if (isFromContract) {
       return userRol.isSeller ? parseFloat(userId) : contract.sellerId;
     } else {
       if (addMode) {
-        return userRol.isSeller ? parseFloat(userId) : '';
+        return userRol.isSeller ? parseFloat(userId) : "";
       } else {
         return selectedItem.sellerId;
       }
@@ -182,41 +182,42 @@ const Order = ({
     }
   }, []);
 
-  const validate = (values) => {
+  const validate = values => {
+    console.log(values);
     const errors = {};
     if (!values.productId) {
-      errors.productId = 'Requerido';
+      errors.productId = "Requerido";
     }
 
     if (!values.latent && !values.contractId) {
-      errors.contractId = 'Requerido';
+      errors.contractId = "Requerido";
     }
 
     if (!values.clientId) {
-      errors.clientId = 'Requerido';
+      errors.clientId = "Requerido";
     }
 
     if (!values.productEditionId) {
-      errors.productEditionId = 'Requerido';
+      errors.productEditionId = "Requerido";
     }
 
     if (!values.productAdvertisingSpaceId) {
-      errors.productAdvertisingSpaceId = 'Requerido';
+      errors.productAdvertisingSpaceId = "Requerido";
     }
 
     if (!values.advertisingSpaceLocationTypeId) {
-      errors.advertisingSpaceLocationTypeId = 'Requerido';
+      errors.advertisingSpaceLocationTypeId = "Requerido";
     }
 
     if (!values.quantity) {
-      errors.quantity = 'Requerido';
+      errors.quantity = "Requerido";
     } else if (values.quantity && Number(values.quantity) < 1) {
-      errors.quantity = 'Debe ser un valor mayor a 0 ';
+      errors.quantity = "Debe ser un valor mayor a 0 ";
     }
 
     if (isFromContract) {
       const soldSpace = contract.soldSpaces.filter(
-        (x) => x.id === values.soldSpaceId
+        x => x.id === values.soldSpaceId
       )[0];
 
       if (soldSpace && soldSpace.balance < values.quantity && addMode) {
@@ -226,7 +227,7 @@ const Order = ({
 
     if (Object.entries(errors).length === 0 && errors.constructor === Object) {
       const productEditionSel = availableEditions.filter(
-        (x) => x.id === values.productEditionId
+        x => x.id === values.productEditionId
       )[0];
 
       if (!isFromContract) {
@@ -239,11 +240,11 @@ const Order = ({
           newOP: {
             productEdition: productEditionSel,
             productAdvertisingSpace: availableSpaceTypes.filter(
-              (x) =>
+              x =>
                 x.productAdvertisingSpaceId === values.productAdvertisingSpaceId
             )[0],
             advertisingSpaceLocationType: availableSpaceLocations.filter(
-              (x) => x.id === values.advertisingSpaceLocationTypeId
+              x => x.id === values.advertisingSpaceLocationTypeId
             )[0],
           },
           updateHistorial,
@@ -259,12 +260,12 @@ const Order = ({
             newOP: {
               productEdition: productEditionSel,
               productAdvertisingSpace: availableSpaceTypes.filter(
-                (x) =>
+                x =>
                   x.productAdvertisingSpaceId ===
                   values.productAdvertisingSpaceId
               )[0],
               advertisingSpaceLocationType: availableSpaceLocations.filter(
-                (x) => x.id === values.advertisingSpaceLocationTypeId
+                x => x.id === values.advertisingSpaceLocationTypeId
               )[0],
             },
             updateHistorial,
@@ -279,12 +280,12 @@ const Order = ({
             newOP: {
               productEdition: productEditionSel,
               productAdvertisingSpace: availableSpaceTypes.filter(
-                (x) =>
+                x =>
                   x.productAdvertisingSpaceId ===
                   values.productAdvertisingSpaceId
               )[0],
               advertisingSpaceLocationType: availableSpaceLocations.filter(
-                (x) => x.id === values.advertisingSpaceLocationTypeId
+                x => x.id === values.advertisingSpaceLocationTypeId
               )[0],
             },
             updateHistorial,
@@ -297,7 +298,7 @@ const Order = ({
     return errors;
   };
 
-  const deleteOp = (values) => {
+  const deleteOp = values => {
     deleteOrderHandlerFromContract({
       ...values,
       updateOrdenesHandler,
@@ -311,75 +312,75 @@ const Order = ({
       validateOnChange={false}
       validateOnBlur={false}
       initialValues={{
-        id: addMode ? '' : selectedItem.id,
+        id: addMode ? "" : selectedItem.id,
         latent: addMode ? false : selectedItem.latent,
         clientId: isFromContract
           ? contract.clientId
           : addMode
-            ? ''
-            : selectedItem.clientId,
+          ? ""
+          : selectedItem.clientId,
         advertisingSpaceLocationTypeId: addMode
-          ? ''
+          ? ""
           : selectedItem.advertisingSpaceLocationTypeId,
         productAdvertisingSpaceId: addMode
-          ? ''
+          ? ""
           : selectedItem.productAdvertisingSpaceId,
         auxProductAdvertisingSpaceId: addMode
-          ? ''
+          ? ""
           : isFromContract
-            ? selectedItem.soldSpaceId
-            : selectedItem.soldSpaceId,
+          ? selectedItem.soldSpaceId
+          : selectedItem.soldSpaceId,
         productId: isFromContract
           ? contract.productId
           : addMode
-            ? ''
-            : selectedItem.productAdvertisingSpace.productId,
-        productEditionId: addMode ? '' : selectedItem.productEditionId,
+          ? ""
+          : selectedItem.productAdvertisingSpace.productId,
+        productEditionId: addMode ? "" : selectedItem.productEditionId,
         contractId: isFromContract
           ? contract.id
           : addMode
-            ? null
-            : selectedItem.contractId,
-        pageNumber: addMode ? '' : selectedItem.pageNumber,
-        invoiceNumber: addMode ? '' : selectedItem.invoiceNumber,
+          ? null
+          : selectedItem.contractId,
+        pageNumber: addMode ? "" : selectedItem.pageNumber,
+        invoiceNumber: addMode ? "" : selectedItem.invoiceNumber,
         paidOut: addMode ? false : selectedItem.paidOut,
         quantity: addMode ? 1 : selectedItem.quantity,
         sellerId: getSellerId(),
-        observations: addMode ? '' : selectedItem.observations,
-        soldSpaceId: addMode ? '' : selectedItem.soldSpaceId,
-        creationDate: addMode ? '' : selectedItem.creationDate,
+        observations: addMode ? "" : selectedItem.observations,
+        soldSpaceId: addMode ? "" : selectedItem.soldSpaceId,
+        creationDate: addMode ? "" : selectedItem.creationDate,
         canDelete: addMode ? true : selectedItem.canDelete,
       }}
-      onSubmit={(values) => {
+      onSubmit={values => {
         return saveHandler({ ...values, params: params });
       }}
-      validate={(values) => validate(values)}
+      validate={values => validate(values)}
       enableReinitialize={true}
     >
-      {(formikProps) => {
+      {formikProps => {
         if (
           availableSpaceLocations.length === 1 &&
           formikProps.values.advertisingSpaceLocationTypeId !==
             availableSpaceLocations[0].id
         ) {
           formikProps.setFieldValue(
-            'advertisingSpaceLocationTypeId',
+            "advertisingSpaceLocationTypeId",
             availableSpaceLocations[0].id
           );
         }
         return (
           <NewOrderFormContainer>
             <h3>
-              {addMode ? 'Agregar Orden de Publicación' : null}
-              {editMode ? 'Editar Orden de Publicación:' : null}
-              {deleteMode ? 'Eliminar Orden de Publicación' : null}
+              {addMode ? "Agregar Orden de Publicación" : null}
+              {editMode ? "Editar Orden de Publicación:" : null}
+              {deleteMode ? "Eliminar Orden de Publicación" : null}
             </h3>
-            <Form autoComplete='off'>
-              <div className='form-row'>
-                <div className='col-md-9'>
+            <Form autoComplete="off">
+              <div className="form-row">
+                <div className="col-md-9">
                   <InputSelectField
-                    labelText='Producto *'
-                    name='productId'
+                    labelText="Producto *"
+                    name="productId"
                     options={availableProducts}
                     disabled={
                       isFromContract ||
@@ -389,7 +390,7 @@ const Order = ({
                       disabledByPageNumber
                     }
                     error={errors.productId}
-                    onChangeHandler={(product) => {
+                    onChangeHandler={product => {
                       getProductEditionsHandler({
                         productId: product.id,
                         editionId: -1,
@@ -420,11 +421,11 @@ const Order = ({
                   />
                 </div>
                 {!isFromContract && (
-                  <div className='col-md-3'>
-                    <div className='check-container'>
+                  <div className="col-md-3">
+                    <div className="check-container">
                       <InputCheckboxField
-                        labelText='Latente'
-                        name='latent'
+                        labelText="Latente"
+                        name="latent"
                         disabled={
                           isFromContract ||
                           deleteMode ||
@@ -434,9 +435,10 @@ const Order = ({
                         }
                         error={errors.latent}
                         inline
-                        onChangeHandler={(evt) => {
+                        onChangeHandler={evt => {
+                          console.log("Es latente: ", evt.target.value);
                           if (evt.target.value) {
-                            if (formikProps.values.productId != '') {
+                            if (formikProps.values.productId != "") {
                               getSpaceTypesAvailableHandler({
                                 latent: true,
                                 contractId: 0,
@@ -458,19 +460,19 @@ const Order = ({
                   </div>
                 )}
               </div>
-              <div className='form-row'>
-                <div className='col-md-12' style={{ position: 'relative' }}>
+              <div className="form-row">
+                <div className="col-md-12" style={{ position: "relative" }}>
                   <div
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
                     }}
                   >
                     <div style={{ flex: 1 }}>
                       <InputSelectField
-                        labelText='Edición *'
-                        name='productEditionId'
+                        labelText="Edición *"
+                        name="productEditionId"
                         options={availableEditions}
                         disabled={
                           deleteMode ||
@@ -479,7 +481,7 @@ const Order = ({
                           disabledByPageNumber
                         }
                         error={errors.productEditionId}
-                        onChangeHandler={(edicion) => {
+                        onChangeHandler={edicion => {
                           if (formikProps.values.latent) {
                             getSpaceTypesAvailableHandler({
                               latent: true,
@@ -494,17 +496,17 @@ const Order = ({
                     {editMode && selectedItem.productEdition.closed && (
                       <div
                         style={{
-                          position: 'relative',
-                          top: '0.5rem',
-                          cursor: 'pointer',
+                          position: "relative",
+                          top: "0.5rem",
+                          cursor: "pointer",
                         }}
-                        title='No se puede modificar el aviso ya que la edición está cerrada'
+                        title="No se puede modificar el aviso ya que la edición está cerrada"
                       >
                         <FontAwesomeIcon
                           icon={faInfoCircle}
-                          className='text-info'
+                          className="text-info"
                           style={{
-                            fontSize: '1.25rem',
+                            fontSize: "1.25rem",
                           }}
                         />
                       </div>
@@ -512,21 +514,21 @@ const Order = ({
                   </div>
                 </div>
               </div>
-              <div className='form-row'>
-                <div className='col-md-9'>
+              <div className="form-row">
+                <div className="col-md-9">
                   <InputSelectField
-                    labelText='Cliente *'
-                    name='clientId'
+                    labelText="Cliente *"
+                    name="clientId"
                     options={
                       formikProps.values.latent
                         ? allClients
                         : availableClients.filter(
-                            (x) =>
+                            x =>
                               x.isEnabled ||
                               x.id === formikProps.values.clientId
                           )
                     }
-                    getOptionLabel={(option) =>
+                    getOptionLabel={option =>
                       `${option.brandName} - ${option.legalName}`
                     }
                     isLoading={isLoadingClients}
@@ -538,7 +540,7 @@ const Order = ({
                       isLoadingClients
                     }
                     error={errors.clientId}
-                    onChangeHandler={(client) => {
+                    onChangeHandler={client => {
                       if (formikProps.values.productId) {
                         getContractsAvailableHandler({
                           productId: formikProps.values.productId,
@@ -557,28 +559,28 @@ const Order = ({
                       }
 
                       formikProps.setFieldValue(
-                        'sellerId',
+                        "sellerId",
                         client.applicationUserSellerId
                       );
                     }}
                   />
                 </div>
-                <div className='col-md-3'>
+                <div className="col-md-3">
                   <InputSelectField
-                    labelText='Vendedor'
-                    name='sellerId'
+                    labelText="Vendedor"
+                    name="sellerId"
                     options={availableSalesmens}
-                    getOptionLabel={(option) => option.fullName}
+                    getOptionLabel={option => option.fullName}
                     disabled={true}
                     error={errors.sellerId}
                   />
                 </div>
               </div>
-              <div className='form-row'>
-                <div className='col-md-12'>
+              <div className="form-row">
+                <div className="col-md-12">
                   <InputSelectField
-                    labelText='Contrato'
-                    name='contractId'
+                    labelText="Contrato"
+                    name="contractId"
                     options={availableContracts}
                     isLoading={isLoadingContracts}
                     disabled={
@@ -590,14 +592,14 @@ const Order = ({
                       isLoadingContracts
                     }
                     error={errors.contractId}
-                    onChangeHandler={(contract) => {
-                      formikProps.setFieldValue('sellerId', contract.sellerId);
+                    onChangeHandler={contract => {
+                      formikProps.setFieldValue("sellerId", contract.sellerId);
                       formikProps.setFieldValue(
-                        'auxProductAdvertisingSpaceId',
+                        "auxProductAdvertisingSpaceId",
                         -1
                       );
                       formikProps.setFieldValue(
-                        'advertisingSpaceLocationTypeId',
+                        "advertisingSpaceLocationTypeId",
                         -1
                       );
                       getSpaceTypesAvailableHandler({
@@ -611,15 +613,16 @@ const Order = ({
                         contract.billingConditionId === 2 && !userRol.isSeller
                       );
                       setShowInvoice(contract.billingConditionId !== 1);
+                      console.log(contract.billingConditionId);
                     }}
                   />
                 </div>
               </div>
-              <div className='form-row'>
-                <div className='col-md-9'>
+              <div className="form-row">
+                <div className="col-md-9">
                   <InputSelectField
-                    labelText='Tipo de Espacio *'
-                    name='auxProductAdvertisingSpaceId'
+                    labelText="Tipo de Espacio *"
+                    name="auxProductAdvertisingSpaceId"
                     options={availableSpaceTypes}
                     isLoading={isLoadingSpaceTypes}
                     disabled={
@@ -630,14 +633,14 @@ const Order = ({
                       isLoadingSpaceTypes
                     }
                     error={errors.productAdvertisingSpaceId}
-                    onChangeHandler={(pas) => {
+                    onChangeHandler={pas => {
                       const productSel = formikProps.values.productId;
                       if (formikProps.values.contractId) {
                         formikProps.setFieldValue(
-                          'productAdvertisingSpaceId',
+                          "productAdvertisingSpaceId",
                           pas.productAdvertisingSpaceId
                         );
-                        formikProps.setFieldValue('soldSpaceId', pas.id);
+                        formikProps.setFieldValue("soldSpaceId", pas.id);
                         getSpaceLocationsAvailableHandler({
                           latent: formikProps.values.latent,
                           soldSpaceId: pas.id,
@@ -646,10 +649,10 @@ const Order = ({
                         });
                       } else {
                         formikProps.setFieldValue(
-                          'productAdvertisingSpaceId',
+                          "productAdvertisingSpaceId",
                           pas.id
                         );
-                        formikProps.setFieldValue('soldSpaceId', null);
+                        formikProps.setFieldValue("soldSpaceId", null);
                         getSpaceLocationsAvailableHandler({
                           latent: formikProps.values.latent,
                           soldSpaceId: 0,
@@ -660,11 +663,11 @@ const Order = ({
                     }}
                   />
                 </div>
-                <div className='col-md-3'>
+                <div className="col-md-3">
                   <InputTextField
-                    labelText='Cantidad *'
-                    name='quantity'
-                    type='number'
+                    labelText="Cantidad *"
+                    name="quantity"
+                    type="number"
                     disabled={
                       deleteMode ||
                       disabledByClosedEdition ||
@@ -675,16 +678,16 @@ const Order = ({
                   />
                 </div>
               </div>
-              <div className='form-row'>
+              <div className="form-row">
                 {showInvoice && (
                   <>
-                    <div className='col-md-9'>
+                    <div className="col-md-9">
                       <InputTextField
-                        labelText='Factura'
-                        name='invoiceNumber'
+                        labelText="Factura"
+                        name="invoiceNumber"
                         disabled={
                           deleteMode ||
-                          userRol.isSeller ||
+                          !userRol.isAdmin ||
                           !enableInvoice ||
                           disabledByClosedEdition ||
                           disabledByPageNumber
@@ -692,15 +695,15 @@ const Order = ({
                         error={errors.invoiceNumber}
                       />
                     </div>
-                    <div className='col-md-3'>
-                      <div className='check-container'>
+                    <div className="col-md-3">
+                      <div className="check-container">
                         <InputCheckboxField
-                          labelText='Pagada'
-                          name='paidOut'
+                          labelText="Pagada"
+                          name="paidOut"
                           disabled={
                             deleteMode ||
                             !formikProps.values.invoiceNumber ||
-                            userRol.isSeller ||
+                            !userRol.isAdmin ||
                             !enableInvoice ||
                             disabledByPageNumber
                           }
@@ -712,25 +715,25 @@ const Order = ({
                   </>
                 )}
               </div>
-              <div className='form-row'>
-                <div className='col-md-3'>
+              <div className="form-row">
+                <div className="col-md-3">
                   <InputTextField
-                    labelText='Página'
-                    name='pageNumber'
+                    labelText="Página"
+                    name="pageNumber"
                     disabled={
                       deleteMode ||
                       disabledByClosedEdition ||
                       disabledByPageNumber
                     }
                     error={errors.pageNumber}
-                    type='text'
-                    maxlength='6'
+                    type="text"
+                    maxlength="6"
                   />
                 </div>
-                <div className='col-md-9'>
+                <div className="col-md-6">
                   <InputSelectField
-                    labelText='Ubicación *'
-                    name='advertisingSpaceLocationTypeId'
+                    labelText="Ubicación *"
+                    name="advertisingSpaceLocationTypeId"
                     options={availableSpaceLocations}
                     isLoading={isLoadingSpaceLocations}
                     disabled={
@@ -745,11 +748,11 @@ const Order = ({
                   />
                 </div>
               </div>
-              <div className='form-row'>
-                <div className='col-md-12'>
+              <div className="form-row">
+                <div className="col-md-12">
                   <InputTextAreaField
-                    labelText='Observaciones'
-                    name='observations'
+                    labelText="Observaciones"
+                    name="observations"
                     disabled={
                       deleteMode ||
                       (editMode && formikProps.values.latent) ||
@@ -759,16 +762,16 @@ const Order = ({
                   />
                 </div>
               </div>
-              <div className='button-container'>
+              <div className="button-container">
                 {deleteMode ? (
                   <>
                     <SaveButton onClickHandler={closeHandler}>
                       Volver
                     </SaveButton>
                     <DangerButton
-                      type='button'
-                      children={'Eliminar'}
-                      onClickHandler={(evt) => {
+                      type="button"
+                      children={"Eliminar"}
+                      onClickHandler={evt => {
                         formikProps.validateForm();
                       }}
                     ></DangerButton>
@@ -779,14 +782,14 @@ const Order = ({
                       Volver
                     </DangerButton>
                     <SaveButton
-                      type='button'
+                      type="button"
                       disabled={disabledByClosedEdition || disabledByPageNumber}
-                      onClickHandler={(evt) => {
+                      onClickHandler={evt => {
                         formikProps.validateForm();
                       }}
                     >
-                      {addMode ? 'Agregar' : null}
-                      {editMode ? 'Guardar' : null}
+                      {addMode ? "Agregar" : null}
+                      {editMode ? "Guardar" : null}
                     </SaveButton>
                   </>
                 )}

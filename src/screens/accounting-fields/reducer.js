@@ -1,5 +1,4 @@
-import { createSelector } from 'reselect';
-
+import { createSelector } from "reselect";
 import {
   INITIAL_LOAD_INIT,
   INITIAL_LOAD_SUCCESS,
@@ -19,7 +18,7 @@ import {
   SHOW_ADD_MODAL,
   SHOW_EDIT_MODAL,
   SHOW_DELETE_MODAL,
-} from './actionTypes.js';
+} from "./actionTypes.js";
 
 const initialState = {
   items: [],
@@ -31,7 +30,7 @@ const initialState = {
   showDeleteModal: false,
 };
 
-export default function (state = initialState, action) {
+export default function(state = initialState, action) {
   switch (action.type) {
     case INITIAL_LOAD_INIT:
     case FILTER_ACCOUNTING_FIELDS_INIT:
@@ -84,39 +83,39 @@ export default function (state = initialState, action) {
   }
 }
 
-const getAccountingFieldsReducer = (state) => state.accountingFields;
+const getAccountingFieldsReducer = state => state.accountingFields;
 
 export const getAccountingFields = createSelector(
   getAccountingFieldsReducer,
-  (accountingFieldsReducer) => accountingFieldsReducer.items
+  accountingFieldsReducer => accountingFieldsReducer.items
 );
 
 export const getCountries = createSelector(
   getAccountingFieldsReducer,
-  (accountingFieldsReducer) => accountingFieldsReducer.countries
+  accountingFieldsReducer => accountingFieldsReducer.countries
 );
 
 export const getLoading = createSelector(
   getAccountingFieldsReducer,
-  (accountingFieldsReducer) => accountingFieldsReducer.loading
+  accountingFieldsReducer => accountingFieldsReducer.loading
 );
 
 export const getErrors = createSelector(
   getAccountingFieldsReducer,
-  (accountingFieldsReducer) => accountingFieldsReducer.errors
+  accountingFieldsReducer => accountingFieldsReducer.errors
 );
 
 export const getShowAddModal = createSelector(
   getAccountingFieldsReducer,
-  (accountingFieldsReducer) => accountingFieldsReducer.showAddModal
+  accountingFieldsReducer => accountingFieldsReducer.showAddModal
 );
 
 export const getShowEditModal = createSelector(
   getAccountingFieldsReducer,
-  (accountingFieldsReducer) => accountingFieldsReducer.showEditModal
+  accountingFieldsReducer => accountingFieldsReducer.showEditModal
 );
 
 export const getShowDeleteModal = createSelector(
   getAccountingFieldsReducer,
-  (accountingFieldsReducer) => accountingFieldsReducer.showDeleteModal
+  accountingFieldsReducer => accountingFieldsReducer.showDeleteModal
 );

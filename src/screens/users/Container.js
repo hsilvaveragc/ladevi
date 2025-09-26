@@ -1,5 +1,6 @@
-import { bindActionCreators, compose } from 'redux';
-import { connect } from 'react-redux';
+// eslint-disable-next-line
+import { bindActionCreators, compose } from "redux";
+import { connect } from "react-redux";
 
 import {
   initialLoad,
@@ -11,7 +12,8 @@ import {
   showDeleteModal,
   getUsersInit,
   filterUsers,
-} from './actionCreators';
+} from "./actionCreators";
+
 import {
   getUsers,
   getCountries,
@@ -21,10 +23,11 @@ import {
   getShowAddModal,
   getShowEditModal,
   getShowDeleteModal,
-} from './reducer';
-import UsersPage from './UsersPage';
+} from "./reducer";
 
-const mapStateToProps = (state) => ({
+import UsersPage from "./UsersPage";
+
+const mapStateToProps = state => ({
   users: getUsers(state),
   isLoading: getLoading(state),
   errors: getErrors(state),
@@ -35,7 +38,7 @@ const mapStateToProps = (state) => ({
   availableAppRoles: getAppRoles(state),
 });
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators(
     {
       initialLoad,
@@ -52,4 +55,9 @@ const mapDispatchToProps = (dispatch) => ({
   ),
 });
 
-export default compose(connect(mapStateToProps, mapDispatchToProps))(UsersPage);
+export default compose(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
+)(UsersPage);

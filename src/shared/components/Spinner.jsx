@@ -1,6 +1,7 @@
-import styled from 'styled-components';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
+import React from "react";
+import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
 
 const SpinnerContainer = styled.div`
   @keyframes spinner {
@@ -16,7 +17,7 @@ const SpinnerContainer = styled.div`
 export default function Spinner() {
   return (
     <SpinnerContainer>
-      <FontAwesomeIcon className='spinner' icon={faCircleNotch} />
+      <FontAwesomeIcon className="spinner" icon={faCircleNotch} />
     </SpinnerContainer>
   );
 }

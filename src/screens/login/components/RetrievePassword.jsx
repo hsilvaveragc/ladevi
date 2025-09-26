@@ -1,21 +1,21 @@
-import { bindActionCreators, compose } from 'redux';
-import { connect } from 'react-redux';
-import styled from 'styled-components';
-import queryString from 'query-string';
-import { Link } from 'react-router-dom';
-import { Formik, Form } from 'formik';
-import * as Yup from 'yup';
-import InputTextField from 'shared/components/InputTextField';
-import { SaveButton, DangerButton } from 'shared/components/Buttons';
-import Footer from 'shared/components/Footer';
-
-import { resetPassword } from '../actionCreators';
+import React from "react";
+import { bindActionCreators, compose } from "redux";
+import { connect } from "react-redux";
+import styled from "styled-components";
+import queryString from "query-string";
+import { Link } from "react-router-dom";
+import { Formik, Form } from "formik";
+import * as Yup from "yup";
+import InputTextField from "shared/components/InputTextField";
+import { SaveButton, DangerButton } from "shared/components/Buttons";
+import { resetPassword } from "../actionCreators";
 import {
   getIsUserConfirmedLoading,
   getIsUserConfirmed,
   getUserFullName,
   getIsResetSuccessful,
-} from '../reducer';
+} from "../reducer";
+import Footer from "shared/components/Footer";
 const PageContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -63,8 +63,8 @@ function ConfirmationPage(props) {
         <h2>Felicitaciones!</h2>
         <p>La contraseña fue cambiada exitosamente!</p>
         <p>Podes empezar a usar la plataforma</p>
-        <Link to='/login'>
-          <button className='btn btn-primary'>Login</button>
+        <Link to="/login">
+          <button className="btn btn-primary">Login</button>
         </Link>
       </MessageBoxContainer>
     </PageContainer>
@@ -77,42 +77,42 @@ function ConfirmationPage(props) {
           initialValues={{
             token,
             email,
-            currentPassword: '',
-            newPassword: '',
-            newPassword2: '',
+            currentPassword: "",
+            newPassword: "",
+            newPassword2: "",
           }}
-          onSubmit={(values) => {
+          onSubmit={values => {
             props.actions.resetPassword({
               ...values,
             });
           }}
           validationSchema={Yup.object().shape({
-            token: Yup.string().required('Requerido'),
-            newPassword: Yup.string().required('Requerido'),
-            newPassword2: Yup.string().required('Requerido'),
+            token: Yup.string().required("Requerido"),
+            newPassword: Yup.string().required("Requerido"),
+            newPassword2: Yup.string().required("Requerido"),
           })}
         >
           {({ values }) => {
             return (
-              <FormContainer className='container'>
+              <FormContainer className="container">
                 <h2>Cambiar Contraseña</h2>
-                <Form autoComplete='off'>
-                  <div className='form-group'>
+                <Form autoComplete="off">
+                  <div className="form-group">
                     <InputTextField
-                      labelText='Contraseña Nueva'
-                      name='newPassword'
-                      type='password'
+                      labelText="Contraseña Nueva"
+                      name="newPassword"
+                      type="password"
                     />
                   </div>
-                  <div className='form-group'>
+                  <div className="form-group">
                     <InputTextField
-                      labelText='Contraseña Nueva Confirmacion'
-                      name='newPassword2'
-                      type='password'
+                      labelText="Contraseña Nueva Confirmacion"
+                      name="newPassword2"
+                      type="password"
                     />
                   </div>
-                  <div className='button-container'>
-                    <SaveButton type='submit'>Cambiar</SaveButton>
+                  <div className="button-container">
+                    <SaveButton type="submit">Cambiar</SaveButton>
                   </div>
                 </Form>
               </FormContainer>
@@ -125,14 +125,14 @@ function ConfirmationPage(props) {
   );
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   isUserConfirmedLoading: getIsUserConfirmedLoading(state),
   isUserConfirmed: getIsUserConfirmed(state),
   userName: getUserFullName(state),
   isResetSuccessful: getIsResetSuccessful(state),
 });
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({ resetPassword }, dispatch),
 });
 

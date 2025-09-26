@@ -1,15 +1,14 @@
-import styled from 'styled-components';
-import { Formik, Form } from 'formik';
-import { isEmpty } from 'ramda';
-import * as Yup from 'yup';
-import InputSelectField from 'shared/components/InputSelectField';
-import InputDatePickerField from 'shared/components/InputDatePickerField';
-import { SaveButton, DangerButton } from 'shared/components/Buttons';
-
-import useUser from 'shared/security/useUser';
-
-import ExcelExport from './ExcelExport';
-import PdfExport from './PdfExport';
+import React from "react";
+import styled from "styled-components";
+import { Formik, Form } from "formik";
+import { isEmpty } from "ramda";
+import * as Yup from "yup";
+import useUser from "shared/security/useUser";
+import InputSelectField from "shared/components/InputSelectField";
+import InputDatePickerField from "shared/components/InputDatePickerField";
+import { SaveButton, DangerButton } from "shared/components/Buttons";
+import ExcelExport from "./ExcelExport";
+import PdfExport from "./PdfExport";
 
 const FiltersContainer = styled.div`
   width: 80vw;
@@ -44,20 +43,20 @@ const Filters = ({
 
   const defaultOption = {
     id: -1,
-    name: 'Todos',
+    name: "Todos",
   };
 
   const defaultSeller = {
     id: -1,
-    fullName: 'Todos',
+    fullName: "Todos",
   };
 
   return (
     <Formik
       initialValues={{
-        fromDate: '',
-        toDate: '',
-        client: '',
+        fromDate: "",
+        toDate: "",
+        client: "",
         sellerId: userRol.isSeller ? parseFloat(userId) : -1,
         productType: -1,
         product: -1,
@@ -65,45 +64,45 @@ const Filters = ({
       }}
       enableReinitialize={true}
       validationSchema={Yup.object().shape({
-        client: Yup.string().required('Requerido'),
+        client: Yup.string().required("Requerido"),
       })}
-      onSubmit={(values) => {
+      onSubmit={values => {
         handleFilter(values);
       }}
     >
-      {(formikProps) => {
+      {formikProps => {
         return (
           <FiltersContainer>
             <Form>
-              <div className='form-row'>
-                <div className='col-3'>
+              <div className="form-row">
+                <div className="col-3">
                   <InputSelectField
-                    labelText='Cliente'
-                    name='client'
+                    labelText="Cliente"
+                    name="client"
                     options={availableClients}
                     isLoading={isLoadingAllClients}
                     disabled={isLoadingAllClients}
-                    getOptionLabel={(option) =>
+                    getOptionLabel={option =>
                       `${option.brandName} - ${option.legalName}`
                     }
                   />
                 </div>
-                <div className='col-3'>
+                <div className="col-3">
                   <InputDatePickerField
-                    labelText='Fecha Salida Desde'
-                    name='fromDate'
+                    labelText="Fecha Salida Desde"
+                    name="fromDate"
                   />
                 </div>
-                <div className='col-3'>
+                <div className="col-3">
                   <InputDatePickerField
-                    labelText='Fecha Salida Hasta'
-                    name='toDate'
+                    labelText="Fecha Salida Hasta"
+                    name="toDate"
                   />
                 </div>
-                <div className='col-3'>
+                <div className="col-3">
                   <InputSelectField
-                    labelText='Vendedor'
-                    name='sellerId'
+                    labelText="Vendedor"
+                    name="sellerId"
                     options={
                       isLoadingSellers
                         ? availableSellers
@@ -111,15 +110,15 @@ const Filters = ({
                     }
                     isLoading={isLoadingSellers}
                     disabled={isLoadingSellers || userRol.isSeller}
-                    getOptionLabel={(option) => option.fullName}
+                    getOptionLabel={option => option.fullName}
                   />
                 </div>
               </div>
-              <div className='form-row'>
-                <div className='col-3'>
+              <div className="form-row">
+                <div className="col-3">
                   <InputSelectField
-                    labelText='Tipo de Producto'
-                    name='productType'
+                    labelText="Tipo de Producto"
+                    name="productType"
                     options={
                       isLoadingProductTypes
                         ? availableProductTypes
@@ -127,18 +126,18 @@ const Filters = ({
                     }
                     isLoading={isLoadingProductTypes}
                     disabled={isLoadingProductTypes}
-                    onChangeHandler={(option) => {
+                    onChangeHandler={option => {
                       getProductHandler(option.id);
-                      formikProps.setFieldValue('product', -1);
+                      formikProps.setFieldValue("product", -1);
                       getProductEditionsHandler(-1);
-                      formikProps.setFieldValue('edition', -1);
+                      formikProps.setFieldValue("edition", -1);
                     }}
                   />
                 </div>
-                <div className='col-3'>
+                <div className="col-3">
                   <InputSelectField
-                    labelText='Producto'
-                    name='product'
+                    labelText="Producto"
+                    name="product"
                     options={
                       isLoadingProducts
                         ? availableProducts
@@ -146,16 +145,16 @@ const Filters = ({
                     }
                     isLoading={isLoadingProducts}
                     disabled={isLoadingProducts || isEmpty(availableProducts)}
-                    onChangeHandler={(option) => {
+                    onChangeHandler={option => {
                       getProductEditionsHandler(option.id);
-                      formikProps.setFieldValue('edition', -1);
+                      formikProps.setFieldValue("edition", -1);
                     }}
                   />
                 </div>
-                <div className='col-3'>
+                <div className="col-3">
                   <InputSelectField
-                    labelText='Edición'
-                    name='edition'
+                    labelText="Edición"
+                    name="edition"
                     options={
                       isLoadingProductEditions
                         ? availableEditions
@@ -169,8 +168,8 @@ const Filters = ({
                     }
                   />
                 </div>
-                <div className='col-3'>
-                  <div className='buttons-container'>
+                <div className="col-3">
+                  <div className="buttons-container">
                     <DangerButton
                       disabled={
                         isLoadingAllClients ||
@@ -185,7 +184,7 @@ const Filters = ({
                       Limpiar
                     </DangerButton>
                     <SaveButton
-                      type='submit'
+                      type="submit"
                       disabled={
                         isLoadingAllClients ||
                         isLoadingProductTypes ||

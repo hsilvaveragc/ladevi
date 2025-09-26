@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react';
-
+import { useState, useEffect } from "react";
 import {
   getAuthFromStorage,
   removeAuthFromStorage,
-} from 'shared/security/utils';
+} from "shared/security/utils";
 
 const useUser = () => {
   const [user, setUser] = useState(getAuthFromStorage());
@@ -12,8 +11,8 @@ const useUser = () => {
   useEffect(() => {
     const handleStorageChange = () => setUser(getAuthFromStorage());
 
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   // Función para actualizar manualmente el usuario

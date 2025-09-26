@@ -1,18 +1,18 @@
-import axios from 'axios';
+import axios from "axios";
 
 export default {
-  login: (credentials) => {
+  login: credentials => {
     const password = window.encodeURIComponent(credentials.password);
     return axios
       .post(
         `ApplicationUsers/login?email=${credentials.username}&password=${password}`
       )
-      .then((response) => response.data);
+      .then(response => response.data);
   },
-  forgotPassword: (credentials) =>
+  forgotPassword: credentials =>
     axios
       .post(`ApplicationUsers/ForgotPassword?email=${credentials.username}`)
-      .then((response) => {
+      .then(response => {
         return response.data;
       }),
   confirmUser: ({ userId, code }) =>
@@ -20,10 +20,10 @@ export default {
       .get(`ApplicationUsers/confirm`, {
         params: {
           userId,
-          code: code.replace(/\s/g, '+'),
+          code: code.replace(/\s/g, "+"),
         },
       })
-      .then((response) => response.data),
+      .then(response => response.data),
   resetPassword: ({
     token,
     email,
@@ -37,9 +37,9 @@ export default {
         { email, currentPassword, newPassword, newPassword2 },
         {
           params: {
-            token: token.replace(/\s/g, '+'),
+            token: token.replace(/\s/g, "+"),
           },
         }
       )
-      .then((response) => response.data),
+      .then(response => response.data),
 };
