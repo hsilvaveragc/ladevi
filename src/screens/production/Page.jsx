@@ -5,11 +5,11 @@ import FullWidthProgressBar from 'shared/components/FullWidthProgressBar';
 
 import { getLoading } from './reducer';
 import SelectorsContainer from './components/SelectorsContainer';
-import ProductionGrid from './components/ProductionGrid';
+import ProductionTemplatesTable from './components/ProductionTemplatesTable';
+import ProductionSummary from './components/ProductionSummary';
 
 const ProductionPage = () => {
   const dispatch = useDispatch();
-
   const loading = useSelector(getLoading);
 
   useEffect(() => {
@@ -28,7 +28,12 @@ const ProductionPage = () => {
         </div>
         <div className='row' style={{ width: '100%' }}>
           <div className='col-md-12'>
-            <ProductionGrid />
+            <ProductionTemplatesTable />
+          </div>
+        </div>
+        <div className='row' style={{ width: '100%' }}>
+          <div className='col-md-12'>
+            <ProductionSummary />
           </div>
         </div>
       </PageContainer>
