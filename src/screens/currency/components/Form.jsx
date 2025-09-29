@@ -1,16 +1,18 @@
-import React from "react";
-import styled from "styled-components";
-import { Formik, Form } from "formik";
-import useUser from "shared/security/useUser";
-import "shared/utils/extensionsMethods.js";
-import { SaveButton, RemoveConfirmButton } from "shared/components/Buttons";
-import { CurrencyFields } from "./FormFields";
-import ParityGrid from "./ParityGrid";
-import { useCurrencyForm } from "../hooks/useCurrencyForm";
-import { getValidationSchema } from "../validationSchemas";
+import styled from 'styled-components';
+import { Formik, Form } from 'formik';
+
+import useUser from 'shared/security/useUser';
+
+import 'shared/utils/extensionsMethods.js';
+import { SaveButton, RemoveConfirmButton } from 'shared/components/Buttons';
+
+import { useCurrencyForm } from '../hooks/useCurrencyForm';
+import { getValidationSchema } from '../validationSchemas';
+
+import { CurrencyFields } from './FormFields';
+import ParityGrid from './ParityGrid';
 
 const CurrencyFormContainer = styled.div`
-  width: 30vw;
   .button-container {
     display: flex;
     flex-direction: row;
@@ -48,12 +50,11 @@ const FormContent = ({
   addMode,
   isLoading,
 }) => {
-  const { handleCheckboxChange, handleNameChange } = useCurrencyForm(
-    formikProps
-  );
+  const { handleCheckboxChange, handleNameChange } =
+    useCurrencyForm(formikProps);
 
   return (
-    <Form autoComplete="off">
+    <Form autoComplete='off'>
       <CurrencyFields
         formikProps={formikProps}
         errors={errors}
@@ -69,7 +70,7 @@ const FormContent = ({
         selectedItem={selectedItem}
         formikProps={formikProps}
       />
-      <div className="button-container">
+      <div className='button-container'>
         <SaveButton onClickHandler={closeHandler}>Cancelar</SaveButton>
         {deleteMode ? (
           <RemoveConfirmButton
@@ -77,9 +78,9 @@ const FormContent = ({
             onClickHandler={() => saveHandler({ ...formikProps.values })}
           />
         ) : (
-          <SaveButton type="submit">
-            {addMode ? "Agregar" : null}
-            {editMode ? "Guardar" : null}
+          <SaveButton type='submit'>
+            {addMode ? 'Agregar' : null}
+            {editMode ? 'Guardar' : null}
           </SaveButton>
         )}
       </div>
@@ -103,14 +104,14 @@ const CurrencyForm = ({
   const { userRol, userCountryId } = useUser();
 
   const getInitialValues = () => ({
-    id: addMode ? "" : selectedItem.id,
+    id: addMode ? '' : selectedItem.id,
     countryId: addMode
       ? userRol.isSupervisor
         ? userCountryId
-        : ""
+        : ''
       : selectedItem.countryId,
     useEuro: addMode ? false : selectedItem.useEuro,
-    name: addMode ? "" : selectedItem.name,
+    name: addMode ? '' : selectedItem.name,
     currencyParities: getCurrencyParitiesInitialValues(),
   });
 
@@ -122,20 +123,21 @@ const CurrencyForm = ({
       return [
         {
           id: 0,
-          start: "",
-          end: "",
-          localCurrencyToDollarExchangeRate: "",
+          start: '',
+          end: '',
+          localCurrencyToDollarExchangeRate: '',
           shouldDelete: false,
         },
       ];
     }
 
     return selectedItem.currencyParities
-      .map(pcp => ({
+      .map((pcp) => ({
         ...pcp,
         start: pcp.start,
         end: pcp.end,
-        localCurrencyToDollarExchangeRate: pcp.localCurrencyToDollarExchangeRate.toLocaleCurrency(),
+        localCurrencyToDollarExchangeRate:
+          pcp.localCurrencyToDollarExchangeRate.toLocaleCurrency(),
         shouldDelete: false,
       }))
       .sort((a, b) => (a.start < b.start ? -1 : 1));
@@ -144,20 +146,20 @@ const CurrencyForm = ({
   return (
     <CurrencyFormContainer>
       <h3>
-        {addMode && "Agregar Moneda"}
-        {editMode && "Editar Moneda"}
-        {deleteMode && "Eliminar Moneda"}
+        {addMode && 'Agregar Moneda'}
+        {editMode && 'Editar Moneda'}
+        {deleteMode && 'Eliminar Moneda'}
       </h3>
       <Formik
         validateOnChange={false}
         validateOnBlur={false}
         initialValues={getInitialValues()}
         validationSchema={getValidationSchema(data)}
-        onSubmit={values => {
+        onSubmit={(values) => {
           saveHandler({ ...values, params });
         }}
       >
-        {formikProps => (
+        {(formikProps) => (
           <FormContent
             formikProps={formikProps}
             errors={errors}

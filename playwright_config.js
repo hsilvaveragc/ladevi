@@ -8,17 +8,17 @@ export default defineConfig({
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
-  forbidOnly: !!process.env.CI,
+  forbidOnly: !!import.meta.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
+  retries: import.meta.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  workers: import.meta.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: "html",
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000",
+    baseURL: import.meta.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000",
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
@@ -63,18 +63,18 @@ export default defineConfig({
       command:
         "docker-compose -f testing/docker-compose.test.yml up --build -d",
       url: "http://localhost:5002",
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: !import.meta.env.CI,
       timeout: 120000,
     },
     {
       // Iniciar React
       command: "NODE_OPTIONS=--openssl-legacy-provider npm run start:js",
       url: "http://localhost:3000",
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: !import.meta.env.CI,
       timeout: 60000,
       env: {
         NODE_OPTIONS: "--openssl-legacy-provider",
-        REACT_APP_API_URL: "http://localhost:5002/api/",
+        VITE_API_URL: "http://localhost:5002/api/",
       },
     },
   ],

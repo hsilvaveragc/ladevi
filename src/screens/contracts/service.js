@@ -1,41 +1,42 @@
-import axios from "axios";
-import { sortAlphabetically } from "shared/utils";
-import { dissoc } from "ramda";
-import { getHeaders } from "shared/services/utils";
-import { CONSTANTS } from "shared/utils/constants";
+import axios from 'axios';
+import { sortAlphabetically } from 'shared/utils';
+import { dissoc } from 'ramda';
 
-const getFilters = payload => {
+import { getHeaders } from 'shared/services/utils';
+import { CONSTANTS } from 'shared/utils/constants';
+
+const getFilters = (payload) => {
   const filter = [];
   let result = null;
 
   if (payload.number) {
     filter.push({
-      field: "number",
-      operator: "eq",
+      field: 'number',
+      operator: 'eq',
       value: payload.number,
     });
   }
 
   if (payload.name) {
     filter.push({
-      field: "name",
-      operator: "contains",
+      field: 'name',
+      operator: 'contains',
       value: payload.name,
     });
   }
 
   if (payload.client) {
     filter.push({
-      logic: "or",
+      logic: 'or',
       filters: [
         {
-          field: "brandName",
-          operator: "contains",
+          field: 'brandName',
+          operator: 'contains',
           value: payload.client,
         },
         {
-          field: "legalName",
-          operator: "contains",
+          field: 'legalName',
+          operator: 'contains',
           value: payload.client,
         },
       ],
@@ -44,55 +45,57 @@ const getFilters = payload => {
 
   if (payload.countryId && payload.countryId !== -1) {
     filter.push({
-      field: "billingCountryId",
-      operator: "eq",
+      field: 'billingCountryId',
+      operator: 'eq',
       value: payload.countryId,
     });
   }
 
   if (payload.productId && payload.productId !== -1) {
     filter.push({
-      field: "productId",
-      operator: "eq",
+      field: 'productId',
+      operator: 'eq',
       value: payload.productId,
     });
   }
 
   if (payload.salesmenId && payload.salesmenId !== -1) {
     filter.push({
-      field: "sellerId",
-      operator: "eq",
+      field: 'sellerId',
+      operator: 'eq',
       value: payload.salesmenId,
     });
   }
 
   if (payload.fromDate) {
     const start = new Date(payload.fromDate);
-    const formatDate = `${start.getDate()}/${start.getMonth() +
-      1}/${start.getFullYear()}`;
+    const formatDate = `${start.getDate()}/${
+      start.getMonth() + 1
+    }/${start.getFullYear()}`;
 
     filter.push({
-      field: "end",
-      operator: "gte",
+      field: 'end',
+      operator: 'gte',
       value: formatDate,
     });
   }
 
   if (payload.toDate) {
     const end = new Date(payload.toDate);
-    const formatDate = `${end.getDate()}/${end.getMonth() +
-      1}/${end.getFullYear()} 23:59:59`;
+    const formatDate = `${end.getDate()}/${
+      end.getMonth() + 1
+    }/${end.getFullYear()} 23:59:59`;
 
     filter.push({
-      field: "end",
-      operator: "lte",
+      field: 'end',
+      operator: 'lte',
       value: formatDate,
     });
   }
 
   if (filter.length > 0) {
     result = {
-      logic: "and",
+      logic: 'and',
       filters: filter,
     };
   }
@@ -100,7 +103,7 @@ const getFilters = payload => {
   return result;
 };
 
-const getAddUpdatePayload = payload => {
+const getAddUpdatePayload = (payload) => {
   return {
     id: payload.id,
     productId: payload.productId,
@@ -142,23 +145,23 @@ const getAddUpdatePayload = payload => {
 };
 
 export default {
-  addContract: payload =>
+  addContract: (payload) =>
     axios.post(
       `Contract/Post`,
       {
-        ...dissoc("id", getAddUpdatePayload(payload)),
+        ...dissoc('id', getAddUpdatePayload(payload)),
       },
       {
         headers: getHeaders(),
       }
     ),
 
-  editContract: payload =>
+  editContract: (payload) =>
     axios.put(`Contract/Put/${payload.id}`, getAddUpdatePayload(payload), {
       headers: getHeaders(),
     }),
 
-  deleteContract: payload =>
+  deleteContract: (payload) =>
     axios.delete(`Contract/Delete/${payload.id}`, {
       headers: getHeaders(),
     }),
@@ -172,12 +175,12 @@ export default {
           headers: getHeaders(),
         }
       )
-      .then(response => {
-        return sortAlphabetically(response.data.data, "number");
+      .then((response) => {
+        return sortAlphabetically(response.data.data, 'number');
       });
   },
 
-  filterContracts: payload =>
+  filterContracts: (payload) =>
     axios
       .post(
         `Contract/Search`,
@@ -189,22 +192,22 @@ export default {
           headers: getHeaders(),
         }
       )
-      .then(response => {
+      .then((response) => {
         //Filtro acá porque no se como filtrar entidades relacionadas con el esquema actual de filtros
         if (payload.saldo === 2) {
           const allContracts = response.data.data;
           const withBalance = allContracts.filter(
-            c => c.soldSpaces.findIndex(sp => sp.balance > 0) !== -1
+            (c) => c.soldSpaces.findIndex((sp) => sp.balance > 0) !== -1
           );
-          return sortAlphabetically(withBalance, "number");
+          return sortAlphabetically(withBalance, 'number');
         }
-        return sortAlphabetically(response.data.data, "number");
+        return sortAlphabetically(response.data.data, 'number');
       }),
 
   getCurrencies: () =>
     axios
       .post(
-        "Currency/Search",
+        'Currency/Search',
         {
           take: 1000,
         },
@@ -212,12 +215,12 @@ export default {
           headers: getHeaders(),
         }
       )
-      .then(response => response.data.data),
+      .then((response) => response.data.data),
 
   getEuroParities: () =>
     axios
       .post(
-        "EuroParity/Search",
+        'EuroParity/Search',
         {
           take: 1000,
         },
@@ -225,7 +228,7 @@ export default {
           headers: getHeaders(),
         }
       )
-      .then(response => response.data.data),
+      .then((response) => response.data.data),
 
   // Ubicaciones
   getAllSpaceLocations: () =>
@@ -235,13 +238,11 @@ export default {
         { take: 1000 },
         { headers: getHeaders() }
       )
-      .then(response => sortAlphabetically(response.data.data, "name"))
-      .catch(error => {
-        console.log(error.response);
-      }),
+      .then((response) => sortAlphabetically(response.data.data, 'name'))
+      .catch((error) => {}),
 
   // Tipos de Espacio
-  getAllSpaceTypes: productId =>
+  getAllSpaceTypes: (productId) =>
     axios
       .post(
         `ProductAdvertisingSpace/Search`,
@@ -252,22 +253,20 @@ export default {
           headers: getHeaders(),
         }
       )
-      .then(response => sortAlphabetically(response.data.data, "name"))
-      .catch(error => {
-        console.log(error.response);
-      }),
+      .then((response) => sortAlphabetically(response.data.data, 'name'))
+      .catch((error) => {}),
 
   getCountriesOptions: () =>
     axios
       .get(`Country/Options`, {
         headers: getHeaders(),
       })
-      .then(response => response.data),
+      .then((response) => response.data),
 
-  getContractHistorial: contractId =>
+  getContractHistorial: (contractId) =>
     axios
       .get(`Contract/GetContractHistorial/${contractId}`, {
         headers: getHeaders(),
       })
-      .then(response => response.data),
+      .then((response) => response.data),
 };

@@ -1,4 +1,5 @@
-import { createSelector } from "reselect";
+import { createSelector } from 'reselect';
+
 import {
   USERS_INITIAL_LOAD_INIT,
   USERS_INITIAL_LOAD_SUCCESS,
@@ -18,7 +19,7 @@ import {
   FILTER_USERS_INIT,
   FILTER_USERS_SUCCESS,
   FILTER_USERS_FAILURE,
-} from "./actionTypes";
+} from './actionTypes';
 
 const initialState = {
   users: [],
@@ -31,7 +32,7 @@ const initialState = {
   showAddModal: false,
 };
 
-export default function(state = initialState, action) {
+export default function (state = initialState, action) {
   switch (action.type) {
     case USERS_INITIAL_LOAD_SUCCESS:
       return {
@@ -104,44 +105,44 @@ export default function(state = initialState, action) {
   }
 }
 
-const getUsersReducer = state => state.users;
+const getUsersReducer = (state) => state.users;
 
 export const getUsers = createSelector(
   getUsersReducer,
-  usersReducer => usersReducer.users
+  (usersReducer) => usersReducer.users
 );
 
 export const getAppRoles = createSelector(
   getUsersReducer,
-  usersReducer => usersReducer.appRoles
+  (usersReducer) => usersReducer.appRoles
 );
 
 export const getCountries = createSelector(
   getUsersReducer,
-  usersReducer => usersReducer.countries
+  (usersReducer) => usersReducer.countries
 );
 
 export const getLoading = createSelector(
   getUsersReducer,
-  usersReducer => usersReducer.loading
+  (usersReducer) => usersReducer.loading
 );
 
 export const getErrors = createSelector(
   getUsersReducer,
-  usersReducer => usersReducer.errors
+  (usersReducer) => usersReducer.errors
 );
 
 export const getShowAddModal = createSelector(
   getUsersReducer,
-  usersReducer => usersReducer.showAddModal
+  (usersReducer) => usersReducer.showAddModal
 );
 
 export const getShowEditModal = createSelector(
   getUsersReducer,
-  usersReducer => usersReducer.showEditModal
+  (usersReducer) => usersReducer.showEditModal
 );
 
 export const getShowDeleteModal = createSelector(
   getUsersReducer,
-  usersReducer => usersReducer.showDeleteModal
+  (usersReducer) => usersReducer.showDeleteModal
 );

@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
-import { SaveButton, DangerButton } from "shared/components/Buttons";
-import InputSelectFieldSimple from "shared/components/InputSelectFieldSimple";
-import InputTextAreaFieldSimple from "shared/components/InputTextAreaFieldSimple";
-import { formatCurrency } from "shared/utils/index";
-import { CONSTANTS } from "../constants";
-import { hideInvoiceDialog, sendToXubioInit } from "../actionCreators";
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { SaveButton, DangerButton } from 'shared/components/Buttons';
+import InputSelectFieldSimple from 'shared/components/InputSelectFieldSimple';
+import InputTextAreaFieldSimple from 'shared/components/InputTextAreaFieldSimple';
+import { formatCurrency } from 'shared/utils/index';
+import { CONSTANTS } from '../constants';
+import { hideInvoiceDialog, sendToXubioInit } from '../actionCreators';
 import {
   getShowInvoiceDialog,
   getCartItems,
@@ -16,7 +16,7 @@ import {
   getSelectedClient,
   getCartTotal,
   getClientType,
-} from "../reducer";
+} from '../reducer';
 
 const InvoiceContractDialog = () => {
   const dispatch = useDispatch();
@@ -29,18 +29,16 @@ const InvoiceContractDialog = () => {
   const xubioProducts = useSelector(getCurrentXubioProducts);
   const xubioGenericProduct = useSelector(getCurrentXubioGenericProduct);
 
-  const [invoiceMode, setInvoiceMode] = useState("separate");
-  const [
-    consolidatedXubioProductCode,
-    setConsolidatedXubioProductCode,
-  ] = useState("");
-  const [globalObservations, setGlobalObservations] = useState("");
+  const [invoiceMode, setInvoiceMode] = useState('separate');
+  const [consolidatedXubioProductCode, setConsolidatedXubioProductCode] =
+    useState('');
+  const [globalObservations, setGlobalObservations] = useState('');
 
   // Obtener productos únicos de los contratos para opciones de consolidación
   const getUniqueContractProducts = () => {
     const contractProducts = new Set();
     if (cartItems) {
-      cartItems.forEach(cartItem => {
+      cartItems.forEach((cartItem) => {
         contractProducts.add(cartItem.entityItems[0].xubioProductCode);
       });
     }
@@ -53,8 +51,8 @@ const InvoiceContractDialog = () => {
 
     // Agregar productos únicos de los  contrato
     const uniqueProductCodes = getUniqueContractProducts();
-    uniqueProductCodes.forEach(productCode => {
-      const product = xubioProducts.find(p => p.code === productCode);
+    uniqueProductCodes.forEach((productCode) => {
+      const product = xubioProducts.find((p) => p.code === productCode);
       if (product) {
         options.push(product);
       }
@@ -68,7 +66,7 @@ const InvoiceContractDialog = () => {
   // Contar la cantidad total de items individuales
   const getTotalItemsCount = () => {
     let count = 0;
-    cartItems.forEach(cartItem => {
+    cartItems.forEach((cartItem) => {
       count += cartItem.entityItems.length;
     });
     return count;
@@ -79,16 +77,16 @@ const InvoiceContractDialog = () => {
   // Reset form when dialog opens
   useEffect(() => {
     if (showDialog) {
-      setInvoiceMode("separate");
-      setConsolidatedXubioProductCode("");
-      setGlobalObservations("");
+      setInvoiceMode('separate');
+      setConsolidatedXubioProductCode('');
+      setGlobalObservations('');
     }
   }, [showDialog]);
 
   useEffect(() => {
     if (cartItems && showDialog) {
       if (cartItems.length === 1) {
-        setGlobalObservations(`${cartItems[0].name}`);
+        setGlobalObservations(`Contrato: ${cartItems[0].name}`);
       }
     }
   }, [cartItems, showDialog]);
@@ -97,51 +95,51 @@ const InvoiceContractDialog = () => {
     dispatch(hideInvoiceDialog());
   };
 
-  const handleInvoiceModeChange = e => {
+  const handleInvoiceModeChange = (e) => {
     setInvoiceMode(e.target.value);
-    if (e.target.value === "separate") {
-      setConsolidatedXubioProductCode("");
+    if (e.target.value === 'separate') {
+      setConsolidatedXubioProductCode('');
     }
   };
 
-  const handleXubioProductChange = product => {
+  const handleXubioProductChange = (product) => {
     setConsolidatedXubioProductCode(product.code || product.Code);
   };
 
-  const handleGlobalObservationsChange = e => {
+  const handleGlobalObservationsChange = (e) => {
     setGlobalObservations(e.target.value);
   };
 
   const handleSendToXubio = () => {
     if (
-      invoiceMode === "consolidated" &&
+      invoiceMode === 'consolidated' &&
       totalItemsCount > 1 &&
       !consolidatedXubioProductCode
     ) {
-      alert("Debe seleccionar un producto para la facturación consolidada");
+      alert('Debe seleccionar un producto para la facturación consolidada');
       return;
     }
 
-    const effectiveMode = totalItemsCount === 1 ? "separate" : invoiceMode;
+    const effectiveMode = totalItemsCount === 1 ? 'separate' : invoiceMode;
 
     let invoiceData = {
       clientId: selectedClient.id,
       globalObservations,
       entityType: CONSTANTS.CONTRACT_CODE,
-      isConsolidated: effectiveMode === "consolidated",
+      isConsolidated: effectiveMode === 'consolidated',
     };
 
-    if (effectiveMode === "consolidated") {
+    if (effectiveMode === 'consolidated') {
       // Modo consolidado
-      let consolidatedObservations = "";
+      let consolidatedObservations = '';
       let totalQuantity = 0;
       let totalAmount = 0;
       let totalTaxes = 0;
       const consolidatedIds = [];
 
-      cartItems.forEach(cartItem => {
+      cartItems.forEach((cartItem) => {
         if (cartItem.entityItems) {
-          cartItem.entityItems.forEach(entityItem => {
+          cartItem.entityItems.forEach((entityItem) => {
             consolidatedObservations += `* ${entityItem.quantity} ${entityItem.productAdvertisingSpaceName}\n`;
             totalQuantity += entityItem.quantity;
             totalAmount += entityItem.total;
@@ -165,9 +163,9 @@ const InvoiceContractDialog = () => {
     } else {
       // Modo separado
       const items = [];
-      cartItems.forEach(cartItem => {
+      cartItems.forEach((cartItem) => {
         if (cartItem.entityItems) {
-          cartItem.entityItems.forEach(entityItem => {
+          cartItem.entityItems.forEach((entityItem) => {
             items.push({
               id: entityItem.id,
               xubioProductCode:
@@ -178,8 +176,8 @@ const InvoiceContractDialog = () => {
               amount: entityItem.total,
               totalTaxes: entityItem.totalTaxes || 0,
               observations: `${
-                cartItems.length > 1 ? cartItem.name + " - " : ""
-              }${entityItem.observations || "-"}`,
+                cartItems.length > 1 ? cartItem.name + ' - ' : ''
+              }${entityItem.observations || '-'}`,
               quantity: entityItem.quantity,
               price: entityItem.unitPriceWithDiscounts,
             });
@@ -193,10 +191,10 @@ const InvoiceContractDialog = () => {
   };
 
   const getConsolidatedObservations = () => {
-    let observations = "";
-    cartItems.forEach(cartItem => {
+    let observations = '';
+    cartItems.forEach((cartItem) => {
       if (cartItem.entityItems) {
-        cartItem.entityItems.forEach(entityItem => {
+        cartItem.entityItems.forEach((entityItem) => {
           observations += `- ${entityItem.quantity} ${entityItem.productAdvertisingSpaceName}\n`;
         });
       }
@@ -205,11 +203,11 @@ const InvoiceContractDialog = () => {
   };
 
   const getInvoiceTableData = () => {
-    const effectiveMode = totalItemsCount === 1 ? "separate" : invoiceMode;
+    const effectiveMode = totalItemsCount === 1 ? 'separate' : invoiceMode;
 
-    if (effectiveMode === "consolidated") {
+    if (effectiveMode === 'consolidated') {
       let xubioProduct = xubioProducts.find(
-        p => p.code === consolidatedXubioProductCode
+        (p) => p.code === consolidatedXubioProductCode
       );
       if (
         !xubioProduct &&
@@ -223,7 +221,7 @@ const InvoiceContractDialog = () => {
           article:
             xubioProduct?.name ||
             xubioProduct?.Name ||
-            "Seleccione un producto",
+            'Seleccione un producto',
           observations: getConsolidatedObservations(),
           quantity: 1,
           unitPriceWithDiscounts: cartTotal,
@@ -233,23 +231,23 @@ const InvoiceContractDialog = () => {
       ];
     } else {
       const items = [];
-      cartItems.forEach(cartItem => {
+      cartItems.forEach((cartItem) => {
         if (cartItem.entityItems) {
-          cartItem.entityItems.forEach(entityItem => {
+          cartItem.entityItems.forEach((entityItem) => {
             const xubioProduct =
               cartItem.entityItems.length === 1 && !entityItem.xubioProductCode
                 ? xubioGenericProduct
                 : xubioProducts.find(
-                    p => (p.code || p.Code) === entityItem.xubioProductCode
+                    (p) => (p.code || p.Code) === entityItem.xubioProductCode
                   );
             items.push({
               article:
                 xubioProduct?.name ||
                 xubioProduct?.Name ||
-                "Producto no especificado",
+                'Producto no especificado',
               observations: `${
-                cartItems.length > 1 ? cartItem.name + " - " : ""
-              }${entityItem.observations || "-"}`,
+                cartItems.length > 1 ? cartItem.name + ' - ' : ''
+              }${entityItem.observations || '-'}`,
               quantity: entityItem.quantity,
               unitPriceWithDiscounts: entityItem.unitPriceWithDiscounts,
               price: entityItem.total,
@@ -272,7 +270,7 @@ const InvoiceContractDialog = () => {
   }
 
   return (
-    <Modal isOpen={showDialog} toggle={handleClose} size="xl">
+    <Modal isOpen={showDialog} toggle={handleClose} size='xl'>
       <ModalHeader toggle={handleClose}>
         Facturar a {selectedClient?.brandName}
       </ModalHeader>
@@ -280,36 +278,36 @@ const InvoiceContractDialog = () => {
         <div>
           {/* Opciones de facturación */}
           {totalItemsCount > 1 && (
-            <div className="form-group mb-4">
-              <label className="form-label">
+            <div className='form-group mb-4'>
+              <label className='form-label'>
                 <strong>Método de facturación:</strong>
               </label>
-              <div className="d-flex">
-                <div className="form-check mr-5">
+              <div className='d-flex'>
+                <div className='form-check mr-5'>
                   <input
-                    className="form-check-input"
-                    type="radio"
-                    name="invoiceMode"
-                    id="separate"
-                    value="separate"
-                    checked={invoiceMode === "separate"}
+                    className='form-check-input'
+                    type='radio'
+                    name='invoiceMode'
+                    id='separate'
+                    value='separate'
+                    checked={invoiceMode === 'separate'}
                     onChange={handleInvoiceModeChange}
                   />
-                  <label className="form-check-label" htmlFor="separate">
+                  <label className='form-check-label' htmlFor='separate'>
                     Facturar espacios por separados
                   </label>
                 </div>
-                <div className="form-check ms-4">
+                <div className='form-check ms-4'>
                   <input
-                    className="form-check-input"
-                    type="radio"
-                    name="invoiceMode"
-                    id="consolidated"
-                    value="consolidated"
-                    checked={invoiceMode === "consolidated"}
+                    className='form-check-input'
+                    type='radio'
+                    name='invoiceMode'
+                    id='consolidated'
+                    value='consolidated'
+                    checked={invoiceMode === 'consolidated'}
                     onChange={handleInvoiceModeChange}
                   />
-                  <label className="form-check-label" htmlFor="consolidated">
+                  <label className='form-check-label' htmlFor='consolidated'>
                     Facturar todo junto (consolidado)
                   </label>
                 </div>
@@ -318,24 +316,24 @@ const InvoiceContractDialog = () => {
           )}
 
           {/* Selección de producto para consolidación */}
-          {invoiceMode === "consolidated" && totalItemsCount > 1 && (
-            <div className="form-group mb-4">
-              <label className="form-label">
+          {invoiceMode === 'consolidated' && totalItemsCount > 1 && (
+            <div className='form-group mb-4'>
+              <label className='form-label'>
                 <strong>Producto Xubio para facturación consolidada:</strong>
               </label>
               {consolidationOptions.length > 0 ? (
                 <InputSelectFieldSimple
-                  labelText={""}
-                  name="xubioProduct"
+                  labelText={''}
+                  name='xubioProduct'
                   options={consolidationOptions}
                   value={consolidatedXubioProductCode}
                   onChangeHandler={handleXubioProductChange}
-                  getOptionLabel={option => option.name || option.Name}
-                  getOptionValue={option => option.code || option.Code}
-                  placeholderText="Seleccione un producto..."
+                  getOptionLabel={(option) => option.name || option.Name}
+                  getOptionValue={(option) => option.code || option.Code}
+                  placeholderText='Seleccione un producto...'
                 />
               ) : (
-                <div className="alert alert-warning">
+                <div className='alert alert-warning'>
                   No se encontraron productos disponibles para consolidación
                 </div>
               )}
@@ -343,8 +341,8 @@ const InvoiceContractDialog = () => {
           )}
 
           {/* Vista previa de la factura */}
-          <div className="row">
-            <div className="col-md-12">
+          <div className='row'>
+            <div className='col-md-12'>
               <p>
                 <strong>Cliente:</strong> {selectedClient?.brandName} (
                 {clientType === CONSTANTS.COMTUR_CODE
@@ -353,23 +351,23 @@ const InvoiceContractDialog = () => {
                 )
               </p>
 
-              <div className="table-responsive mt-3">
-                <table className="table table-sm table-bordered">
-                  <thead className="table-dark">
+              <div className='table-responsive mt-3'>
+                <table className='table table-sm table-bordered'>
+                  <thead className='table-dark'>
                     <tr>
-                      <th style={{ width: "20%" }} className="text-center">
+                      <th style={{ width: '20%' }} className='text-center'>
                         PRODUCTO
                       </th>
-                      <th style={{ width: "30%" }} className="text-center">
+                      <th style={{ width: '30%' }} className='text-center'>
                         OBSERVACIONES
                       </th>
-                      <th style={{ width: "10%" }} className="text-center">
+                      <th style={{ width: '10%' }} className='text-center'>
                         CANTIDAD
                       </th>
-                      <th style={{ width: "20%" }} className="text-center">
+                      <th style={{ width: '20%' }} className='text-center'>
                         PRECIO
                       </th>
-                      <th style={{ width: "20%" }} className="text-center">
+                      <th style={{ width: '20%' }} className='text-center'>
                         IMPORTE
                       </th>
                     </tr>
@@ -380,11 +378,11 @@ const InvoiceContractDialog = () => {
                         <td>{item.article}</td>
                         <td>
                           {totalItemsCount > 1 &&
-                          invoiceMode === "consolidated" ? (
+                          invoiceMode === 'consolidated' ? (
                             <div
                               style={{
-                                whiteSpace: "pre-wrap",
-                                fontSize: "0.875rem",
+                                whiteSpace: 'pre-wrap',
+                                fontSize: '0.875rem',
                               }}
                             >
                               {item.observations}
@@ -393,28 +391,28 @@ const InvoiceContractDialog = () => {
                             item.observations
                           )}
                         </td>
-                        <td className="text-center">{item.quantity}</td>
-                        <td className="text-end">
+                        <td className='text-center'>{item.quantity}</td>
+                        <td className='text-end'>
                           {formatCurrency(
                             item.unitPriceWithDiscounts,
-                            item.currencyName || "$"
+                            item.currencyName || '$'
                           )}
                         </td>
-                        <td className="text-end">
-                          {formatCurrency(item.price, item.currencyName || "$")}
+                        <td className='text-end'>
+                          {formatCurrency(item.price, item.currencyName || '$')}
                         </td>
                       </tr>
                     ))}
                   </tbody>
-                  <tfoot className="table-light">
+                  <tfoot className='table-light'>
                     <tr>
-                      <th colSpan="4" className="text-end">
+                      <th colSpan='4' className='text-end'>
                         Total a facturar:
                       </th>
-                      <th className="text-end">
+                      <th className='text-end'>
                         {cartCurrency
                           ? formatCurrency(cartTotal, cartCurrency)
-                          : formatCurrency(cartTotal, "$")}
+                          : formatCurrency(cartTotal, '$')}
                       </th>
                     </tr>
                   </tfoot>
@@ -425,13 +423,13 @@ const InvoiceContractDialog = () => {
         </div>
 
         {/* Observaciones globales */}
-        <div className="form-group">
+        <div className='form-group'>
           <InputTextAreaFieldSimple
-            labelText="Observaciones generales:"
-            name="globalObservations"
+            labelText='Observaciones generales:'
+            name='globalObservations'
             value={globalObservations}
             onChangeHandler={handleGlobalObservationsChange}
-            placeholderText="Ingrese observaciones que se aplicarán a la factura..."
+            placeholderText='Ingrese observaciones que se aplicarán a la factura...'
             rows={3}
           />
         </div>
@@ -444,7 +442,7 @@ const InvoiceContractDialog = () => {
           onClickHandler={handleSendToXubio}
           disabled={
             loading ||
-            (invoiceMode === "consolidated" &&
+            (invoiceMode === 'consolidated' &&
               totalItemsCount > 1 &&
               !consolidatedXubioProductCode)
           }
@@ -452,13 +450,13 @@ const InvoiceContractDialog = () => {
           {loading ? (
             <>
               <span
-                className="spinner-border spinner-border-sm me-2"
-                role="status"
+                className='spinner-border spinner-border-sm me-2'
+                role='status'
               />
               Procesando...
             </>
           ) : (
-            "Generar factura en Xubio"
+            'Generar factura en Xubio'
           )}
         </SaveButton>
       </ModalFooter>

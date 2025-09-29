@@ -1,150 +1,90 @@
-import React from "react";
-import ReactExport from "react-data-export";
-import Moment from "moment";
-import excelIcon from "shared/images/iconExcel.png";
+import React from 'react';
+import * as XLSX from 'xlsx';
+import { format } from 'date-fns';
 
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+import excelIcon from 'shared/images/iconExcel.png';
 
-const haederStyle = {
-  font: {
-    sz: "12",
-    bold: true,
-    color: { rgb: "ffffff" },
-  },
-  alignment: { horizontal: "center" },
-  fill: {
-    patternType: "solid",
-    fgColor: { rgb: "003e6b" },
-  },
-};
-const bodySizeText = "12";
+export default function ExcelExport({ tableRef }) {
+  const [excelD, setExcelD] = React.useState([]);
 
-const getReporteExcelfile = data => [
-  {
-    columns: [
-      {
-        title: "Cliente".toLocaleUpperCase(),
-        width: { wpx: 300 },
-        style: haederStyle,
-      },
-      {
-        title: "Tipo de Espacio".toLocaleUpperCase(),
-        width: { wpx: 180 },
-        style: haederStyle,
-      },
-      {
-        title: "Ubicación".toLocaleUpperCase(),
-        width: { wpx: 180 },
-        style: haederStyle,
-      },
-      {
-        title: "B x A".toLocaleUpperCase(),
-        width: { wpx: 120 },
-        style: haederStyle,
-      },
-      {
-        title: "N°Cont.".toLocaleUpperCase(),
-        width: { wpx: 90 },
-        style: haederStyle,
-      },
-      {
-        title: "Contrato".toLocaleUpperCase(),
-        width: { wpx: 300 },
-        style: haederStyle,
-      },
-      {
-        title: "Cantidad".toLocaleUpperCase(),
-        width: { wpx: 80 },
-        style: haederStyle,
-      },
-      {
-        title: "Página".toLocaleUpperCase(),
-        width: { wpx: 80 },
-        style: haederStyle,
-      },
-      {
-        title: "Observaciones".toLocaleUpperCase(),
-        width: { wpx: 120 },
-        style: haederStyle,
-      },
-      {
-        title: "Vdor".toLocaleUpperCase(),
-        width: { wpx: 160 },
-        style: haederStyle,
-      },
-    ],
-    data: data.map(d => [
-      {
-        value: `${d.brandName} ${d.legalName}`,
-        style: { font: { sz: bodySizeText } },
-      },
-      {
-        value: d.spaceType ? d.spaceType : "",
-        style: { font: { sz: bodySizeText } },
-      },
-      {
-        value: d.spaceLocation,
-        style: { font: { sz: bodySizeText } },
-      },
-      {
-        value: d.bxA,
-        style: { font: { sz: bodySizeText } },
-      },
-      { value: d.contractId, style: { font: { sz: bodySizeText } } },
-      {
-        value: d.contractName,
-        style: { font: { sz: bodySizeText } },
-      },
-      {
-        value: !d.quantity
-          ? ""
-          : isNaN(d.quantity)
-          ? d.quantity
-          : Number(d.quantity),
-        style: { font: { sz: bodySizeText } },
-      },
-      {
-        value: !d.pageNumber
-          ? ""
-          : isNaN(d.pageNumber)
-          ? d.pageNumber
-          : Number(d.pageNumber),
-        style: { font: { sz: bodySizeText } },
-      },
-      {
-        value: d.observations,
-        style: { font: { sz: bodySizeText } },
-      },
-      {
-        value: d.seller,
-        style: { font: { sz: bodySizeText } },
-      },
-    ]),
-  },
-];
+  React.useEffect(() => {
+    if (Array.isArray(excelD) && excelD.length > 0) {
+      downloadExcel(excelD);
+    }
+  }, [excelD]);
 
-export default function ExcelExport({
-  addReporteGeneration,
-  data,
-  productEditionId,
-}) {
+  const downloadExcel = (data) => {
+    // Preparar datos para Excel
+    const excelData = data.map((d) => ({
+      CLIENTE: d.client,
+      CONTRATO: d.contract,
+      EDICIÓN: d.edition,
+      ESPACIO: d.productAdvertisingSpace,
+      UBICACIÓN: d.location,
+      CANTIDAD: d.quantity,
+      OBSERVACIONES: d.observations,
+      VENDEDOR: d.seller,
+      FACTURA: d.invoiceNumber,
+      'PÁG.': d.pageNumber,
+    }));
+
+    // Crear workbook
+    const ws = XLSX.utils.json_to_sheet(excelData);
+    const wb = XLSX.utils.book_new();
+
+    // Configurar anchos de columnas
+    const colWidths = [
+      { wch: 40 }, // Cliente
+      { wch: 40 }, // Contrato
+      { wch: 15 }, // Edición
+      { wch: 40 }, // Espacio
+      { wch: 40 }, // Ubicación
+      { wch: 12 }, // Cantidad
+      { wch: 30 }, // Observaciones
+      { wch: 25 }, // Vendedor
+      { wch: 15 }, // Factura
+      { wch: 12 }, // Pág.
+    ];
+    ws['!cols'] = colWidths;
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Órdenes para Producción');
+
+    // Descargar archivo
+    const filename = `Órdenes para producción ${format(
+      new Date(),
+      'dd-MM-yyyy HH:mm:ss'
+    )}
+    )}.xlsx`;
+    XLSX.writeFile(wb, filename);
+  };
+
+  const getExcelData = () => {
+    const data = (
+      tableRef?.current?.paginationContext?.props?.data ||
+      tableRef?.current ||
+      []
+    ).map((d) => ({
+      client: d.client,
+      contract: d.contract,
+      edition: d.edition,
+      productAdvertisingSpace: d.productAdvertisingSpace,
+      location: d.location,
+      quantity: d.quantity,
+      observations: d.observations,
+      seller: d.seller,
+      invoiceNumber: d.invoiceNumber,
+      pageNumber: d.pageNumber,
+    }));
+    return data;
+  };
+
+  const handleClickExcel = () => {
+    setExcelD(getExcelData());
+  };
+
   return (
-    <ExcelFile
-      filename={`Órdenes de publicación ${Moment(new Date()).format(
-        "DD-MM-YYYY HH:mm:ss"
-      )}`}
-      element={
-        <button
-          type="button"
-          className="btn"
-          onClick={() => addReporteGeneration(productEditionId)}
-        >
-          <img src={excelIcon} width="26" height="32" />
-        </button>
-      }
-    >
-      <ExcelSheet dataSet={getReporteExcelfile(data)} name="Reporte" />
-    </ExcelFile>
+    <button type='button' className='btn' onClick={handleClickExcel}>
+      <img src={excelIcon} width='26' height='32' />
+    </button>
   );
 }

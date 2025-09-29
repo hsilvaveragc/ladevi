@@ -1,8 +1,8 @@
-import React from "react";
-import styled from "styled-components";
-import { Link } from "react-router-dom";
-import useUser from "shared/security/useUser";
-import espaciosIcon from "shared/images/icon-espacios.png";
+import styled from 'styled-components';
+import { Link } from 'react-router-dom';
+
+import useUser from 'shared/security/useUser';
+import espaciosIcon from 'shared/images/icon-espacios.png';
 
 const PageContainer = styled.div`
   display: flex;
@@ -34,26 +34,26 @@ export default function ReportsPage() {
 
   return (
     <PageContainer>
-      <div className="menu-container">
+      <div className='menu-container'>
         {(userRol.isAdmin || userRol.isSupervisor) && (
-          <Link to="/reportes/reportOPP">
-            <img src={espaciosIcon} alt="Icono" />
+          <Link to='/reportes/reportOPP'>
+            <img src={espaciosIcon} alt='Icono' />
             <span>Órdenes de publicación para producción</span>
           </Link>
         )}
-        <Link to="/reportes/reportEPV">
-          <img src={espaciosIcon} alt="Icono" />
+        <Link to='/reportes/reportEPV'>
+          <img src={espaciosIcon} alt='Icono' />
           <span>Espacios publicados por vendedor</span>
         </Link>
         <Link
-          to="/reportes/reportEPC"
+          to='/reportes/reportEPC'
           //to="#"
         >
-          <img src={espaciosIcon} alt="Icono" />
+          <img src={espaciosIcon} alt='Icono' />
           <span>Espacios publicados por cliente</span>
         </Link>
-        <Link to="/reportes/reporteCPV">
-          <img src={espaciosIcon} alt="Icono" />
+        <Link to='/reportes/reporteCPV'>
+          <img src={espaciosIcon} alt='Icono' />
           <span>Contratos pendientes por vendedor</span>
         </Link>
       </div>

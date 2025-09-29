@@ -1,15 +1,14 @@
 version: '3.3'
 
 services:
-
-  ladevi_ventas_front:
-    image: ladevi_ventas_front
-    container_name: "ladevi_ventas_front"
+  ladevi_ventas_front_inventario:
+    image: ladevi_ventas_front_inventario
+    container_name: "ladevi_ventas_front_inventario"
     build:
       context: .
       dockerfile: Dockerfile.react
     ports:
-      - "8080:80"
+      - "8081:80"  # Puerto diferente para evitar conflicto
     environment:
       x: a
     env_file: .env

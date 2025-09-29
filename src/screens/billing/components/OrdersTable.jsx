@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import "shared/utils/extensionsMethods.js";
-import { getHeaderStyleTable, getAllItem } from "shared/utils/index";
-import { CONSTANTS } from "../constants";
-import { addToCart } from "../actionCreators";
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import 'shared/utils/extensionsMethods.js';
+import { getHeaderStyleTable, getAllItem } from 'shared/utils/index';
+import { CONSTANTS } from '../constants';
+import { addToCart } from '../actionCreators';
 import {
   getOrders,
   getLoading,
   getCartItems,
   getSelectedCurrency,
   getSelectedEdition,
-} from "../reducer";
-import Table from "shared/components/Table";
-import InputSelectFieldSimple from "shared/components/InputSelectFieldSimple";
-import { SaveButton } from "shared/components/Buttons";
+} from '../reducer';
+import Table from 'shared/components/Table';
+import InputSelectFieldSimple from 'shared/components/InputSelectFieldSimple';
+import { SaveButton } from 'shared/components/Buttons';
 
 const OrdersTable = () => {
   const dispatch = useDispatch();
@@ -39,8 +39,8 @@ const OrdersTable = () => {
   const ordersInCart = React.useMemo(
     () =>
       cartItems
-        .filter(item => item.type === CONSTANTS.ORDER_CODE)
-        .map(item => item.id),
+        .filter((item) => item.type === CONSTANTS.ORDER_CODE)
+        .map((item) => item.id),
     [cartItems]
   );
 
@@ -51,7 +51,7 @@ const OrdersTable = () => {
       let ordersFilteredByCurrency = orders;
       if (selectedCurrency) {
         ordersFilteredByCurrency = orders.filter(
-          order => order.currencyName === selectedCurrency
+          (order) => order.currencyName === selectedCurrency
         );
       } else {
         setVisibleOrders([]);
@@ -66,7 +66,7 @@ const OrdersTable = () => {
       const uniqueClients = new Set();
       const clientOpts = [getAllItem()];
 
-      ordersFilteredByCurrency.forEach(order => {
+      ordersFilteredByCurrency.forEach((order) => {
         if (order.sellerId && !uniqueSellers.has(order.sellerId)) {
           uniqueSellers.add(order.sellerId);
           sellerOpts.push({
@@ -88,7 +88,7 @@ const OrdersTable = () => {
 
       // Inicializar las órdenes filtradas excluyendo las que ya están en el carrito
       const availableOrders = ordersFilteredByCurrency.filter(
-        order => !ordersInCart.includes(order.id)
+        (order) => !ordersInCart.includes(order.id)
       );
       setVisibleOrders(availableOrders);
     } else {
@@ -112,12 +112,12 @@ const OrdersTable = () => {
     let ordersToFilter = orders;
     if (selectedCurrency) {
       ordersToFilter = orders.filter(
-        order => order.currencyName === selectedCurrency
+        (order) => order.currencyName === selectedCurrency
       );
     }
 
     // Luego aplicar los filtros adicionales
-    const filtered = ordersToFilter.filter(order => {
+    const filtered = ordersToFilter.filter((order) => {
       // Excluir órdenes que ya están en el carrito
       if (ordersInCart.includes(order.id)) {
         return false;
@@ -139,7 +139,7 @@ const OrdersTable = () => {
     setVisibleOrders(filtered);
   };
 
-  const handleAddOrderToCart = order => {
+  const handleAddOrderToCart = (order) => {
     if (loading) {
       return;
     }
@@ -175,79 +175,79 @@ const OrdersTable = () => {
     }
 
     // Agregar cada orden visible al carrito
-    visibleOrders.forEach(order => {
+    visibleOrders.forEach((order) => {
       handleAddOrderToCart(order);
     });
   };
 
   const columns = [
     {
-      Header: "Cliente",
-      accessor: "clientBrandName",
-      width: "1%",
+      Header: 'Cliente',
+      accessor: 'clientBrandName',
+      width: '1%',
       headerStyle: getHeaderStyleTable(),
     },
     {
-      Header: "N°Contrato",
-      accessor: "contractNumber",
-      width: "10%",
+      Header: 'N°Contrato',
+      accessor: 'contractNumber',
+      width: '10%',
       headerStyle: getHeaderStyleTable(),
     },
     {
-      Header: "Contrato",
-      accessor: "contractName",
-      width: "20%",
+      Header: 'Contrato',
+      accessor: 'contractName',
+      width: '20%',
       headerStyle: getHeaderStyleTable(),
     },
     {
-      Header: "Espacio",
-      accessor: "productAdvertisingSpaceName",
-      width: "20%",
+      Header: 'Espacio',
+      accessor: 'productAdvertisingSpaceName',
+      width: '20%',
       headerStyle: getHeaderStyleTable(),
     },
     {
-      Header: "Ubicación",
-      accessor: "advertisingSpaceLocationTypeName",
-      width: "10%",
+      Header: 'Ubicación',
+      accessor: 'advertisingSpaceLocationTypeName',
+      width: '10%',
       headerStyle: getHeaderStyleTable(),
     },
     {
-      Header: "Moneda",
-      accessor: "currencyName",
-      width: "5%",
+      Header: 'Moneda',
+      accessor: 'currencyName',
+      width: '5%',
       headerStyle: getHeaderStyleTable(),
     },
     {
-      Header: "Cantidad",
-      accessor: "quantity",
-      width: "5%",
+      Header: 'Cantidad',
+      accessor: 'quantity',
+      width: '5%',
       headerStyle: getHeaderStyleTable(),
     },
     {
-      accessor: "total",
-      Header: "Importe",
-      width: "10%",
+      accessor: 'total',
+      Header: 'Importe',
+      width: '10%',
       headerStyle: getHeaderStyleTable(),
-      Cell: props =>
+      Cell: (props) =>
         `${
           props.original.currencyName
         } ${props.original.total.toLocaleCurrency()}`,
     },
     {
-      Header: "Acciones",
-      width: "10%",
+      Header: 'Acciones',
+      width: '10%',
       Cell: ({ row }) => {
         const order = row._original;
         return (
           <button
-            className="btn btn-sm btn-primary"
-            onClick={e => {
+            className='btn btn-sm btn-primary'
+            onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
               handleAddOrderToCart(order);
             }}
             disabled={loading}
-            title="Agregar"
+            title='Agregar'
           >
             Agregar
           </button>
@@ -258,44 +258,44 @@ const OrdersTable = () => {
   ];
 
   return (
-    <div className="card mb-4">
-      <div className="card-header">
-        <h5 className="mb-0">Órdenes de la edición seleccionada</h5>
+    <div className='card mb-4'>
+      <div className='card-header'>
+        <h5 className='mb-0'>Órdenes de la edición seleccionada</h5>
       </div>
-      <div className="card-body">
-        <div className="mb-4">
-          <div className="row">
+      <div className='card-body'>
+        <div className='mb-4'>
+          <div className='row'>
             {/* SIMPLIFICADO: Solo filtros relevantes para facturación por ediciones */}
-            <div className="col-md-4">
+            <div className='col-md-4'>
               <InputSelectFieldSimple
-                labelText="Cliente"
-                name="clientId"
+                labelText='Cliente'
+                name='clientId'
                 options={clientOptions}
                 value={filters.clientId}
-                onChangeHandler={client =>
-                  handleFilterChange("clientId", client.id)
+                onChangeHandler={(client) =>
+                  handleFilterChange('clientId', client.id)
                 }
-                getOptionLabel={option => option.name}
-                getOptionValue={option => option.id}
+                getOptionLabel={(option) => option.name}
+                getOptionValue={(option) => option.id}
               />
             </div>
 
-            <div className="col-md-4">
+            <div className='col-md-4'>
               <InputSelectFieldSimple
-                labelText="Vendedor"
-                name="sellerId"
+                labelText='Vendedor'
+                name='sellerId'
                 options={sellerOptions}
                 value={filters.sellerId}
-                onChangeHandler={seller =>
-                  handleFilterChange("sellerId", seller.id)
+                onChangeHandler={(seller) =>
+                  handleFilterChange('sellerId', seller.id)
                 }
-                getOptionLabel={option => option.name}
-                getOptionValue={option => option.id}
+                getOptionLabel={(option) => option.name}
+                getOptionValue={(option) => option.id}
               />
             </div>
 
-            <div className="col-md-3 d-flex justify-content-center align-items-center mt-2">
-              <div className="d-flex gap-2">
+            <div className='col-md-3 d-flex justify-content-center align-items-center mt-2'>
+              <div className='d-flex gap-2'>
                 <SaveButton
                   onClickHandler={handleApplyFilters}
                   disabled={loading}
@@ -305,10 +305,10 @@ const OrdersTable = () => {
 
                 {visibleOrders.length > 0 && (
                   <button
-                    className="btn btn-primary btn-sm ml-3"
+                    className='btn btn-primary btn-sm ml-3'
                     onClick={handleAddAllToCart}
                     disabled={loading}
-                    title="Agregar todas las órdenes visibles al carrito"
+                    title='Agregar todas las órdenes visibles al carrito'
                   >
                     Agregar Todo
                   </button>
@@ -319,10 +319,10 @@ const OrdersTable = () => {
         </div>
 
         {visibleOrders.length === 0 ? (
-          <div className="alert alert-info">
+          <div className='alert alert-info'>
             {(selectedEdition && orders.length == 0) || selectedCurrency
-              ? "No hay ordenes de publiación disponibles con los filtros aplicados"
-              : "Selecciona una moneda para ver las ordenes de publiación disponibles"}
+              ? 'No hay ordenes de publiación disponibles con los filtros aplicados'
+              : 'Selecciona una moneda para ver las ordenes de publiación disponibles'}
           </div>
         ) : (
           <Table
@@ -335,8 +335,8 @@ const OrdersTable = () => {
 
         {/* NUEVO: Mostrar información de resumen */}
         {visibleOrders.length > 0 && (
-          <div className="mt-3">
-            <small className="text-muted">
+          <div className='mt-3'>
+            <small className='text-muted'>
               Mostrando {visibleOrders.length} órdenes
               {selectedCurrency && <span> • Moneda: {selectedCurrency}</span>}
             </small>

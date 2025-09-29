@@ -1,8 +1,8 @@
-import Moment from "moment";
+import { formatDateWithSlashes } from './dateHelpers';
 
-Number.prototype.toLocaleCurrency = function(options = {}) {
+Number.prototype.toLocaleCurrency = function (options = {}) {
   const defaultOptions = {
-    locale: "es-ES",
+    locale: 'es-ES',
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   };
@@ -15,13 +15,8 @@ Number.prototype.toLocaleCurrency = function(options = {}) {
   });
 };
 
-String.prototype.toLocaleDate = function() {
-  // Verifica si es un objeto Moment
-  if (Moment.isMoment(this)) {
-    return this.format("DD/MM/YYYY");
-  }
-
-  return Moment(this).format("DD/MM/YYYY");
+String.prototype.toLocaleDate = function () {
+  return formatDateWithSlashes(this.toString());
 };
 
 export {};

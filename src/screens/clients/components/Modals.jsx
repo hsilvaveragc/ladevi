@@ -1,9 +1,9 @@
-import React from "react";
-import Modal from "shared/components/Modal";
-import ClientForm from "./Form";
-import DuplicateCuitModal from "./DuplicateCuitModal";
+import Modal from 'shared/components/Modal';
 
-export default props => (
+import ClientForm from './Form';
+import DuplicateCuitModal from './DuplicateCuitModal';
+
+const ModalsClient = (props) => (
   <>
     <Modal
       shouldClose={true}
@@ -75,3 +75,5 @@ export default props => (
     />
   </>
 );
+
+export default ModalsClient;

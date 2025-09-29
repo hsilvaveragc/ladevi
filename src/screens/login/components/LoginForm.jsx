@@ -1,11 +1,11 @@
-import { Formik, Form } from "formik";
-import { isEmpty } from "ramda";
-import React from "react";
-import styled from "styled-components";
-import * as Yup from "yup";
-import Spinner from "shared/components/Spinner";
-import InputTextField from "shared/components/InputTextField";
-import Logo from "../../../shared/images/newLogo.png";
+import { Formik, Form } from 'formik';
+import { isEmpty } from 'ramda';
+import styled from 'styled-components';
+import * as Yup from 'yup';
+import Spinner from 'shared/components/Spinner';
+import InputTextField from 'shared/components/InputTextField';
+
+import Logo from '../../../shared/images/newLogo.png';
 
 const LoginFormContainer = styled.div`
   width: 100%;
@@ -20,16 +20,16 @@ const LoginFormContainer = styled.div`
     flex-direction: column;
   }
   h2 {
-    font-family: "Roboto", sans-serif;
+    font-family: 'Roboto', sans-serif;
 
     font-size: 1.2rem;
     text-align: center;
   }
   label {
     font-size: 0.7rem;
-    font-family: "Lato", sans-serif;
+    font-family: 'Lato', sans-serif;
   }
-  button[type="submit"] {
+  button[type='submit'] {
     background-color: #03449e;
     color: #fff;
     width: 100%;
@@ -62,67 +62,67 @@ export default function LoginForm({ error, actions, isLoading, modalHandler }) {
         validateOnChange={false}
         validateOnBlur={false}
         initialValues={{
-          username: "",
-          password: "",
+          username: '',
+          password: '',
         }}
-        onSubmit={values => {
+        onSubmit={(values) => {
           actions.loginInit({
             username: values.username,
             password: values.password,
           });
         }}
         validationSchema={Yup.object().shape({
-          username: Yup.string().required("Requerido"),
-          password: Yup.string().required("Requerido"),
+          username: Yup.string().required('Requerido'),
+          password: Yup.string().required('Requerido'),
         })}
       >
-        {props => {
-          let { errors } = props;
+        {(props) => {
+          const { errors } = props;
           return (
-            <Form className="form">
+            <Form className='form'>
               <h2>Sistema de ventas</h2>
-              <div className="form-group">
+              <div className='form-group'>
                 <InputTextField
-                  labelText="Nombre de usuario"
+                  labelText='Nombre de usuario'
                   error={errors.username}
-                  name="username"
-                  data-testid="username-input"
+                  name='username'
+                  data-testid='username-input'
                 />
               </div>
-              <div className="form-group">
+              <div className='form-group'>
                 <InputTextField
-                  type="password"
-                  labelText="Contraseña"
+                  type='password'
+                  labelText='Contraseña'
                   error={errors.password}
-                  name="password"
-                  data-testid="password-input"
+                  name='password'
+                  data-testid='password-input'
                 />
               </div>
-              <div className="form-group form-check">
+              <div className='form-group form-check'>
                 <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id="exampleCheck1"
+                  type='checkbox'
+                  className='form-check-input'
+                  id='exampleCheck1'
                 />
-                <label className="form-check-label" htmlFor="exampleCheck1">
+                <label className='form-check-label' htmlFor='exampleCheck1'>
                   Recordar Sesión
                 </label>
               </div>
               {isEmpty(error) ? null : (
                 <div
-                  className="error-container"
-                  data-testid="error-container-login"
+                  className='error-container'
+                  data-testid='error-container-login'
                 >
                   {error}
                 </div>
               )}
               <button
-                className="btn btn-primary"
+                className='btn btn-primary'
                 disabled={isLoading}
-                type="submit"
-                data-testid="login-button"
+                type='submit'
+                data-testid='login-button'
               >
-                {!isLoading ? "Ingresar" : <Spinner />}
+                {!isLoading ? 'Ingresar' : <Spinner />}
               </button>
               <span onClick={modalHandler}>Olvidé mi contraseña</span>
             </Form>

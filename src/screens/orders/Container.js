@@ -1,8 +1,7 @@
-// eslint-disable-next-line
-import { bindActionCreators, compose } from "redux";
-import { connect } from "react-redux";
-import Page from "./Page";
+import { bindActionCreators, compose } from 'redux';
+import { connect } from 'react-redux';
 
+import Page from './Page';
 import {
   initialLoad,
   showAddModal,
@@ -19,8 +18,7 @@ import {
   getContractsAvailable,
   getSpaceTypesAvailable,
   getSpaceLocationsAvailable,
-} from "./actionCreators";
-
+} from './actionCreators';
 import {
   getOrders,
   getProducts,
@@ -46,9 +44,9 @@ import {
   getLoadingContracts,
   getLoadingSpaceTypes,
   getLoadingSpaceLocations,
-} from "./reducer";
+} from './reducer';
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   availableOrders: getOrders(state),
   availableProducts: getProducts(state),
   availableEditionsForFilter: getEditionsForFilter(state),
@@ -75,7 +73,7 @@ const mapStateToProps = state => ({
   isLoadingSpaceLocations: getLoadingSpaceLocations(state),
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators(
     {
       initialLoad,
@@ -98,9 +96,4 @@ const mapDispatchToProps = dispatch => ({
   ),
 });
 
-export default compose(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
-)(Page);
+export default compose(connect(mapStateToProps, mapDispatchToProps))(Page);

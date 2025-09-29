@@ -1,13 +1,14 @@
-import React from "react";
-import Modal from "shared/components/Modal";
-import CurrencyForm from "./Form";
+import Modal from 'shared/components/Modal';
 
-export default props => (
+import CurrencyForm from './Form';
+
+const CurrencyModals = (props) => (
   <>
     <Modal
       shouldClose={true}
       closeHandler={props.actions.showAddModal}
       isOpen={props.showAddModal}
+      size='sm'
     >
       <CurrencyForm
         saveHandler={props.actions.addCurrency}
@@ -23,6 +24,7 @@ export default props => (
       shouldClose={true}
       closeHandler={props.actions.showEditModal}
       isOpen={props.showEditModal}
+      size='sm'
     >
       <CurrencyForm
         selectedItem={props.selectedItem}
@@ -38,6 +40,7 @@ export default props => (
       shouldClose={true}
       closeHandler={props.actions.showDeleteModal}
       isOpen={props.showDeleteModal}
+      size='sm'
     >
       <CurrencyForm
         selectedItem={props.selectedItem}
@@ -51,3 +54,5 @@ export default props => (
     </Modal>
   </>
 );
+
+export default CurrencyModals;

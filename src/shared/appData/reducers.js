@@ -1,4 +1,5 @@
-import { createSelector } from "reselect";
+import { createSelector } from 'reselect';
+
 import {
   SET_LOGGED_USER,
   FETCH_APP_ROLES_INIT,
@@ -13,7 +14,7 @@ import {
   FETCH_DISTRICTS_INIT,
   FETCH_DISTRICTS_SUCCESS,
   FETCH_DISTRICTS_FAILURE,
-} from "./actionTypes";
+} from './actionTypes';
 
 const initialState = {
   loggedUser: {},
@@ -21,11 +22,11 @@ const initialState = {
   countries: [],
   statesGroupedByCountry: [],
   districtsGroupedByState: [],
-  error: "",
+  error: '',
   loading: false,
 };
 
-export default function(state = initialState, action) {
+export default function (state = initialState, action) {
   switch (action.type) {
     case SET_LOGGED_USER:
       return { ...state, loggedUser: action.payload };
@@ -84,29 +85,29 @@ export default function(state = initialState, action) {
   }
 }
 
-const getAppDataReducer = state => state.appData;
+const getAppDataReducer = (state) => state.appData;
 
 export const loggedUserSelector = createSelector(
   getAppDataReducer,
-  appDataReducer => appDataReducer.loggedUser
+  (appDataReducer) => appDataReducer.loggedUser
 );
 
 export const appRolesSelector = createSelector(
   getAppDataReducer,
-  appDataReducer => appDataReducer.appRoles
+  (appDataReducer) => appDataReducer.appRoles
 );
 
 export const countriesSelector = createSelector(
   getAppDataReducer,
-  appDataReducer => appDataReducer.countries
+  (appDataReducer) => appDataReducer.countries
 );
 
 export const statesGroupedByCountrySelector = createSelector(
   getAppDataReducer,
-  appDataReducer => appDataReducer.statesGroupedByCountry
+  (appDataReducer) => appDataReducer.statesGroupedByCountry
 );
 
 export const districtsGroupedByStateSelector = createSelector(
   getAppDataReducer,
-  appDataReducer => appDataReducer.districtsGroupedByState
+  (appDataReducer) => appDataReducer.districtsGroupedByState
 );

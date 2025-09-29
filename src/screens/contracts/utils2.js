@@ -1,9 +1,9 @@
-import { values } from "ramda";
+import { values } from 'ramda';
 
-const parseNumberValue = value => {
+const parseNumberValue = (value) => {
   if (!value) return 0;
-  if (typeof value === "string") {
-    return parseFloat(value.replaceAll(".", "").replaceAll(",", "."));
+  if (typeof value === 'string') {
+    return parseFloat(value.replaceAll('.', '').replaceAll(',', '.'));
   }
   return parseFloat(value);
 };
@@ -240,33 +240,25 @@ export const getSubtotalContract = (values, availableProducts) => {
   for (let i = 0; i < values.soldSpaces.length; i++) {
     const { subTotal } = makeTotals(values, i);
     totalNeto += parseFloat(
-      subTotal
-        .toString()
-        .split(".")
-        .join("")
-        .replace(",", ".")
+      subTotal.toString().split('.').join('').replace(',', '.')
     );
   }
 
   return !totalNeto || isNaN(totalNeto) ? 0 : formatNumber(totalNeto);
 };
 
-const formatNumber = number => {
-  return (Math.round(number * 100) / 100).toLocaleString("pt-BR", {
+const formatNumber = (number) => {
+  return (Math.round(number * 100) / 100).toLocaleString('pt-BR', {
     maximumFractionDigits: 2,
   });
 };
 
-export const getTotalsDiscounts = values => {
+export const getTotalsDiscounts = (values) => {
   let descuentos = 0;
   for (let i = 0; i < values.soldSpaces.length; i++) {
     const { totalDiscounts } = makeTotals(values, i);
     descuentos += parseFloat(
-      totalDiscounts
-        .toString()
-        .split(".")
-        .join("")
-        .replace(",", ".")
+      totalDiscounts.toString().split('.').join('').replace(',', '.')
     );
   }
   return !descuentos || isNaN(descuentos) ? 0 : formatNumber(descuentos);
@@ -277,41 +269,23 @@ export const getTotalTaxes = (values, availableProducts) => {
   for (let i = 0; i < values.soldSpaces.length; i++) {
     const { subtotalWithIva } = makeTotals(values, i);
     taxes += parseFloat(
-      subtotalWithIva
-        .toString()
-        .split(".")
-        .join("")
-        .replace(",", ".")
+      subtotalWithIva.toString().split('.').join('').replace(',', '.')
     );
   }
   return !taxes || isNaN(taxes) ? 0 : formatNumber(taxes);
 };
 
-export const getTotalContract = values => {
+export const getTotalContract = (values) => {
   let total = 0;
   for (let i = 0; i < values.soldSpaces.length; i++) {
     const { subTotal, subtotalWithIva, totalDiscounts } = makeTotals(values, i);
     total +=
+      parseFloat(subTotal.toString().split('.').join('').replace(',', '.')) -
       parseFloat(
-        subTotal
-          .toString()
-          .split(".")
-          .join("")
-          .replace(",", ".")
-      ) -
-      parseFloat(
-        totalDiscounts
-          .toString()
-          .split(".")
-          .join("")
-          .replace(",", ".")
+        totalDiscounts.toString().split('.').join('').replace(',', '.')
       ) +
       parseFloat(
-        subtotalWithIva
-          .toString()
-          .split(".")
-          .join("")
-          .replace(",", ".")
+        subtotalWithIva.toString().split('.').join('').replace(',', '.')
       );
   }
 
@@ -337,18 +311,10 @@ export const getUnitarioSoldSpace = (
 
   const unitario =
     parseFloat(
-      precioUnitario
-        .toString()
-        .split(".")
-        .join("")
-        .replace(",", ".")
+      precioUnitario.toString().split('.').join('').replace(',', '.')
     ) -
     parseFloat(
-      descuentosUnitario
-        .toString()
-        .split(".")
-        .join("")
-        .replace(",", ".")
+      descuentosUnitario.toString().split('.').join('').replace(',', '.')
     );
 
   return unitario;
@@ -433,26 +399,12 @@ export const getTotalSoldSpace = (
   );
 
   const total =
+    parseFloat(subTotal.toString().split('.').join('').replace(',', '.')) -
     parseFloat(
-      subTotal
-        .toString()
-        .split(".")
-        .join("")
-        .replace(",", ".")
-    ) -
-    parseFloat(
-      totalDiscounts
-        .toString()
-        .split(".")
-        .join("")
-        .replace(",", ".")
+      totalDiscounts.toString().split('.').join('').replace(',', '.')
     ) +
     parseFloat(
-      subtotalWithIva
-        .toString()
-        .split(".")
-        .join("")
-        .replace(",", ".")
+      subtotalWithIva.toString().split('.').join('').replace(',', '.')
     );
 
   return total;
@@ -488,10 +440,7 @@ export const makeTotals = (
   const dollarParityLocal =
     dollarParity ||
     parseFloat(
-      values.currencyParity
-        .toString()
-        .replaceAll(".", "")
-        .replaceAll(",", ".")
+      values.currencyParity.toString().replaceAll('.', '').replaceAll(',', '.')
     );
 
   const gerentialDiscountLocal = parseNumberValue(
@@ -615,11 +564,5 @@ export const makeTotals = (
   };
 };
 
-export const parseFloatRegionArg = value =>
-  parseFloat(
-    value
-      .toString()
-      .split(".")
-      .join("")
-      .replace(",", ".")
-  );
+export const parseFloatRegionArg = (value) =>
+  parseFloat(value.toString().split('.').join('').replace(',', '.'));

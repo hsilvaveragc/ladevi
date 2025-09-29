@@ -1,6 +1,6 @@
-import { put, all, takeLatest, call } from "redux-saga/effects";
-import { toast } from "react-toastify";
-import { getErrorMessage } from "shared/utils";
+import { put, all, takeLatest, call } from 'redux-saga/effects';
+import { toast } from 'react-toastify';
+import { getErrorMessage } from 'shared/utils';
 
 import {
   INITIAL_LOAD_INIT,
@@ -37,17 +37,17 @@ import {
   GETEDITIONSFILTER_INIT,
   GETEDITIONSFILTER_SUCCESS,
   GETEDITIONSFILTER_FAILURE,
-} from "./actionTypes.js";
+} from './actionTypes.js';
 import {
   UPDATE_ORDERS_CONTRACT,
   UPDATE_CONTRACT_HISTORIAL,
-} from "../contracts/actionTypes.js";
+} from '../contracts/actionTypes.js';
 
-import ordersService from "./service";
-import contractsService from "../contracts/service";
-import usersService from "../users/service";
-import productsService from "../products/service";
-import clientsService from "../clients/service";
+import ordersService from './service';
+import contractsService from '../contracts/service';
+import usersService from '../users/service';
+import productsService from '../products/service';
+import clientsService from '../clients/service';
 
 export function* initialLoad() {
   try {
@@ -71,7 +71,7 @@ export function* initialLoad() {
         type: INITIAL_LOAD_FAILURE,
         errors: { ...error.response.data.errors },
       }),
-      call(toast.error, "Hubo un error :("),
+      call(toast.error, 'Hubo un error :('),
     ]);
   }
 }
@@ -84,7 +84,7 @@ export function* addOrder({ payload }) {
       type: ADD_ORDER_SUCCESS,
       payload: addOrderPayload,
     });
-    yield call(toast.success, "Orden de publicación agregada con exito!");
+    yield call(toast.success, 'Orden de publicación agregada con exito!');
     yield put({
       type: FILTER_ORDERS_INIT,
       payload: payload.params || {},
@@ -125,13 +125,13 @@ export function* addOrder({ payload }) {
         ...err.response.data.errors,
       };
       // Manejar el caso especial cuando hay una clave vacía en el objeto de errores
-      if (auxError[""] && auxError[""].length > 0) {
+      if (auxError[''] && auxError[''].length > 0) {
         // Mostrar el primer mensaje de error en la clave vacía
-        yield call(toast.error, auxError[""][0], { position: "top-center" });
+        yield call(toast.error, auxError[''][0], { position: 'top-center' });
 
         // Si solo hay errores en la clave vacía, también podemos crear un error general
         if (Object.keys(auxError).length === 1) {
-          auxError.general = auxError[""][0];
+          auxError.general = auxError[''][0];
         }
       }
     }
@@ -153,7 +153,7 @@ export function* editOrder({ payload }) {
       payload: editOrderPayload,
     });
 
-    yield call(toast.success, "Orden de publicación modificada con exito!");
+    yield call(toast.success, 'Orden de publicación modificada con exito!');
 
     if (payload.contractId && payload.isFromContract) {
       payload.updateOrdenesHandler({
@@ -185,14 +185,14 @@ export function* deleteOrder({ payload }) {
     const deleteOrderPayload = yield call(ordersService.deleteOrder, payload);
 
     yield put({ type: DELETE_ORDER_SUCCESS, payload: deleteOrderPayload });
-    yield call(toast.success, "Orden de publicación eliminada con exito!");
+    yield call(toast.success, 'Orden de publicación eliminada con exito!');
 
     if (payload.contractId && payload.isFromContract) {
       payload.updateOrdenesHandler({
         ...payload,
       });
     }
-    console.log("Parametros: ", payload.params);
+    console.log('Parametros: ', payload.params);
 
     if (!payload.isFromContract) {
       yield put({
@@ -207,7 +207,7 @@ export function* deleteOrder({ payload }) {
         type: DELETE_ORDER_FAILURE,
         errors: { ...err.response.data.errors },
       }),
-      call(toast.error, "Hubo un error :("),
+      call(toast.error, 'Hubo un error :('),
     ]);
   }
 }

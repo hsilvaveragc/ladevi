@@ -1,27 +1,27 @@
-export const USERS_INITIAL_LOAD_INIT = "@users/USERS_INITIAL_LOAD_INIT";
-export const USERS_INITIAL_LOAD_SUCCESS = "@users/USERS_INITIAL_LOAD_SUCCESS";
-export const USERS_INITIAL_LOAD_FAILURE = "@users/USERS_INITIAL_LOAD_FAILURE";
+export const USERS_INITIAL_LOAD_INIT = '@users/USERS_INITIAL_LOAD_INIT';
+export const USERS_INITIAL_LOAD_SUCCESS = '@users/USERS_INITIAL_LOAD_SUCCESS';
+export const USERS_INITIAL_LOAD_FAILURE = '@users/USERS_INITIAL_LOAD_FAILURE';
 
-export const GET_ALL_USERS_INIT = "@users/GET_ALL_USERS_INIT";
-export const GET_ALL_USERS_SUCCESS = "@users/GET_ALL_USERS_SUCCESS";
-export const GET_ALL_USERS_FAILURE = "@users/GET_ALL_USERS_FAILURE";
+export const GET_ALL_USERS_INIT = '@users/GET_ALL_USERS_INIT';
+export const GET_ALL_USERS_SUCCESS = '@users/GET_ALL_USERS_SUCCESS';
+export const GET_ALL_USERS_FAILURE = '@users/GET_ALL_USERS_FAILURE';
 
-export const FILTER_USERS_INIT = "@users/FILTER_USERS_INIT";
-export const FILTER_USERS_SUCCESS = "@users/FILTER_USERS_SUCCESS";
-export const FILTER_USERS_FAILURE = "@users/FILTER_USERS_FAILURE";
+export const FILTER_USERS_INIT = '@users/FILTER_USERS_INIT';
+export const FILTER_USERS_SUCCESS = '@users/FILTER_USERS_SUCCESS';
+export const FILTER_USERS_FAILURE = '@users/FILTER_USERS_FAILURE';
 
-export const EDIT_USER_INIT = "@users/EDIT_USER_INIT";
-export const EDIT_USER_SUCCESS = "@users/EDIT_USER_SUCCESS";
-export const EDIT_USER_FAILURE = "@users/EDIT_USER_FAILURE";
+export const EDIT_USER_INIT = '@users/EDIT_USER_INIT';
+export const EDIT_USER_SUCCESS = '@users/EDIT_USER_SUCCESS';
+export const EDIT_USER_FAILURE = '@users/EDIT_USER_FAILURE';
 
-export const ADD_USER_INIT = "@users/ADD_USER_INIT";
-export const ADD_USER_SUCCESS = "@users/ADD_USER_SUCCESS";
-export const ADD_USER_FAILURE = "@users/ADD_USER_FAILURE";
+export const ADD_USER_INIT = '@users/ADD_USER_INIT';
+export const ADD_USER_SUCCESS = '@users/ADD_USER_SUCCESS';
+export const ADD_USER_FAILURE = '@users/ADD_USER_FAILURE';
 
-export const DELETE_USER_INIT = "@users/DELETE_USER_INIT";
-export const DELETE_USER_SUCCESS = "@users/DELETE_USER_SUCCESS";
-export const DELETE_USER_FAILURE = "@users/DELETE_USER_FAILURE";
+export const DELETE_USER_INIT = '@users/DELETE_USER_INIT';
+export const DELETE_USER_SUCCESS = '@users/DELETE_USER_SUCCESS';
+export const DELETE_USER_FAILURE = '@users/DELETE_USER_FAILURE';
 
-export const SHOW_ADD_MODAL = "@users/SHOW_ADD_MODAL";
-export const SHOW_EDIT_MODAL = "@users/SHOW_EDIT_MODAL";
-export const SHOW_DELETE_MODAL = "@users/SHOW_DELETE_MODAL";
+export const SHOW_ADD_MODAL = '@users/SHOW_ADD_MODAL';
+export const SHOW_EDIT_MODAL = '@users/SHOW_EDIT_MODAL';
+export const SHOW_DELETE_MODAL = '@users/SHOW_DELETE_MODAL';

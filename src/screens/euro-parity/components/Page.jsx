@@ -1,20 +1,21 @@
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import Modals from "./Modals";
-import EuroTable from "./EuroTable";
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
+
+import Modals from './Modals';
+import EuroTable from './EuroTable';
 
 const PageContainer = styled.div`
   width: 100%;
 `;
 
-export default function(props) {
+const EuroParityPage = (props) => {
   const [selectedItem, setSelectedItem] = useState({});
 
   useEffect(() => {
     props.actions.initialLoadEuroParity();
   }, [props.actions]);
 
-  const handleDelete = item => {
+  const handleDelete = (item) => {
     setSelectedItem(item);
     props.actions.showDeleteModalEuroParity();
   };
@@ -32,4 +33,6 @@ export default function(props) {
       />
     </PageContainer>
   );
-}
+};
+
+export default EuroParityPage;
